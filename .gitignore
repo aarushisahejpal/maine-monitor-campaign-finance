@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+checkpoint.txt
+fec_checkpoint_*.json
+
+# Original flat files (now organized under data/)
+maine_campaign_finance_2025_2026.csv
+Export_SearchResult.csv
+fec_receipts_*.csv
+fec_expenditures_*.csv
+schedule_a-*.csv
+scrape.py
+fec_scrape.py
+# Root-level originals (copies live in scrapers/)
+/me_candidates_*.json
+Data source - Matrix.csv

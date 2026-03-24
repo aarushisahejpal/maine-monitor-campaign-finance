@@ -1,0 +1,130 @@
+[
+  {
+    "candidate_id": "H4ME01152",
+    "name": "PIANTIDOSI, ANDREW",
+    "office": "House",
+    "district": "01",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00842708"
+  },
+  {
+    "candidate_id": "H4ME01186",
+    "name": "ALCORN, ETHAN",
+    "office": "House",
+    "district": "01",
+    "party": "INDEPENDENT",
+    "committee_id": "NONE"
+  },
+  {
+    "candidate_id": "H4ME02267",
+    "name": "BALL, KEVIN",
+    "office": "House",
+    "district": "02",
+    "party": "UNAFFILIATED",
+    "committee_id": "C00833541"
+  },
+  {
+    "candidate_id": "H4ME02291",
+    "name": "THERIAULT, AUSTIN LEO",
+    "office": "House",
+    "district": "02",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00852061"
+  },
+  {
+    "candidate_id": "H8ME02185",
+    "name": "GOLDEN, JARED",
+    "office": "House",
+    "district": "02",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00653816"
+  },
+  {
+    "candidate_id": "H4ME02283",
+    "name": "SOBOLESKI, MIKE",
+    "office": "House",
+    "district": "02",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00851238"
+  },
+  {
+    "candidate_id": "H4ME01178",
+    "name": "VIGUE, NICHOLAS",
+    "office": "House",
+    "district": "01",
+    "party": "OTHER",
+    "committee_id": "NONE"
+  },
+  {
+    "candidate_id": "H4ME02275",
+    "name": "CROSS, ROBERT N",
+    "office": "House",
+    "district": "02",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00836676"
+  },
+  {
+    "candidate_id": "H4ME02309",
+    "name": "BASSILE, ELIAS",
+    "office": "House",
+    "district": "01",
+    "party": "INDEPENDENT",
+    "committee_id": "C00851550"
+  },
+  {
+    "candidate_id": "H8ME01120",
+    "name": "PINGREE, CHELLIE M",
+    "office": "House",
+    "district": "01",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00433391"
+  },
+  {
+    "candidate_id": "H4ME01160",
+    "name": "RUSSELL, RONALD CHARLES MR.",
+    "office": "House",
+    "district": "01",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00860379"
+  },
+  {
+    "candidate_id": "S4ME00113",
+    "name": "COSTELLO, DAVID",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00837609"
+  },
+  {
+    "candidate_id": "S4ME00147",
+    "name": "CHERRY, JASON SETH",
+    "office": "Senate",
+    "district": "00",
+    "party": "INDEPENDENT",
+    "committee_id": "C00863787"
+  },
+  {
+    "candidate_id": "S2ME00109",
+    "name": "KING, ANGUS S. JR.",
+    "office": "Senate",
+    "district": "00",
+    "party": "INDEPENDENT",
+    "committee_id": "C00516047"
+  },
+  {
+    "candidate_id": "S4ME00139",
+    "name": "ALCALA, NATASHA",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00867069"
+  },
+  {
+    "candidate_id": "S4ME00121",
+    "name": "KOUZOUNAS, DEMI",
+    "office": "Senate",
+    "district": "00",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00867002"
+  }
+]

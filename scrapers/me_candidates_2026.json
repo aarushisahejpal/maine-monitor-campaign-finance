@@ -1,0 +1,258 @@
+[
+  {
+    "candidate_id": "H6ME01264",
+    "name": "DUPREY, JOSHUA JAMES",
+    "office": "House",
+    "district": "01",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00905240"
+  },
+  {
+    "candidate_id": "H6ME01272",
+    "name": "SMALL, ERIC",
+    "office": "House",
+    "district": "01",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00912055"
+  },
+  {
+    "candidate_id": "H6ME02197",
+    "name": "WOOD, JORDAN",
+    "office": "House",
+    "district": "02",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00903179"
+  },
+  {
+    "candidate_id": "H6ME02213",
+    "name": "BALDACCI, JOSEPH",
+    "office": "House",
+    "district": "02",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00934000"
+  },
+  {
+    "candidate_id": "H8ME02185",
+    "name": "GOLDEN, JARED",
+    "office": "House",
+    "district": "02",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00653816"
+  },
+  {
+    "candidate_id": "H6ME02189",
+    "name": "CLARK, JAMES L.",
+    "office": "House",
+    "district": "02",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00927624"
+  },
+  {
+    "candidate_id": "H4ME01160",
+    "name": "RUSSELL, RONALD CHARLES MR.",
+    "office": "House",
+    "district": "01",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00860379"
+  },
+  {
+    "candidate_id": "H6ME01280",
+    "name": "ROBERTS, TIFFANY DANIELLE",
+    "office": "House",
+    "district": "01",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00925487"
+  },
+  {
+    "candidate_id": "H6ME02148",
+    "name": "LEPAGE, PAUL",
+    "office": "House",
+    "district": "02",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00904094"
+  },
+  {
+    "candidate_id": "H6ME02155",
+    "name": "SIGEL, LOUIS MR.",
+    "office": "House",
+    "district": "02",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00915439"
+  },
+  {
+    "candidate_id": "H6ME02205",
+    "name": "LOUD, PAIGE",
+    "office": "House",
+    "district": "02",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00931352"
+  },
+  {
+    "candidate_id": "H6ME02171",
+    "name": "DUNLAP, MATT",
+    "office": "House",
+    "district": "02",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00922377"
+  },
+  {
+    "candidate_id": "H8ME01120",
+    "name": "PINGREE, CHELLIE M",
+    "office": "House",
+    "district": "01",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00433391"
+  },
+  {
+    "candidate_id": "H6ME01256",
+    "name": "PIANTIDOSI, ANDREW",
+    "office": "House",
+    "district": "01",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00903724"
+  },
+  {
+    "candidate_id": "H6ME01298",
+    "name": "PIETROWICZ, JOSHUA JAMES",
+    "office": "House",
+    "district": "01",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00932004"
+  },
+  {
+    "candidate_id": "S6ME00340",
+    "name": "LAFLAMME, ANDREA",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00907261"
+  },
+  {
+    "candidate_id": "S6ME00332",
+    "name": "WOOD, JORDAN",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "NONE"
+  },
+  {
+    "candidate_id": "S6ME00308",
+    "name": "ALCALA, NATASHA",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00898080"
+  },
+  {
+    "candidate_id": "S4ME00113",
+    "name": "COSTELLO, DAVID",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00907881"
+  },
+  {
+    "candidate_id": "S6ME00415",
+    "name": "RICH, TIMOTHY",
+    "office": "Senate",
+    "district": "00",
+    "party": "UNAFFILIATED",
+    "committee_id": "C00935718"
+  },
+  {
+    "candidate_id": "S6ME00365",
+    "name": "RODRIGUEZ, DAIRA",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00916189"
+  },
+  {
+    "candidate_id": "S6ME00316",
+    "name": "CALABRESE, CARMEM VINCENT MR.",
+    "office": "Senate",
+    "district": "00",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00902759"
+  },
+  {
+    "candidate_id": "S6ME00423",
+    "name": "ALCORN, ETHAN WELD MR",
+    "office": "Senate",
+    "district": "00",
+    "party": "UNAFFILIATED",
+    "committee_id": "C00942078"
+  },
+  {
+    "candidate_id": "S6ME00324",
+    "name": "CALABRESE, CARMEN VINCENT MR.",
+    "office": "Senate",
+    "district": "00",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00902759"
+  },
+  {
+    "candidate_id": "S6ME00282",
+    "name": "RENCH, PHILLIP",
+    "office": "Senate",
+    "district": "00",
+    "party": "INDEPENDENT",
+    "committee_id": "C00897660"
+  },
+  {
+    "candidate_id": "S6ME00399",
+    "name": "EVANS, DAVID ALAN",
+    "office": "Senate",
+    "district": "00",
+    "party": "INDEPENDENT",
+    "committee_id": "C00921767"
+  },
+  {
+    "candidate_id": "S6ME00373",
+    "name": "PLATNER, GRAHAM",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00916437"
+  },
+  {
+    "candidate_id": "S6ME00290",
+    "name": "SMERIGLIO, DANIEL C",
+    "office": "Senate",
+    "district": "00",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00903872"
+  },
+  {
+    "candidate_id": "S6ME00159",
+    "name": "COLLINS, SUSAN M.",
+    "office": "Senate",
+    "district": "00",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "C00314575"
+  },
+  {
+    "candidate_id": "S6ME00407",
+    "name": "MILLS, JANET TRAFTON",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00923144"
+  },
+  {
+    "candidate_id": "S6ME00381",
+    "name": "KLEBAN, DAN",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00918300"
+  },
+  {
+    "candidate_id": "S6ME00357",
+    "name": "FAVREAU, TUCKER",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00907873"
+  }
+]
