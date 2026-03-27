@@ -3,7 +3,7 @@ library(readr)
 library(readxl)
 
 #list of candidates from 2026
-candidate_list_2026 <- read_excel("data/2026 Primary Candidate List posting FINAL.xlsx")
+candidate_list_2026 <- read_excel("viz/data/cand_lists/2026 Primary Candidate List posting FINAL.xlsx")
 
 list_2026 <- candidate_list_2026 %>% 
   mutate(name = paste(`First Name`, `Last Name`)) %>% 
@@ -44,7 +44,7 @@ list_2024 <- candidate_list %>%
   select(filer_name, race, district, party) 
 
 #nonmatching candidates
-candidate_list_nonmatch <-  read_excel("data/2026_candidates_nonmatch.xlsx")
+candidate_list_nonmatch <-  read_excel("viz/data/cand_lists/2026_candidates_nonmatch.xlsx")
 
 #bind lists from 2024 and 2026 otgether 
 list_26_24 <- list_2026 %>% 
@@ -54,6 +54,6 @@ list_26_24 <- list_2026 %>%
 
 
 
-write.csv(list_2024, file = "data/candidate_list_2024.csv", row.names = FALSE)
-write.csv(list_2026, file = "data/candidate_list_2026.csv", row.names = FALSE)
-write.csv(list_26_24, file = "data/candidate_list_2026_and_2024.csv", row.names = FALSE)
+write.csv(list_2024, file = "viz/data/cand_lists/candidate_list_2024.csv", row.names = FALSE)
+write.csv(list_2026, file = "viz/data/cand_lists/candidate_list_2026.csv", row.names = FALSE)
+write.csv(list_26_24, file = "viz/data/cand_lists/candidate_list_2026_and_2024.csv", row.names = FALSE)
