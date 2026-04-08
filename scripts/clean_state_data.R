@@ -78,11 +78,13 @@ cand_sheets <- cand_con_total %>%
   mutate(
     sheet_name = case_when(
       race == "Governor" ~ "Governor",
-      TRUE ~ paste(race, district, sep = "_")
+      race == "Representative" ~ paste(race, district, sep = "_"),
+      race == "Senator" ~ paste(race, district, sep = "_")
     ),
     sheet_name = str_replace_all(sheet_name, " ", "_")
   )
 
+#SOMETHING IS GOING WRONG HERE
 sheets <- cand_sheets %>%
   group_by(sheet_name) %>%
   group_split() %>%
@@ -133,13 +135,12 @@ cand_top5_contribs <- cand_contributors %>%
   rbind(cand_comm_contribs) %>% 
   group_by(candidate) %>%
   slice_max(total_contributed, n = 5, with_ties = FALSE) %>%
-  arrange(candidate, desc(total_contributed)) %>% 
-  
+  arrange(race, district, candidate, desc(total_contributed)) 
 
 
 #export datasets
-# write.csv(cand_con_total, file = "viz/data/clean/total_contributions_by_filer.csv", row.names = FALSE)
-write.csv(cand_top5_contribs, file = "viz/data/clean/top_5contributors_by_filer.csv", row.names = FALSE)
+write.csv(cand_con_total, file = "viz/data/clean/maine_total_contributions_by_filer.csv", row.names = FALSE)
+write.csv(cand_top5_contribs, file = "viz/data/clean/maine_top_5contributors_by_filer.csv", row.names = FALSE)
 
 
 
