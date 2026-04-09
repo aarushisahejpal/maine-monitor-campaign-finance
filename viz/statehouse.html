@@ -104,6 +104,14 @@
         .chart-svg .label { fill: var(--text); font-size: 13px; font-weight: 500; }
         .chart-svg .value { fill: var(--text-secondary); font-size: 12.5px; font-weight: 600; }
 
+        .chart-total {
+            text-align: right;
+            font-family: 'Lora', Georgia, serif;
+            font-size: 1em;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
         /* ── TOOLTIP ── */
         .tip {
             position: fixed; pointer-events: none; z-index: 9999;
@@ -177,6 +185,7 @@
         <div class="section-label">Money Raised</div>
         <h2 class="section-title">Total Contributions</h2>
         <div id="chartContainer"></div>
+        <div class="chart-total" id="chartTotal"></div>
     </section>
 
     <section class="section">
@@ -300,9 +309,9 @@ PARTY_ORDER.forEach(party => {
 });
 cardsContainer.appendChild(partyGroups);
 
-// ── BAR CHART ──
-const margin = { top: 4, right: 100, bottom: 4, left: 0 };
-const barH = 40, barGap = 10;
+// ── BAR CHART (matches governor style) ──
+const margin = { top: 4, right: 110, bottom: 4, left: 200 };
+const barH = 30, barGap = 6;
 const width = 680;
 const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
 
@@ -312,37 +321,35 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-const maxVal = d3.max(TOTALS, d => d.t);
-const x = d3.scaleLinear().domain([0, maxVal]).range([0, width - margin.right]);
-const y = d3.scaleBand().domain(TOTALS.map(d => d.c)).range([margin.top, height - margin.bottom]).padding(0.2);
+const x = d3.scaleLinear()
+    .domain([0, d3.max(TOTALS, d => d.t)])
+    .range([margin.left, width - margin.right]);
+
+const y = d3.scaleBand()
+    .domain(TOTALS.map(d => d.c))
+    .range([margin.top, height - margin.bottom])
+    .padding(0.15);
 
 const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
 
 bars.append('rect')
     .attr('class', 'bar')
-    .attr('x', 0)
+    .attr('x', margin.left)
     .attr('y', d => y(d.c))
-    .attr('height', y.bandwidth())
-    .attr('rx', 3)
-    .attr('fill', d => COLORS[d.p] || '#999')
     .attr('width', 0)
-    .transition().duration(600).delay((d, i) => i * 80)
-    .attr('width', d => x(d.t));
+    .attr('height', y.bandwidth())
+    .attr('rx', 2)
+    .attr('fill', d => COLORS[d.p] || '#999')
+    .transition().duration(700).delay((d, i) => i * 80)
+    .attr('width', d => x(d.t) - margin.left);
 
-// Name inside bar or beside it
 bars.append('text')
     .attr('class', 'label')
-    .attr('x', d => Math.min(x(d.t) - 10, width * 0.4))
+    .attr('x', margin.left - 10)
     .attr('y', d => y(d.c) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .attr('text-anchor', d => x(d.t) > 120 ? 'end' : 'start')
-    .attr('fill', d => x(d.t) > 120 ? '#fff' : 'var(--text)')
-    .attr('font-weight', 600)
-    .attr('font-size', '13px')
-    .text(d => d.c)
-    .style('opacity', 0)
-    .transition().delay((d, i) => i * 80 + 400).duration(300)
-    .style('opacity', 1);
+    .attr('text-anchor', 'end')
+    .text(d => d.c);
 
 bars.append('text')
     .attr('class', 'value')
@@ -351,8 +358,11 @@ bars.append('text')
     .attr('dy', '0.35em')
     .text(d => fmt(d.t))
     .style('opacity', 0)
-    .transition().delay((d, i) => i * 80 + 500).duration(300)
+    .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
+
+const total = TOTALS.reduce((a, b) => a + b.t, 0);
+document.getElementById('chartTotal').textContent = 'Total raised across all candidates: ' + fmt(total);
 
 bars.on('mouseenter', function(evt, d) {
     svg.classed('has-hover', true);
