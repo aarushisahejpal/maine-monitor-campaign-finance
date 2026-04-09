@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         :root {
             --blue: #2c6fbb;
@@ -290,73 +291,52 @@
 <div class="tip" id="tip"></div>
 
 <script>
-// ─── DATA ───
+// ─── CONFIG ───
 const COLORS = { Democratic:'#2c6fbb', Republican:'#c0392b', Unenrolled:'#6b6b6b', Independent:'#8e44ad' };
 const PARTY_ORDER = ['Democratic','Republican','Unenrolled','Independent'];
+const RACE_FILTER = 'Governor';
 
-const TOTALS = [
-  {c:"hannah pingree",p:"Democratic",t:1351701.29},
-  {c:"shenna bellows",p:"Democratic",t:1232143.5},
-  {c:"jonathan bush",p:"Republican",t:926861},
-  {c:"angus s king iii",p:"Democratic",t:858719.69},
-  {c:"troy dale jackson",p:"Democratic",t:724500.68},
-  {c:"robert b charles",p:"Republican",t:641479.13},
-  {c:"richard bennett",p:"Unenrolled",t:490095},
-  {c:"nirav shah",p:"Democratic",t:392786.08},
-  {c:"owen mccarthy",p:"Republican",t:332962},
-  {c:"david john jones",p:"Republican",t:289540.83},
-  {c:"benjamin midgley",p:"Republican",t:269275},
-  {c:"robert j wessels",p:"Republican",t:27630.46},
-  {c:"david jones",p:"Republican",t:3910},
-  {c:"steven christopher sheppard",p:"Republican",t:1100},
-  {c:"garrett mason",p:"Republican",t:1000},
-  {c:"robert wessels",p:"Republican",t:680},
-  {c:"alexander kenneth murchison",p:"Unenrolled",t:671.63},
-  {c:"kenneth forrest pinet",p:"Democratic",t:665},
-  {c:"james libby",p:"Republican",t:264.7},
-  {c:"john michael glowa sr",p:"Independent",t:180}
-];
+const BASE_URL = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/viz/data/clean/';
 
-const DONORS = [
-  {c:"hannah pingree",e:"Contributors giving $50 or less",a:33255.29},
-  {c:"hannah pingree",e:"Robert Gober",a:16600},{c:"hannah pingree",e:"Bethany B Kleban",a:10375},
-  {c:"hannah pingree",e:"Katherine M Vogt",a:10375},{c:"hannah pingree",e:"Greg Payne",a:10125},
-  {c:"shenna bellows",e:"Contributors giving $50 or less",a:162942.88},
-  {c:"shenna bellows",e:"Alex Kasser",a:10375},{c:"shenna bellows",e:"Ellen L. Sudow",a:10375},
-  {c:"shenna bellows",e:"Robert J. Yamartino",a:10375},{c:"shenna bellows",e:"Bronson Platner",a:8300},
-  {c:"jonathan bush",e:"Albert Santalo",a:12450},{c:"jonathan bush",e:"Amy Geng",a:10375},
-  {c:"jonathan bush",e:"Andrea Immelt",a:10375},{c:"jonathan bush",e:"Cozack Inc.",a:10375},
-  {c:"jonathan bush",e:"Jeff Immelt",a:10375},
-  {c:"angus s king iii",e:"Contributors giving $50 or less",a:14794},
-  {c:"angus s king iii",e:"Ellen Oppenheim",a:8300},{c:"angus s king iii",e:"LOBO PAC",a:8300},
-  {c:"angus s king iii",e:"Peter McBride",a:8300},{c:"angus s king iii",e:"Gina Redinger",a:6225},
-  {c:"troy dale jackson",e:"Contributors giving $50 or less",a:114887.42},
-  {c:"troy dale jackson",e:"International Association of Fire Fighters",a:12450},
-  {c:"troy dale jackson",e:"Timothy Varney",a:10375},
-  {c:"troy dale jackson",e:"Mi'Kmaq Nation General Account",a:10000},
-  {c:"troy dale jackson",e:"Local Union 567 - IBEW PAC Fund",a:9375},
-  {c:"robert b charles",e:"Contributors giving $50 or less",a:79031.74},
-  {c:"robert b charles",e:"John Coleman",a:20124},{c:"robert b charles",e:"Robert Charles",a:20000},
-  {c:"robert b charles",e:"Joseph Jangro",a:18675},{c:"robert b charles",e:"David Barker",a:10375},
-  {c:"richard bennett",e:"Bahre Paris Realty, LLC",a:10375},{c:"richard bennett",e:"John McBride",a:10375},
-  {c:"richard bennett",e:"Paul Coulombe",a:10375},{c:"richard bennett",e:"Brenda Garrand",a:9225},
-  {c:"richard bennett",e:"Forward Party",a:8300},
-  {c:"nirav shah",e:"Daniel Logan",a:10375},{c:"nirav shah",e:"Pankil Doshi",a:10375},
-  {c:"nirav shah",e:"Alene Gelbard",a:8300},{c:"nirav shah",e:"John Wasileski",a:8150},
-  {c:"nirav shah",e:"Benjamin Lowenstein",a:6225},
-  {c:"owen mccarthy",e:"ASASIA PIERCE",a:8300},{c:"owen mccarthy",e:"HOLLY MCCARTHY",a:8300},
-  {c:"owen mccarthy",e:"LOU AWAD",a:8300},{c:"owen mccarthy",e:"JEROD PIERCE",a:6225},
-  {c:"owen mccarthy",e:"LARA BASHKOFF",a:6225},
-  {c:"david john jones",e:"David Jones",a:26605},{c:"david john jones",e:"Amy McMillian-Tambini",a:8300},
-  {c:"david john jones",e:"Cohen Properties LLC",a:8300},{c:"david john jones",e:"Jason Case",a:8300},
-  {c:"david john jones",e:"Sareem AlShawk",a:8300},
-  {c:"benjamin midgley",e:"Michael Grondahl",a:12450},{c:"benjamin midgley",e:"Barry Julien",a:10375},
-  {c:"benjamin midgley",e:"Paul Hartl",a:10375},{c:"benjamin midgley",e:"Amy Bowen",a:8300},
-  {c:"benjamin midgley",e:"Assaf Gal",a:8300}
-];
+function loadCSV(file) {
+    return new Promise((resolve, reject) => {
+        Papa.parse(BASE_URL + file, {
+            download: true, header: true, skipEmptyLines: true,
+            complete: r => resolve(r.data),
+            error: e => reject(e)
+        });
+    });
+}
+
+async function loadData() {
+    const [totalsRaw, donorsRaw] = await Promise.all([
+        loadCSV('maine_total_contributions_by_filer.csv'),
+        loadCSV('maine_top_5contributors_by_filer.csv')
+    ]);
+
+    const TOTALS = totalsRaw
+        .filter(r => r.race === RACE_FILTER)
+        .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand)}))
+        .sort((a, b) => b.t - a.t);
+
+    const DONORS = donorsRaw
+        .filter(r => r.race === RACE_FILTER)
+        .map(r => ({c: r.display_name || r.candidate, e: r.entity, a: parseFloat(r.total_contributed)}));
+
+    return { TOTALS, DONORS };
+}
+
+// Load and render
+loadData().then(({ TOTALS, DONORS }) => {
+    render(TOTALS, DONORS);
+}).catch(err => {
+    console.error('Failed to load data:', err);
+    document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data. Check console.</p>';
+});
+
+function render(TOTALS, DONORS) {
 
 // ─── HELPERS ───
-const tc = s => s.replace(/\b\w/g, c => c.toUpperCase());
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const tip = document.getElementById('tip');
 
@@ -389,7 +369,7 @@ PARTY_ORDER.forEach(party => {
     byParty[party].forEach(d => {
         const c = document.createElement('div');
         c.className = 'cand';
-        c.innerHTML = `<div class="cand-name">${tc(d.c)}</div><div class="cand-meta">${fmt(d.t)} raised</div>`;
+        c.innerHTML = `<div class="cand-name">${d.c}</div><div class="cand-meta">${fmt(d.t)} raised</div>`;
         g.appendChild(c);
     });
     cEl.appendChild(g);
@@ -439,7 +419,7 @@ bars.append('text')
     .attr('y', d => y(d.c) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
     .attr('text-anchor', 'end')
-    .text(d => tc(d.c));
+    .text(d => d.c);
 
 bars.append('text')
     .attr('class', 'value')
@@ -457,7 +437,7 @@ bars.on('mouseenter', function(evt, d) {
     d3.select(this).select('.bar').classed('active', true);
     const rank = chartData.indexOf(d) + 1;
     const donors = DONORS.filter(x => x.c === d.c);
-    let html = `<div class="tip-name">${tc(d.c)}</div>
+    let html = `<div class="tip-name">${d.c}</div>
         <div class="tip-party">${d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
@@ -492,7 +472,7 @@ topCands.forEach(cand => {
     card.className = 'donor-card';
     card.innerHTML = `
         <div class="donor-card-header">
-            <span class="donor-card-name">${tc(cand.c)}</span>
+            <span class="donor-card-name">${cand.c}</span>
             <span class="donor-card-total">${fmt(cand.t)} total</span>
         </div>`;
 
@@ -504,6 +484,7 @@ topCands.forEach(cand => {
     });
     donorsEl.appendChild(card);
 });
+} // end render()
 </script>
 </body>
 </html>
