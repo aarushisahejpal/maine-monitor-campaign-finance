@@ -1,14 +1,14 @@
-name: Weekly State 2026 Scrape
+name: Biweekly State 2026 Scrape + Aggregate
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Every Monday at 6am UTC
+    - cron: '0 6 * * 1/2'  # Every other Monday at 6am UTC
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  scrape:
+  scrape-and-aggregate:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       - uses: actions/checkout@v4
@@ -17,20 +17,31 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install R packages
+        run: |
+          Rscript -e 'install.packages(c("readr", "tidyverse", "purrr", "writexl", "stringr"), repos="https://cloud.r-project.org")'
+
+      - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Run state 2026 scraper
+      - name: Scrape state 2026 data
         run: python scrapers/state_2026_scraper.py
 
-      - name: Commit and push updated data
+      - name: Run R aggregation scripts
+        run: |
+          Rscript scripts/clean_state_data.R
+          Rscript scripts/clean_federal_data.R
+
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/state_2026/transactions.csv
+          git add data/state_2026/transactions.csv viz/data/clean/
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Weekly update: state 2026 transactions $(date +%Y-%m-%d)"
+            git commit -m "Biweekly update: scrape + aggregate $(date +%Y-%m-%d)"
             git push
           fi

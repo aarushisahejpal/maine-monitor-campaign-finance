@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House District 94 — Campaign Finances — The Maine Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --blue: #2c6fbb;
+            --red: #c0392b;
+            --gray: #6b6b6b;
+            --purple: #8e44ad;
+            --accent: #8989f1;
+            --text: #1a1a1a;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --border: #e5e5e5;
+            --bg-hover: #fafafc;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: #fff;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 0 20px 80px; }
+
+        /* ── HEADER ── */
+        .page-header { padding: 56px 0 24px; }
+        .page-header .kicker {
+            font-size: 0.7em; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--accent); margin-bottom: 12px;
+        }
+        .page-header h1 {
+            font-family: 'Lora', Georgia, serif;
+            font-size: 2em; font-weight: 700; color: var(--text);
+            letter-spacing: -0.03em; line-height: 1.15;
+        }
+        .page-header .dek {
+            font-family: 'Lora', Georgia, serif;
+            font-style: italic; font-size: 0.95em; color: var(--text-secondary);
+            margin-top: 10px;
+        }
+        .header-rule { width: 60px; height: 3px; background: var(--accent); margin: 24px 0 0; border: none; }
+
+        /* ── SECTIONS ── */
+        .section { margin-top: 44px; }
+        .section-label {
+            font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--accent);
+        }
+        .section-title {
+            font-family: 'Lora', Georgia, serif;
+            font-size: 1.25em; font-weight: 600; color: var(--text);
+            margin-top: 4px; margin-bottom: 20px;
+        }
+
+        /* ── CANDIDATES (side-by-side cards) ── */
+        .cand-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .cand-card {
+            border-radius: 6px;
+            padding: 20px;
+            background: #fafafa;
+            border-top: 3px solid var(--gray);
+            transition: box-shadow 0.15s, transform 0.15s;
+        }
+        .cand-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); transform: translateY(-1px); }
+        .cand-card.democratic { border-top-color: var(--blue); }
+        .cand-card.republican { border-top-color: var(--red); }
+        .cand-card .cc-party {
+            font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 6px;
+        }
+        .cand-card.democratic .cc-party { color: var(--blue); }
+        .cand-card.republican .cc-party { color: var(--red); }
+        .cand-card .cc-name {
+            font-family: 'Lora', Georgia, serif;
+            font-size: 1.1em; font-weight: 600; text-transform: capitalize;
+            line-height: 1.25; margin-bottom: 8px;
+        }
+        .cand-card .cc-amount {
+            font-size: 1.4em; font-weight: 700; font-variant-numeric: tabular-nums;
+        }
+        .cand-card .cc-label {
+            font-size: 0.72em; color: var(--text-muted); margin-top: 2px;
+        }
+
+        /* ── CHART ── */
+        .chart-svg { width: 100%; overflow: visible; }
+        .chart-svg text { font-family: 'Inter', sans-serif; }
+        .chart-svg .bar { transition: opacity 0.15s; cursor: pointer; }
+        .chart-svg.has-hover .bar { opacity: 0.3; }
+        .chart-svg.has-hover .bar.active { opacity: 1; }
+        .chart-svg .label { fill: var(--text); font-size: 13px; font-weight: 500; }
+        .chart-svg .value { fill: var(--text-secondary); font-size: 12.5px; font-weight: 600; }
+
+        /* ── TOOLTIP ── */
+        .tip {
+            position: fixed; pointer-events: none; z-index: 9999;
+            background: var(--text); color: #fff; border-radius: 8px;
+            padding: 14px 18px; font-size: 0.8em; line-height: 1.55;
+            max-width: 280px; box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+            opacity: 0; transform: translateY(4px);
+            transition: opacity 0.12s, transform 0.12s;
+        }
+        .tip.on { opacity: 1; transform: translateY(0); }
+        .tip-name { font-weight: 700; font-size: 1.05em; text-transform: capitalize; }
+        .tip-party { font-size: 0.85em; opacity: 0.6; margin-bottom: 6px; }
+        .tip-total { font-size: 1.2em; font-weight: 700; }
+        .tip-divider { border: none; border-top: 1px solid rgba(255,255,255,0.15); margin: 8px 0; }
+        .tip-header { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 4px; }
+        .tip-donor-row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+        .tip-donor-name { opacity: 0.75; }
+        .tip-donor-amt { font-weight: 600; white-space: nowrap; }
+
+        /* ── DONORS (stacked for small races) ── */
+        .donors-stack { }
+        .donor-block { margin-bottom: 28px; }
+        .donor-block-header {
+            display: flex; justify-content: space-between; align-items: baseline;
+            padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 2px;
+        }
+        .donor-block-name {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: 600; font-size: 0.95em; text-transform: capitalize;
+        }
+        .donor-block-total { font-size: 0.75em; color: var(--text-muted); font-weight: 500; }
+        .d-row {
+            display: flex; justify-content: space-between; align-items: baseline;
+            padding: 7px 8px; border-radius: 3px; transition: background 0.1s; gap: 8px;
+        }
+        .d-row:hover { background: var(--bg-hover); }
+        .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 600; min-width: 18px; }
+        .d-name { flex: 1; font-size: 0.85em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .d-amt { font-size: 0.85em; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+        /* ── FOOTER ── */
+        .page-footer {
+            margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border);
+            font-size: 0.72em; color: var(--text-muted); line-height: 1.7;
+        }
+        .page-footer strong { font-weight: 600; color: var(--text-secondary); }
+
+        @media (max-width: 600px) {
+            .page-header h1 { font-size: 1.5em; }
+            .cand-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="page-header">
+        <div class="kicker">2026 Maine Elections &middot; State House</div>
+        <h1>House District 94</h1>
+        <p class="dek">Campaign finance data for all candidates running in Maine House District 94.</p>
+        <hr class="header-rule">
+    </header>
+
+    <section class="section" id="candidatesSection">
+        <div class="section-label">The Candidates</div>
+        <h2 class="section-title">Who's Running</h2>
+        <div id="candCards"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Money Raised</div>
+        <h2 class="section-title">Total Contributions</h2>
+        <div id="chartContainer"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Follow the Money</div>
+        <h2 class="section-title">Top Donors</h2>
+        <div class="donors-stack" id="donors"></div>
+    </section>
+
+    <footer class="page-footer">
+        <strong>Source:</strong> Maine Campaign Finance Disclosure System. Includes direct contributions and contributions routed through committees and PACs.<br>
+        <strong>Last updated:</strong> April 2026. Data is refreshed biweekly.
+    </footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const COLORS = { Democratic:'#2c6fbb', Republican:'#c0392b', Unenrolled:'#6b6b6b', Independent:'#8e44ad' };
+
+const TOTALS = [
+  {c:"Janet Beaudoin",p:"Republican",t:7316},
+  {c:"Kiernan Innes Majerus-Collins",p:"Democratic",t:7140},
+  {c:"Scott A. Harriman",p:"Democratic",t:4751.73}
+];
+
+const DONORS = [
+  {c:"Janet Beaudoin",e:"Betsey Grant",a:500},
+  {c:"Janet Beaudoin",e:"Dirigo Freedom Leadership PAC",a:500},
+  {c:"Janet Beaudoin",e:"Gary St. Laurent",a:500},
+  {c:"Janet Beaudoin",e:"Jonathan Connor",a:500},
+  {c:"Janet Beaudoin",e:"Jonathan Courtney",a:500},
+  {c:"Kiernan Innes Majerus-Collins",e:"Douglas Stone",a:1500},
+  {c:"Kiernan Innes Majerus-Collins",e:"Sarah O'Neill",a:1000},
+  {c:"Kiernan Innes Majerus-Collins",e:"Valerie Gutmann",a:1500},
+  {c:"Kiernan Innes Majerus-Collins",e:"Clifford Gutmann",a:700},
+  {c:"Kiernan Innes Majerus-Collins",e:"Jason Paul",a:500},
+  {c:"Scott A. Harriman",e:"Contributors giving $50 or less",a:1946.18},
+  {c:"Scott A. Harriman",e:"Dirigo Leaders PAC",a:1000},
+  {c:"Scott A. Harriman",e:"ACTBLUE MAINE",a:700},
+  {c:"Scott A. Harriman",e:"Paul Robinson",a:300},
+  {c:"Scott A. Harriman",e:"Karen Tcheyan",a:250}
+];
+
+const tc = s => s.replace(/\b\w/g, c => c.toUpperCase());
+const fmt = n => '$' + Math.round(n).toLocaleString();
+const tip = document.getElementById('tip');
+
+function showTip(evt, html) {
+    tip.innerHTML = html; tip.classList.add('on'); moveTip(evt);
+}
+function moveTip(evt) {
+    const pad = 16;
+    let x = evt.clientX + pad, y = evt.clientY + pad;
+    const r = tip.getBoundingClientRect();
+    if (x + r.width > window.innerWidth - pad) x = evt.clientX - r.width - pad;
+    if (y + r.height > window.innerHeight - pad) y = evt.clientY - r.height - pad;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+function hideTip() { tip.classList.remove('on'); }
+
+// ── CANDIDATE CARDS (grouped by party) ──
+const cardsContainer = document.getElementById('candCards');
+const byParty = {};
+const PARTY_ORDER = ['Democratic','Republican','Unenrolled','Independent'];
+TOTALS.forEach(d => { (byParty[d.p] ??= []).push(d); });
+
+const partyGroups = document.createElement('div');
+partyGroups.style.cssText = 'display:flex;flex-direction:column;gap:28px;';
+
+PARTY_ORDER.forEach(party => {
+    if (!byParty[party]) return;
+    const group = document.createElement('div');
+
+    const heading = document.createElement('div');
+    heading.style.cssText = `font-size:0.7em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding-bottom:8px;margin-bottom:12px;color:${COLORS[party]};border-bottom:2px solid ${COLORS[party]};`;
+    heading.textContent = party + 's';
+    group.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'cand-cards';
+    byParty[party].forEach(d => {
+        const card = document.createElement('div');
+        const pc = d.p.toLowerCase();
+        card.className = `cand-card ${pc}`;
+        card.innerHTML = `
+            <div class="cc-party">${d.p}</div>
+            <div class="cc-name">${d.c}</div>
+            <div class="cc-amount">${fmt(d.t)}</div>
+            <div class="cc-label">total raised</div>
+        `;
+        grid.appendChild(card);
+    });
+    group.appendChild(grid);
+    partyGroups.appendChild(group);
+});
+cardsContainer.appendChild(partyGroups);
+
+// ── BAR CHART ──
+const margin = { top: 4, right: 100, bottom: 4, left: 0 };
+const barH = 40, barGap = 10;
+const width = 680;
+const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
+
+const svg = d3.select('#chartContainer')
+    .append('svg')
+    .attr('class', 'chart-svg')
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet');
+
+const maxVal = d3.max(TOTALS, d => d.t);
+const x = d3.scaleLinear().domain([0, maxVal]).range([0, width - margin.right]);
+const y = d3.scaleBand().domain(TOTALS.map(d => d.c)).range([margin.top, height - margin.bottom]).padding(0.2);
+
+const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
+
+bars.append('rect')
+    .attr('class', 'bar')
+    .attr('x', 0)
+    .attr('y', d => y(d.c))
+    .attr('height', y.bandwidth())
+    .attr('rx', 3)
+    .attr('fill', d => COLORS[d.p] || '#999')
+    .attr('width', 0)
+    .transition().duration(600).delay((d, i) => i * 80)
+    .attr('width', d => x(d.t));
+
+// Name inside bar or beside it
+bars.append('text')
+    .attr('class', 'label')
+    .attr('x', d => Math.min(x(d.t) - 10, width * 0.4))
+    .attr('y', d => y(d.c) + y.bandwidth() / 2)
+    .attr('dy', '0.35em')
+    .attr('text-anchor', d => x(d.t) > 120 ? 'end' : 'start')
+    .attr('fill', d => x(d.t) > 120 ? '#fff' : 'var(--text)')
+    .attr('font-weight', 600)
+    .attr('font-size', '13px')
+    .text(d => tc(d.c))
+    .style('opacity', 0)
+    .transition().delay((d, i) => i * 80 + 400).duration(300)
+    .style('opacity', 1);
+
+bars.append('text')
+    .attr('class', 'value')
+    .attr('x', d => x(d.t) + 8)
+    .attr('y', d => y(d.c) + y.bandwidth() / 2)
+    .attr('dy', '0.35em')
+    .text(d => fmt(d.t))
+    .style('opacity', 0)
+    .transition().delay((d, i) => i * 80 + 500).duration(300)
+    .style('opacity', 1);
+
+bars.on('mouseenter', function(evt, d) {
+    svg.classed('has-hover', true);
+    d3.select(this).select('.bar').classed('active', true);
+    const donors = DONORS.filter(x => x.c === d.c);
+    let html = `<div class="tip-name">${d.c}</div>
+        <div class="tip-party">${d.p}</div>
+        <div class="tip-total">${fmt(d.t)}</div>`;
+    if (donors.length) {
+        html += `<hr class="tip-divider"><div class="tip-header">Top Donors</div>`;
+        donors.slice(0, 5).forEach(x => {
+            html += `<div class="tip-donor-row"><span class="tip-donor-name">${x.e}</span><span class="tip-donor-amt">${fmt(x.a)}</span></div>`;
+        });
+    }
+    showTip(evt, html);
+})
+.on('mousemove', moveTip)
+.on('mouseleave', function() {
+    svg.classed('has-hover', false);
+    d3.select(this).select('.bar').classed('active', false);
+    hideTip();
+});
+
+// ── TOP DONORS ──
+const donorsEl = document.getElementById('donors');
+// Only show candidates with donors
+const candsWithDonors = TOTALS.filter(t => DONORS.some(d => d.c === t.c));
+
+candsWithDonors.forEach(cand => {
+    const cd = DONORS.filter(d => d.c === cand.c);
+    if (!cd.length) return;
+
+    const block = document.createElement('div');
+    block.className = 'donor-block';
+    block.innerHTML = `
+        <div class="donor-block-header">
+            <span class="donor-block-name">${tc(cand.c)}</span>
+            <span class="donor-block-total">${fmt(cand.t)} total</span>
+        </div>`;
+
+    cd.forEach((d, i) => {
+        const row = document.createElement('div');
+        row.className = 'd-row';
+        row.innerHTML = `<span class="d-rank">${i + 1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
+        block.appendChild(row);
+    });
+    donorsEl.appendChild(block);
+});
+</script>
+</body>
+</html>
