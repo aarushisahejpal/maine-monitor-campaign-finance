@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         :root {
             --blue: #2c6fbb;
@@ -194,32 +195,58 @@
 
 <script>
 const COLORS = { Democratic:'#2c6fbb', Republican:'#c0392b', Unenrolled:'#6b6b6b', Independent:'#8e44ad' };
+const PARTY_ORDER = ['Democratic','Republican','Unenrolled','Independent'];
 
-const TOTALS = [
-  {c:"Janet Beaudoin",p:"Republican",t:7316},
-  {c:"Kiernan Innes Majerus-Collins",p:"Democratic",t:7140},
-  {c:"Scott A. Harriman",p:"Democratic",t:4751.73}
-];
+// Get district from URL param, default to 94
+const params = new URLSearchParams(window.location.search);
+const DISTRICT = params.get('district') || '94';
+const RACE = params.get('race') || 'Representative';
 
-const DONORS = [
-  {c:"Janet Beaudoin",e:"Betsey Grant",a:500},
-  {c:"Janet Beaudoin",e:"Dirigo Freedom Leadership PAC",a:500},
-  {c:"Janet Beaudoin",e:"Gary St. Laurent",a:500},
-  {c:"Janet Beaudoin",e:"Jonathan Connor",a:500},
-  {c:"Janet Beaudoin",e:"Jonathan Courtney",a:500},
-  {c:"Kiernan Innes Majerus-Collins",e:"Douglas Stone",a:1500},
-  {c:"Kiernan Innes Majerus-Collins",e:"Sarah O'Neill",a:1000},
-  {c:"Kiernan Innes Majerus-Collins",e:"Valerie Gutmann",a:1500},
-  {c:"Kiernan Innes Majerus-Collins",e:"Clifford Gutmann",a:700},
-  {c:"Kiernan Innes Majerus-Collins",e:"Jason Paul",a:500},
-  {c:"Scott A. Harriman",e:"Contributors giving $50 or less",a:1946.18},
-  {c:"Scott A. Harriman",e:"Dirigo Leaders PAC",a:1000},
-  {c:"Scott A. Harriman",e:"ACTBLUE MAINE",a:700},
-  {c:"Scott A. Harriman",e:"Paul Robinson",a:300},
-  {c:"Scott A. Harriman",e:"Karen Tcheyan",a:250}
-];
+// Update page header
+document.querySelector('.page-header h1').textContent =
+    RACE === 'Senator' ? `Senate District ${DISTRICT}` : `House District ${DISTRICT}`;
+document.querySelector('.page-header .dek').textContent =
+    `Campaign finance data for all candidates running in Maine ${RACE === 'Senator' ? 'Senate' : 'House'} District ${DISTRICT}.`;
 
-const tc = s => s.replace(/\b\w/g, c => c.toUpperCase());
+const BASE_URL = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/viz/data/clean/';
+
+function loadCSV(file) {
+    return new Promise((resolve, reject) => {
+        Papa.parse(BASE_URL + file, {
+            download: true, header: true, skipEmptyLines: true,
+            complete: r => resolve(r.data),
+            error: e => reject(e)
+        });
+    });
+}
+
+async function loadData() {
+    const [totalsRaw, donorsRaw] = await Promise.all([
+        loadCSV('maine_total_contributions_by_filer.csv'),
+        loadCSV('maine_top_5contributors_by_filer.csv')
+    ]);
+
+    const TOTALS = totalsRaw
+        .filter(r => r.race === RACE && String(r.district) === DISTRICT)
+        .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand)}))
+        .sort((a, b) => b.t - a.t);
+
+    const DONORS = donorsRaw
+        .filter(r => r.race === RACE && String(r.district) === DISTRICT)
+        .map(r => ({c: r.display_name || r.candidate, e: r.entity, a: parseFloat(r.total_contributed)}));
+
+    return { TOTALS, DONORS };
+}
+
+loadData().then(({ TOTALS, DONORS }) => {
+    render(TOTALS, DONORS);
+}).catch(err => {
+    console.error('Failed to load data:', err);
+    document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
+});
+
+function render(TOTALS, DONORS) {
+
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const tip = document.getElementById('tip');
 
@@ -312,7 +339,7 @@ bars.append('text')
     .attr('fill', d => x(d.t) > 120 ? '#fff' : 'var(--text)')
     .attr('font-weight', 600)
     .attr('font-size', '13px')
-    .text(d => tc(d.c))
+    .text(d => d.c)
     .style('opacity', 0)
     .transition().delay((d, i) => i * 80 + 400).duration(300)
     .style('opacity', 1);
@@ -362,7 +389,7 @@ candsWithDonors.forEach(cand => {
     block.className = 'donor-block';
     block.innerHTML = `
         <div class="donor-block-header">
-            <span class="donor-block-name">${tc(cand.c)}</span>
+            <span class="donor-block-name">${cand.c}</span>
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
 
@@ -374,6 +401,7 @@ candsWithDonors.forEach(cand => {
     });
     donorsEl.appendChild(block);
 });
+} // end render()
 </script>
 </body>
 </html>
