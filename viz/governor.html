@@ -445,7 +445,7 @@ bars.on('mouseenter', function(evt, d) {
     const rank = chartData.indexOf(d) + 1;
     const donors = DONORS.filter(x => x.c === d.c);
     let html = `<div class="tip-name">${d.c}</div>
-        <div class="tip-party">${d.p}</div>
+        <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
     if (donors.length) {
