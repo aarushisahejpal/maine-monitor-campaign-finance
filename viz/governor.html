@@ -309,9 +309,10 @@ function loadCSV(file) {
 }
 
 async function loadData() {
-    const [totalsRaw, donorsRaw] = await Promise.all([
+    const [totalsRaw, donorsRaw, smallRaw] = await Promise.all([
         loadCSV('maine_total_contributions_by_filer.csv'),
-        loadCSV('maine_top_5contributors_by_filer.csv')
+        loadCSV('maine_top_5contributors_by_filer.csv'),
+        loadCSV('maine_small_dollar_by_filer.csv')
     ]);
 
     const TOTALS = totalsRaw
@@ -323,18 +324,23 @@ async function loadData() {
         .filter(r => r.race === RACE_FILTER)
         .map(r => ({c: r.display_name || r.candidate, e: r.entity, a: parseFloat(r.total_contributed)}));
 
-    return { TOTALS, DONORS };
+    const SMALL = {};
+    smallRaw.filter(r => r.race === RACE_FILTER).forEach(r => {
+        SMALL[r.display_name || r.candidate] = parseFloat(r.small_dollar_total);
+    });
+
+    return { TOTALS, DONORS, SMALL };
 }
 
 // Load and render
-loadData().then(({ TOTALS, DONORS }) => {
-    render(TOTALS, DONORS);
+loadData().then(({ TOTALS, DONORS, SMALL }) => {
+    render(TOTALS, DONORS, SMALL);
 }).catch(err => {
     console.error('Failed to load data:', err);
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data. Check console.</p>';
 });
 
-function render(TOTALS, DONORS) {
+function render(TOTALS, DONORS, SMALL) {
 
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
@@ -468,6 +474,10 @@ topCands.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
     if (!cd.length) return;
 
+    // Small-dollar from separate CSV, named donors from top 5
+    const smallAmt = SMALL[cand.c];
+    const namedDonors = cd.slice(0, 5);
+
     const card = document.createElement('div');
     card.className = 'donor-card';
     card.innerHTML = `
@@ -476,7 +486,23 @@ topCands.forEach(cand => {
             <span class="donor-card-total">${fmt(cand.t)} total</span>
         </div>`;
 
-    cd.forEach((d, i) => {
+    // Small-dollar highlight
+    if (smallAmt) {
+        const sd = document.createElement('div');
+        sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:700;">${fmt(smallAmt)}</span>`;
+        card.appendChild(sd);
+    }
+
+    // Top 5 named donors header
+    if (namedDonors.length) {
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
+        hdr.textContent = 'Top Individual Donors';
+        card.appendChild(hdr);
+    }
+
+    namedDonors.forEach((d, i) => {
         const row = document.createElement('div');
         row.className = 'd-row';
         row.innerHTML = `<span class="d-rank">${i + 1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;

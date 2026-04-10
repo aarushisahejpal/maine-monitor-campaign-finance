@@ -175,11 +175,31 @@ cand_comm_contribs <- state_df %>%
          entity = filer_name)
   
 
-cand_top5_contribs <- cand_contributors %>% 
-  rbind(cand_comm_contribs) %>% 
+all_contribs <- cand_contributors %>%
+  rbind(cand_comm_contribs)
+
+# Small-dollar totals (contributions of $50 or less) per candidate
+small_dollar <- state_df %>%
+  filter(transaction_type == "Monetary Contribution") %>%
+  filter(!str_detect(filer_name, paste(committee_strings, collapse = "|"))) %>%
+  filter(amount_n <= 50 & amount_n > 0) %>%
+  mutate(
+    filer_name = filer_name_clean %>%
+      str_remove_all("\\s+special$")
+  ) %>%
+  group_by(filer_name) %>%
+  summarise(small_dollar_total = sum(amount_n, na.rm = TRUE), .groups = "drop") %>%
+  left_join(candidate_list, by = "filer_name") %>%
+  filter(race %in% c("Governor", "Senator", "Representative")) %>%
+  rename(candidate = filer_name) %>%
+  select(candidate, race, district, party, small_dollar_total)
+
+# Top 5 named donors (exclude the aggregate "Contributors giving $50 or less" row)
+cand_top5_contribs <- all_contribs %>%
+  filter(!str_detect(tolower(entity), "contributors giving")) %>%
   group_by(candidate) %>%
   slice_max(total_contributed, n = 5, with_ties = FALSE) %>%
-  arrange(race, district, candidate, desc(total_contributed)) 
+  arrange(race, district, candidate, desc(total_contributed))
 
 
 # filter out candidates who lost primary (after June primary, update data/candidate_status.csv)
@@ -272,9 +292,18 @@ cand_top5_payees <- cand_top5_payees %>%
   mutate(display_name = coalesce(display, candidate)) %>%
   select(-display)
 
+# Add display names + status filter to small_dollar
+small_dollar <- small_dollar %>%
+  left_join(candidate_status %>% select(candidate, show_on_page), by = "candidate") %>%
+  filter(is.na(show_on_page) | show_on_page != "no") %>%
+  left_join(display_names, by = c("candidate" = "clean")) %>%
+  mutate(display_name = coalesce(display, candidate)) %>%
+  select(-display)
+
 #export datasets
 write.csv(cand_con_total, file = "viz/data/clean/maine_total_contributions_by_filer.csv", row.names = FALSE)
 write.csv(cand_top5_contribs, file = "viz/data/clean/maine_top_5contributors_by_filer.csv", row.names = FALSE)
+write.csv(small_dollar, file = "viz/data/clean/maine_small_dollar_by_filer.csv", row.names = FALSE)
 write.csv(cand_exp_total, file = "viz/data/clean/maine_total_expenditures_by_filer.csv", row.names = FALSE)
 write.csv(cand_top5_payees, file = "viz/data/clean/maine_top_5payees_by_filer.csv", row.names = FALSE)
 
