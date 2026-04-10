@@ -287,7 +287,8 @@ PARTY_ORDER.forEach(party => {
 
     const heading = document.createElement('div');
     heading.style.cssText = `font-size:0.7em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding-bottom:8px;margin-bottom:12px;color:${COLORS[party]};border-bottom:2px solid ${COLORS[party]};`;
-    heading.textContent = party + 's';
+    const partyLabel = party === 'Democratic' ? 'Democrat' : party;
+    heading.textContent = partyLabel;
     group.appendChild(heading);
 
     const grid = document.createElement('div');
