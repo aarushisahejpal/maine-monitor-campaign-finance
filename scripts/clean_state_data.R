@@ -11,6 +11,11 @@ state_df <- read_csv("data/state_2026/transactions.csv") %>%
 candidate_list <- read_csv("viz/data/cand_lists/candidate_list_2026_and_2024.csv") %>%
   unique()
 
+# Load MCEA designations (TF = Traditional, MCEA = Maine Clean Election Act)
+mcea_data <- read_csv("data/mcea_designations.csv") %>%
+  select(candidate_clean, finance_type) %>%
+  distinct()
+
 # --- NAME CLEANING ---
 # 1. Remove "(Special)" / "special" suffix from candidate names
 # 2. Keep a display_name that preserves hyphens (e.g. Majerus-Collins)
@@ -299,6 +304,28 @@ small_dollar <- small_dollar %>%
   left_join(display_names, by = c("candidate" = "clean")) %>%
   mutate(display_name = coalesce(display, candidate)) %>%
   select(-display)
+
+#export datasets
+# Add MCEA/TF designation to all outputs
+cand_con_total <- cand_con_total %>%
+  left_join(mcea_data, by = c("candidate" = "candidate_clean")) %>%
+  mutate(finance_type = coalesce(finance_type, "Unknown"))
+
+cand_top5_contribs <- cand_top5_contribs %>%
+  left_join(mcea_data, by = c("candidate" = "candidate_clean")) %>%
+  mutate(finance_type = coalesce(finance_type, "Unknown"))
+
+small_dollar <- small_dollar %>%
+  left_join(mcea_data, by = c("candidate" = "candidate_clean")) %>%
+  mutate(finance_type = coalesce(finance_type, "Unknown"))
+
+cand_exp_total <- cand_exp_total %>%
+  left_join(mcea_data, by = c("candidate" = "candidate_clean")) %>%
+  mutate(finance_type = coalesce(finance_type, "Unknown"))
+
+cand_top5_payees <- cand_top5_payees %>%
+  left_join(mcea_data, by = c("candidate" = "candidate_clean")) %>%
+  mutate(finance_type = coalesce(finance_type, "Unknown"))
 
 #export datasets
 write.csv(cand_con_total, file = "viz/data/clean/maine_total_contributions_by_filer.csv", row.names = FALSE)
