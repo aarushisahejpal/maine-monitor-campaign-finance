@@ -86,49 +86,58 @@ def main():
     session.headers.update(HEADERS)
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
 
+    # Collect all rows, dedup by URL at the end
+    all_rows = []
+    seen_urls = set()
+    page = 1
+    total_pages = None
+    total_records = None
+
+    while True:
+        params = build_params(page, end_date)
+        try:
+            resp = session.get(BASE_URL, params=params, timeout=30)
+            resp.raise_for_status()
+        except requests.RequestException as e:
+            print(f"  Error on page {page}: {e}. Retrying in 10s...")
+            time.sleep(10)
+            continue
+
+        rows, total = parse_page(resp.text)
+
+        if total and total_records is None:
+            total_records = total
+            total_pages = (total + 49) // 50
+            print(f"Total records: {total_records:,} | Total pages: {total_pages:,}")
+
+        if not rows:
+            print(f"Page {page}: no rows found. Stopping.")
+            break
+
+        # Deduplicate by URL as we go
+        for row in rows:
+            url = row["filer_url"]
+            if url not in seen_urls:
+                seen_urls.add(url)
+                all_rows.append(row)
+
+        if page % 100 == 0 or page == total_pages:
+            pct = page / total_pages * 100 if total_pages else 0
+            print(f"Page {page}/{total_pages or '?'} | {pct:.1f}% done | {len(all_rows):,} unique rows")
+
+        if total_pages and page >= total_pages:
+            break
+
+        page += 1
+        time.sleep(0.5)
+
+    # Write deduplicated results
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=FIELDNAMES)
         writer.writeheader()
+        writer.writerows(all_rows)
 
-        page = 1
-        total_pages = None
-        total_records = None
-
-        while True:
-            params = build_params(page, end_date)
-            try:
-                resp = session.get(BASE_URL, params=params, timeout=30)
-                resp.raise_for_status()
-            except requests.RequestException as e:
-                print(f"  Error on page {page}: {e}. Retrying in 10s...")
-                time.sleep(10)
-                continue
-
-            rows, total = parse_page(resp.text)
-
-            if total and total_records is None:
-                total_records = total
-                total_pages = (total + 49) // 50
-                print(f"Total records: {total_records:,} | Total pages: {total_pages:,}")
-
-            if not rows:
-                print(f"Page {page}: no rows found. Stopping.")
-                break
-
-            writer.writerows(rows)
-            csvfile.flush()
-
-            if page % 100 == 0 or page == total_pages:
-                pct = page / total_pages * 100 if total_pages else 0
-                print(f"Page {page}/{total_pages or '?'} | {pct:.1f}% done")
-
-            if total_pages and page >= total_pages:
-                break
-
-            page += 1
-            time.sleep(0.5)
-
-    print(f"\nDone! Data saved to {OUTPUT_FILE}")
+    print(f"\nDone! {len(all_rows):,} unique rows saved to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
