@@ -2,13 +2,15 @@
 """
 Maine Campaign Finance Disclosure scraper (new site)
 Scrapes all transactions from 2025-01-01 to today.
-Used by GitHub Action weekly to refresh 2026 cycle state + governor data.
+Uses monthly date windows to avoid pagination instability.
+Deduplicates by transaction URL.
 """
 
 import csv
 import time
 import os
-from datetime import date
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 import requests
 from bs4 import BeautifulSoup
 
@@ -24,7 +26,7 @@ HEADERS = {
 FIELDNAMES = ["filer_name", "filer_url", "transaction_type", "source_payee", "date", "amount"]
 
 
-def build_params(page, end_date):
+def build_params(page, start_date, end_date):
     params = []
     params.append(("q[public_search_i_cont]", ""))
     for t in ["", "contribution", "loan", "loan_forgiveness",
@@ -36,9 +38,9 @@ def build_params(page, end_date):
     params.append(("q[filer_type_key_eq]", ""))
     params.append(("q[amount_cents_gteq]", ""))
     params.append(("q[amount_cents_lteq]", ""))
-    params.append(("q[date_gteq]", "2025-01-01"))
+    params.append(("q[date_gteq]", start_date))
     params.append(("q[date_lteq]", end_date))
-    params.append(("q[s]", "filer_name asc"))
+    params.append(("q[s]", "date asc"))
     params.append(("commit", "Create Search"))
     params.append(("limit", "50"))
     params.append(("page", str(page)))
@@ -78,28 +80,42 @@ def parse_page(html):
     return rows, total
 
 
-def main():
-    end_date = date.today().isoformat()
-    print(f"Scraping state 2026 data: 2025-01-01 to {end_date}")
+def generate_month_windows(start, end):
+    """Generate (start_date, end_date) tuples for each month."""
+    windows = []
+    current = start
+    while current < end:
+        window_end = min(current + relativedelta(months=1) - timedelta(days=1), end)
+        windows.append((current, window_end))
+        current = current + relativedelta(months=1)
+    return windows
 
-    session = requests.Session()
-    session.headers.update(HEADERS)
-    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
 
-    # Collect all rows, dedup by URL at the end
-    all_rows = []
-    seen_urls = set()
+def split_into_weeks(start, end):
+    """Split a date range into weekly windows."""
+    windows = []
+    current = start
+    while current <= end:
+        window_end = min(current + timedelta(days=6), end)
+        windows.append((current, window_end))
+        current = window_end + timedelta(days=1)
+    return windows
+
+
+def scrape_window(session, start_date, end_date, seen_urls):
+    """Scrape all pages for a single date window. Returns new rows."""
+    new_rows = []
     page = 1
     total_pages = None
     total_records = None
 
     while True:
-        params = build_params(page, end_date)
+        params = build_params(page, start_date, end_date)
         try:
             resp = session.get(BASE_URL, params=params, timeout=30)
             resp.raise_for_status()
         except requests.RequestException as e:
-            print(f"  Error on page {page}: {e}. Retrying in 10s...")
+            print(f"    Error on page {page}: {e}. Retrying in 10s...")
             time.sleep(10)
             continue
 
@@ -108,22 +124,15 @@ def main():
         if total and total_records is None:
             total_records = total
             total_pages = (total + 49) // 50
-            print(f"Total records: {total_records:,} | Total pages: {total_pages:,}")
 
         if not rows:
-            print(f"Page {page}: no rows found. Stopping.")
             break
 
-        # Deduplicate by URL as we go
         for row in rows:
             url = row["filer_url"]
             if url not in seen_urls:
                 seen_urls.add(url)
-                all_rows.append(row)
-
-        if page % 100 == 0 or page == total_pages:
-            pct = page / total_pages * 100 if total_pages else 0
-            print(f"Page {page}/{total_pages or '?'} | {pct:.1f}% done | {len(all_rows):,} unique rows")
+                new_rows.append(row)
 
         if total_pages and page >= total_pages:
             break
@@ -131,7 +140,67 @@ def main():
         page += 1
         time.sleep(0.5)
 
-    # Write deduplicated results
+    return new_rows, total_records or 0
+
+
+def main():
+    end = date.today()
+    start = date(2025, 1, 1)
+    print(f"Scraping state 2026 data: {start} to {end}")
+    print(f"Using monthly date windows to avoid pagination issues\n")
+
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+
+    MAX_PER_WINDOW = 8000  # if a window exceeds this, split smaller
+
+    windows = generate_month_windows(start, end)
+    all_rows = []
+    seen_urls = set()
+
+    for i, (w_start, w_end) in enumerate(windows):
+        label = f"[{i+1}/{len(windows)}] {w_start} to {w_end}"
+
+        # First, check how many records this window has
+        params = build_params(1, w_start.isoformat(), w_end.isoformat())
+        resp = session.get(BASE_URL, params=params, timeout=30)
+        _, window_total = parse_page(resp.text)
+        window_total = window_total or 0
+
+        if window_total > MAX_PER_WINDOW:
+            # Too many — split into weekly windows
+            weeks = split_into_weeks(w_start, w_end)
+            print(f"{label} ({window_total:,} records — splitting into {len(weeks)} weeks)")
+            for j, (ws, we) in enumerate(weeks):
+                # Check if this week also needs splitting into days
+                params_check = build_params(1, ws.isoformat(), we.isoformat())
+                resp_check = session.get(BASE_URL, params=params_check, timeout=30)
+                _, week_total = parse_page(resp_check.text)
+                week_total = week_total or 0
+
+                if week_total > MAX_PER_WINDOW:
+                    # Split into individual days
+                    print(f"  Week {j+1}/{len(weeks)}: {ws} to {we} ({week_total:,} — splitting into days)")
+                    d = ws
+                    while d <= we:
+                        print(f"    {d}...", end=" ", flush=True)
+                        new_rows, expected = scrape_window(session, d.isoformat(), d.isoformat(), seen_urls)
+                        all_rows.extend(new_rows)
+                        print(f"{len(new_rows):,} rows (site: {expected:,})")
+                        d += timedelta(days=1)
+                else:
+                    print(f"  Week {j+1}/{len(weeks)}: {ws} to {we}...", end=" ", flush=True)
+                    new_rows, expected = scrape_window(session, ws.isoformat(), we.isoformat(), seen_urls)
+                    all_rows.extend(new_rows)
+                    print(f"{len(new_rows):,} rows (site: {expected:,})")
+        else:
+            print(f"{label}...", end=" ", flush=True)
+            new_rows, expected = scrape_window(session, w_start.isoformat(), w_end.isoformat(), seen_urls)
+            all_rows.extend(new_rows)
+            print(f"{len(new_rows):,} new rows (site: {expected:,})")
+
+    # Write results
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=FIELDNAMES)
         writer.writeheader()
