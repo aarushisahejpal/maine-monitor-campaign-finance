@@ -192,13 +192,15 @@
 <script>
 const PARTY_COLORS = {
     'REPUBLICAN PARTY':'#c0392b', 'DEMOCRATIC PARTY':'#2c6fbb',
-    'INDEPENDENT':'#8e44ad', 'UNAFFILIATED':'#6b6b6b'
+    'INDEPENDENT':'#8e44ad', 'INDEPENDENT PARTY':'#8e44ad',
+    'UNAFFILIATED':'#6b6b6b', '':'#6b6b6b'
 };
 const PARTY_LABELS = {
     'REPUBLICAN PARTY':'Republican', 'DEMOCRATIC PARTY':'Democrat',
-    'INDEPENDENT':'Independent', 'UNAFFILIATED':'Unenrolled'
+    'INDEPENDENT':'Independent', 'INDEPENDENT PARTY':'Independent',
+    'UNAFFILIATED':'Unenrolled', '':'Other'
 };
-const PARTY_ORDER = ['DEMOCRATIC PARTY','REPUBLICAN PARTY','INDEPENDENT','UNAFFILIATED'];
+const PARTY_ORDER = ['DEMOCRATIC PARTY','REPUBLICAN PARTY','INDEPENDENT','INDEPENDENT PARTY','UNAFFILIATED'];
 const SOURCE_COLORS = { Individual:'#2c6fbb', 'PAC/Committee':'#e67e22', 'Party Committee':'#27ae60', Other:'#999', 'Candidate/Self':'#8e44ad' };
 const GEO_COLORS = { 'In State':'#2c6fbb', 'Out of State':'#c0392b', Unknown:'#999' };
 
