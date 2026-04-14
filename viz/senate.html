@@ -214,8 +214,6 @@ function loadCSV(f) {
 }
 
 async function loadData() {
-    const FILINGS_URL = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/data/federal_2026/filings.csv';
-
     const [tot, don, src, geo, exp, pay] = await Promise.all([
         loadCSV('total_contributions_by_federal_candidate.csv'),
         loadCSV('top_5contributors_by_federal_candidate.csv'),
@@ -224,15 +222,6 @@ async function loadData() {
         loadCSV('total_expenditures_by_federal_candidate.csv'),
         loadCSV('top_5payees_by_federal_candidate.csv')
     ]);
-
-    // Load filings separately so it doesn't break everything if it fails
-    let fil = [];
-    try {
-        fil = await new Promise((res, rej) => {
-            Papa.parse(FILINGS_URL, { download:true, header:true, skipEmptyLines:true, complete: r => res(r.data), error: rej });
-        });
-    } catch(e) { console.warn('Filings failed to load:', e); }
-
     const f = r => r.office === OFFICE;
     return {
         TOTALS: tot.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_con})).sort((a,b)=>b.t-a.t),
@@ -240,8 +229,7 @@ async function loadData() {
         BY_SOURCE: src.filter(f).map(r => ({c:r.candidate_name, s:r.source_type, t:+r.total})),
         BY_STATE: geo.filter(f).map(r => ({c:r.candidate_name, g:r.geo, t:+r.total})),
         EXP_TOTALS: exp.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_exp})).sort((a,b)=>b.t-a.t),
-        TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid})),
-        FILINGS: fil.filter(f).filter(r => r.report_type && r.report_type.trim() !== '')
+        TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid}))
     };
 }
 
@@ -250,7 +238,7 @@ loadData().then(d => render(d)).catch(e => {
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
 });
 
-function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES, FILINGS }) {
+function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES }) {
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const tip = document.getElementById('tip');
@@ -384,68 +372,6 @@ buildChart('chartExpenditures', EXP_TOTALS, 'expTotal');
 
 // ── TOP PAYEES ──
 buildDonorGrid('payees', TOP_PAYEES, EXP_TOTALS, 6);
-
-// ── FILINGS ──
-const filingsEl = document.getElementById('filings');
-const filingsByCand = {};
-FILINGS.forEach(f => { (filingsByCand[f.candidate_name] ??= []).push(f); });
-
-// Order by contribution totals
-TOTALS.forEach(cand => {
-    const cf = filingsByCand[cand.c];
-    if (!cf || !cf.length) return;
-
-    // Sort by filed date descending
-    cf.sort((a, b) => (b.receipt_date || '').localeCompare(a.receipt_date || ''));
-
-    const block = document.createElement('div');
-    block.className = 'filing-candidate';
-
-    const header = document.createElement('div');
-    header.className = 'filing-candidate-header';
-    header.innerHTML = `<span>${titleCase(cand.c)}</span><span class="toggle">${cf.length} filings ▾</span>`;
-    block.appendChild(header);
-
-    const colHeader = document.createElement('div');
-    colHeader.className = 'filing-header';
-    colHeader.innerHTML = '<span>Report</span><span class="f-period">Period</span><span class="f-num">Receipts</span><span class="f-num">Spent</span><span class="f-num">Cash</span><span></span>';
-    block.appendChild(colHeader);
-
-    const rowsDiv = document.createElement('div');
-    rowsDiv.className = 'filing-rows';
-
-    cf.forEach(f => {
-        const start = f.coverage_start_date ? new Date(f.coverage_start_date).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
-        const end = f.coverage_end_date ? new Date(f.coverage_end_date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '';
-        const period = start && end ? `${start} – ${end}` : '';
-        const receipts = f.total_receipts && +f.total_receipts > 0 ? fmt(+f.total_receipts) : '—';
-        const disb = f.total_disbursements && +f.total_disbursements > 0 ? fmt(+f.total_disbursements) : '—';
-        const cash = f.cash_on_hand && +f.cash_on_hand > 0 ? fmt(+f.cash_on_hand) : '—';
-
-        const row = document.createElement('div');
-        row.className = 'filing-row';
-        row.innerHTML = `
-            <span class="f-title">${f.report_type}</span>
-            <span class="f-period">${period}</span>
-            <span class="f-num">${receipts}</span>
-            <span class="f-num">${disb}</span>
-            <span class="f-num">${cash}</span>
-            <span class="f-pdf">${f.pdf_url ? `<a href="${f.pdf_url}" target="_blank" title="View PDF">PDF</a>` : ''}</span>
-        `;
-        rowsDiv.appendChild(row);
-    });
-    block.appendChild(rowsDiv);
-
-    // Toggle collapse
-    header.addEventListener('click', () => {
-        rowsDiv.classList.toggle('collapsed');
-        header.querySelector('.toggle').textContent = rowsDiv.classList.contains('collapsed')
-            ? `${cf.length} filings ▸`
-            : `${cf.length} filings ▾`;
-    });
-
-    filingsEl.appendChild(block);
-});
 
 } // end render
 </script>
