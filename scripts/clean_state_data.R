@@ -203,7 +203,7 @@ small_dollar <- state_df %>%
 cand_top5_contribs <- all_contribs %>%
   filter(!str_detect(tolower(entity), "contributors giving")) %>%
   group_by(candidate) %>%
-  slice_max(total_contributed, n = 5, with_ties = FALSE) %>%
+  slice_max(total_contributed, n = 25, with_ties = FALSE) %>%
   arrange(race, district, candidate, desc(total_contributed))
 
 

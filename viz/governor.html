@@ -467,7 +467,7 @@ bars.on('mouseenter', function(evt, d) {
 const total = TOTALS.reduce((a, b) => a + b.t, 0);
 document.getElementById('chartTotal').textContent = 'Total raised across all candidates: ' + fmt(total);
 
-// ─── TOP DONORS ───
+// ─── TOP DONORS (scrollable tables) ───
 const donorsEl = document.getElementById('donors');
 const topCands = TOTALS.slice(0, 8);
 
@@ -475,9 +475,9 @@ topCands.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
     if (!cd.length) return;
 
-    // Small-dollar from separate CSV, named donors from top 5
     const smallAmt = SMALL[cand.c];
-    const namedDonors = cd.slice(0, 5);
+    // Show all donors (up to 25 for ties), not just 5
+    const namedDonors = cd.slice(0, 25);
 
     const card = document.createElement('div');
     card.className = 'donor-card';
@@ -495,7 +495,7 @@ topCands.forEach(cand => {
         card.appendChild(sd);
     }
 
-    // Top 5 named donors header
+    // Top donors header
     if (namedDonors.length) {
         const hdr = document.createElement('div');
         hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
@@ -503,12 +503,17 @@ topCands.forEach(cand => {
         card.appendChild(hdr);
     }
 
+    // Scrollable container
+    const scrollWrap = document.createElement('div');
+    scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
+
     namedDonors.forEach((d, i) => {
         const row = document.createElement('div');
         row.className = 'd-row';
         row.innerHTML = `<span class="d-rank">${i + 1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
-        card.appendChild(row);
+        scrollWrap.appendChild(row);
     });
+    card.appendChild(scrollWrap);
     donorsEl.appendChild(card);
 });
 } // end render()
