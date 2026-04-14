@@ -71,14 +71,14 @@
         .d-amt { font-size: 0.85em; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
         /* ── BREAKDOWN CHARTS ── */
-        .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-        .breakdown-card { }
-        .breakdown-card h4 { font-family: 'Lora', Georgia, serif; font-size: 0.95em; font-weight: 600; text-transform: capitalize; margin-bottom: 12px; }
-        .breakdown-bar { display: flex; align-items: center; margin-bottom: 6px; }
-        .breakdown-label { width: 110px; min-width: 110px; font-size: 0.78em; color: var(--text-secondary); text-align: right; padding-right: 10px; }
-        .breakdown-track { flex: 1; height: 22px; position: relative; }
+        .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 48px; }
+        .breakdown-card { margin-bottom: 8px; }
+        .breakdown-card h4 { font-family: 'Lora', Georgia, serif; font-size: 0.95em; font-weight: 600; text-transform: capitalize; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+        .breakdown-bar { display: flex; align-items: center; margin-bottom: 10px; }
+        .breakdown-label { width: 110px; min-width: 110px; font-size: 0.75em; color: var(--text-secondary); text-align: right; padding-right: 10px; line-height: 1.3; }
+        .breakdown-track { flex: 1; height: 20px; position: relative; margin-right: 70px; }
         .breakdown-fill { height: 100%; border-radius: 2px; }
-        .breakdown-val { position: absolute; right: -8px; top: 50%; transform: translate(100%, -50%); font-size: 0.75em; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+        .breakdown-val { position: absolute; right: -70px; top: 50%; transform: translateY(-50%); font-size: 0.75em; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
 
         .page-footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.72em; color: var(--text-muted); line-height: 1.7; }
         .page-footer strong { font-weight: 600; color: var(--text-secondary); }
@@ -213,7 +213,16 @@ function moveTip(evt) {
 }
 function hideTip() { tip.classList.remove('on'); }
 
-function titleCase(s) { return s.replace(/\b\w+/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase()); }
+function titleCase(s) {
+    // Flip "LAST, FIRST MIDDLE" to "First Middle Last"
+    if (s.includes(',')) {
+        const parts = s.split(',', 2);
+        s = parts[1].trim() + ' ' + parts[0].trim();
+    }
+    return s.replace(/\b\w+/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase())
+            .replace(/\bIii\b/g, 'III').replace(/\bIi\b/g, 'II').replace(/\bIv\b/g, 'IV')
+            .replace(/\bJr\b/g, 'Jr.').replace(/\bSr\b/g, 'Sr.');
+}
 
 // ── CANDIDATES ──
 const byParty = {};
