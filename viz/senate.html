@@ -80,6 +80,43 @@
         .breakdown-fill { height: 100%; border-radius: 2px; }
         .breakdown-val { position: absolute; right: -70px; top: 50%; transform: translateY(-50%); font-size: 0.75em; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
 
+        /* ── FILINGS ── */
+        .filings-list { }
+        .filing-candidate { margin-bottom: 28px; }
+        .filing-candidate-header {
+            font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 0.95em;
+            text-transform: capitalize; padding-bottom: 6px; border-bottom: 2px solid var(--text);
+            margin-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; cursor: pointer;
+        }
+        .filing-candidate-header:hover { color: var(--accent); }
+        .filing-candidate-header .toggle { font-size: 0.75em; color: var(--text-muted); }
+        .filing-rows { }
+        .filing-rows.collapsed { display: none; }
+        .filing-row {
+            display: grid; grid-template-columns: 1fr 140px 100px 100px 100px 40px;
+            gap: 8px; padding: 8px; border-bottom: 1px solid #f0f0f0; font-size: 0.8em;
+            align-items: center; transition: background 0.1s;
+        }
+        .filing-row:hover { background: var(--bg-hover); }
+        .filing-row .f-title { font-weight: 500; }
+        .filing-row .f-period { color: var(--text-secondary); font-size: 0.9em; }
+        .filing-row .f-num { text-align: right; font-variant-numeric: tabular-nums; }
+        .filing-row .f-pdf a {
+            color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95em;
+        }
+        .filing-row .f-pdf a:hover { text-decoration: underline; }
+        .filing-header {
+            display: grid; grid-template-columns: 1fr 140px 100px 100px 100px 40px;
+            gap: 8px; padding: 6px 8px; font-size: 0.65em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        .filing-header .f-num { text-align: right; }
+        @media (max-width: 600px) {
+            .filing-row, .filing-header { grid-template-columns: 1fr 1fr; }
+            .filing-row .f-period, .filing-header .f-period { display: none; }
+        }
+
         .page-footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.72em; color: var(--text-muted); line-height: 1.7; }
         .page-footer strong { font-weight: 600; color: var(--text-secondary); }
 
@@ -144,6 +181,12 @@
         <div class="donors-grid" id="payees"></div>
     </section>
 
+    <section class="section">
+        <div class="section-label">Official Records</div>
+        <h2 class="section-title">Campaign Finance Filings</h2>
+        <div class="filings-list" id="filings"></div>
+    </section>
+
     <footer class="page-footer">
         <strong>Source:</strong> Federal Election Commission (FEC). Processed data for the 2026 election cycle.<br>
         <strong>Last updated:</strong> April 2026. Federal data is refreshed quarterly.
@@ -175,13 +218,14 @@ function loadCSV(f) {
 }
 
 async function loadData() {
-    const [tot, don, src, geo, exp, pay] = await Promise.all([
+    const [tot, don, src, geo, exp, pay, fil] = await Promise.all([
         loadCSV('total_contributions_by_federal_candidate.csv'),
         loadCSV('top_5contributors_by_federal_candidate.csv'),
         loadCSV('contributions_by_source_federal.csv'),
         loadCSV('contributions_by_state_federal.csv'),
         loadCSV('total_expenditures_by_federal_candidate.csv'),
-        loadCSV('top_5payees_by_federal_candidate.csv')
+        loadCSV('top_5payees_by_federal_candidate.csv'),
+        loadCSV('../data/federal_2026/filings.csv')
     ]);
     const f = r => r.office === OFFICE;
     return {
@@ -190,16 +234,17 @@ async function loadData() {
         BY_SOURCE: src.filter(f).map(r => ({c:r.candidate_name, s:r.source_type, t:+r.total})),
         BY_STATE: geo.filter(f).map(r => ({c:r.candidate_name, g:r.geo, t:+r.total})),
         EXP_TOTALS: exp.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_exp})).sort((a,b)=>b.t-a.t),
-        TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid}))
+        TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid})),
+        FILINGS: fil.filter(f).filter(r => r.report_type && r.report_type.trim() !== '')
     };
 }
 
-loadData().then(render).catch(e => {
+loadData().then(d => render(d)).catch(e => {
     console.error(e);
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
 });
 
-function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES }) {
+function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES, FILINGS }) {
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const tip = document.getElementById('tip');
@@ -333,6 +378,68 @@ buildChart('chartExpenditures', EXP_TOTALS, 'expTotal');
 
 // ── TOP PAYEES ──
 buildDonorGrid('payees', TOP_PAYEES, EXP_TOTALS, 6);
+
+// ── FILINGS ──
+const filingsEl = document.getElementById('filings');
+const filingsByCand = {};
+FILINGS.forEach(f => { (filingsByCand[f.candidate_name] ??= []).push(f); });
+
+// Order by contribution totals
+TOTALS.forEach(cand => {
+    const cf = filingsByCand[cand.c];
+    if (!cf || !cf.length) return;
+
+    // Sort by filed date descending
+    cf.sort((a, b) => (b.receipt_date || '').localeCompare(a.receipt_date || ''));
+
+    const block = document.createElement('div');
+    block.className = 'filing-candidate';
+
+    const header = document.createElement('div');
+    header.className = 'filing-candidate-header';
+    header.innerHTML = `<span>${titleCase(cand.c)}</span><span class="toggle">${cf.length} filings ▾</span>`;
+    block.appendChild(header);
+
+    const colHeader = document.createElement('div');
+    colHeader.className = 'filing-header';
+    colHeader.innerHTML = '<span>Report</span><span class="f-period">Period</span><span class="f-num">Receipts</span><span class="f-num">Spent</span><span class="f-num">Cash</span><span></span>';
+    block.appendChild(colHeader);
+
+    const rowsDiv = document.createElement('div');
+    rowsDiv.className = 'filing-rows';
+
+    cf.forEach(f => {
+        const start = f.coverage_start_date ? new Date(f.coverage_start_date).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
+        const end = f.coverage_end_date ? new Date(f.coverage_end_date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '';
+        const period = start && end ? `${start} – ${end}` : '';
+        const receipts = f.total_receipts && +f.total_receipts > 0 ? fmt(+f.total_receipts) : '—';
+        const disb = f.total_disbursements && +f.total_disbursements > 0 ? fmt(+f.total_disbursements) : '—';
+        const cash = f.cash_on_hand && +f.cash_on_hand > 0 ? fmt(+f.cash_on_hand) : '—';
+
+        const row = document.createElement('div');
+        row.className = 'filing-row';
+        row.innerHTML = `
+            <span class="f-title">${f.report_type}</span>
+            <span class="f-period">${period}</span>
+            <span class="f-num">${receipts}</span>
+            <span class="f-num">${disb}</span>
+            <span class="f-num">${cash}</span>
+            <span class="f-pdf">${f.pdf_url ? `<a href="${f.pdf_url}" target="_blank" title="View PDF">PDF</a>` : ''}</span>
+        `;
+        rowsDiv.appendChild(row);
+    });
+    block.appendChild(rowsDiv);
+
+    // Toggle collapse
+    header.addEventListener('click', () => {
+        rowsDiv.classList.toggle('collapsed');
+        header.querySelector('.toggle').textContent = rowsDiv.classList.contains('collapsed')
+            ? `${cf.length} filings ▸`
+            : `${cf.length} filings ▾`;
+    });
+
+    filingsEl.appendChild(block);
+});
 
 } // end render
 </script>
