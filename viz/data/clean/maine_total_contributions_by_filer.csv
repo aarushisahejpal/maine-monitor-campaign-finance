@@ -1,128 +1,128 @@
-"candidate","race","district","party","tot_con_per_cand","show_on_page","display_name"
-"hannah pingree","Governor",NA,"Democratic",1351701.29,"yes","Hannah Pingree"
-"shenna bellows","Governor",NA,"Democratic",1232143.5,"yes","Shenna Bellows"
-"jonathan bush","Governor",NA,"Republican",926861,"yes","Jonathan Bush"
-"angus s king iii","Governor",NA,"Democratic",858719.69,"yes","Angus S. King, Iii"
-"troy dale jackson","Governor",NA,"Democratic",724500.68,"yes","Troy Dale Jackson"
-"robert b charles","Governor",NA,"Republican",641479.13,"yes","Robert B. Charles"
-"richard bennett","Governor",NA,"Unenrolled",490095,"yes","Richard Bennett"
-"nirav shah","Governor",NA,"Democratic",392786.08,"yes","Nirav Shah"
-"owen mccarthy","Governor",NA,"Republican",332962,"yes","Owen Mccarthy"
-"david john jones","Governor",NA,"Republican",289540.83,"yes","David John Jones"
-"benjamin midgley","Governor",NA,"Republican",269275,"yes","Benjamin Midgley"
-"robert j wessels","Governor",NA,"Republican",27630.46,"yes","Robert J. Wessels"
-"steven christopher sheppard","Governor",NA,"Republican",1100,"yes","Steven Christopher Sheppard"
-"alexander kenneth murchison","Governor",NA,"Unenrolled",671.63,"yes","Alexander Kenneth Murchison"
-"kenneth forrest pinet","Governor",NA,"Democratic",665,"yes","Kenneth Forrest Pinet"
-"james libby","Governor",NA,"Republican",264.7,"yes","james libby"
-"john michael glowa sr","Governor",NA,"Independent",180,"yes","John Michael Glowa, Sr."
-"austin theriault","Representative",1,"Republican",500,"yes","austin theriault"
-"dana appleby","Representative",1,"Democratic",32,"yes","dana appleby"
-"john linnehan","Representative",13,"Unenrolled",2620,"yes","john linnehan"
-"j mark worth","Representative",13,"Democratic",210,"yes","j mark worth"
-"gary friedmann","Representative",14,"Democratic",5900,"yes","gary friedmann"
-"gary gene runnells jr","Representative",16,"Independent",2435,"yes","Gary Gene Runnells, Jr."
-"nina a milliken","Representative",16,"Democratic",800,"yes","Nina A Milliken"
-"steven matthew bishop iv","Representative",17,"Republican",4010,"yes","Steven Matthew Bishop, Iv"
-"jonathan goble","Representative",18,"Democratic",946.08,"yes","jonathan goble"
-"joschka winterling","Representative",23,"Democratic",170,"yes","joschka winterling"
-"carolyn fish","Representative",24,"Republican",23460,"yes","Carolyn Fish"
-"sean f faircloth","Representative",24,"Democratic",675,"yes","Sean F. Faircloth"
-"joseph charles perry","Representative",24,"Democratic",400,"yes","Joseph Charles Perry"
-"laurie osher","Representative",25,"Democratic",720,"yes","laurie osher"
-"gary a drinkwater","Representative",27,"Republican",100,"yes","gary a drinkwater"
-"david giles","Representative",27,"Republican",30,"yes","David Giles"
-"devan arnold","Representative",27,"Democratic",10,"yes","devan arnold"
-"james lee white","Representative",30,"Republican",500,"yes","James Lee White"
-"andrew r torbett","Representative",31,"Republican",500,"yes","Andrew R. Torbett"
-"eric boothroyd","Representative",31,"Democratic",395,"yes","eric boothroyd"
-"shawn leroy lancaster","Representative",32,"Republican",500,"yes","Shawn Leroy Lancaster"
-"kenneth wade fredette","Representative",33,"Republican",1000,"yes","Kenneth Wade Fredette"
-"stephen ellis","Representative",38,"Democratic",833,"yes","stephen ellis"
-"jason cherry","Representative",38,"Democratic",200,"yes","jason cherry"
-"michael j nicholson","Representative",39,"Republican",500,"yes","Michael J. Nicholson"
-"joshua d gerritsen","Representative",41,"Democratic",700,"yes","Joshua D. Gerritsen"
-"michael sweeny flanagan","Representative",43,"Republican",1000,"yes","Michael Sweeny Flanagan"
-"chris p austin","Representative",43,"Republican",974.49,"yes","Chris P Austin"
-"rebecca stephens","Representative",45,"Republican",950,"yes","rebecca stephens"
-"charlotte nutt","Representative",48,"Democratic",1000,"yes","Charlotte Nutt"
-"jeffrey harris","Representative",58,"Republican",975,"yes","jeffrey harris"
-"sharon c frost","Representative",58,"Unenrolled",900,"yes","Sharon C. Frost"
-"nicholas alexander","Representative",58,"Republican",147.7,"yes","Nicholas Alexander"
-"john reny","Representative",59,"Republican",1250,"yes","John Reny"
-"marcus emerson","Representative",59,"Republican",1001.22,"yes","Marcus Emerson"
-"robin crawley","Representative",61,"Democratic",94,"yes","robin crawley"
-"paul r flynn","Representative",63,"Republican",300,"yes","Paul R Flynn"
-"shawn michael packard","Representative",64,"Republican",610,"yes","Shawn Michael Packard"
-"john e ducharme iii","Representative",71,"Republican",150,"yes","John E. Ducharme, Iii"
-"douglas a thomas","Representative",72,"Republican",1000,"yes","Douglas A. Thomas"
-"cynthia somahernandez","Representative",72,"Democratic",200,"yes","cynthia somahernandez"
-"randall douglas gauvin","Representative",75,"Republican",100,"yes","Randall Douglas Gauvin"
-"trevor alex doiron","Representative",76,"Democratic",1000,"yes","Trevor Alex Doiron"
-"woodleigh h hughes","Representative",78,"Democratic",700,"yes","Woodleigh H Hughes"
-"christopher alfred lewey","Representative",82,"Democratic",1000,"yes","Christopher Alfred Lewey"
-"kimberly j pomerleau","Representative",85,"Republican",1110,"yes","Kimberly J. Pomerleau"
-"david wayne boyer jr","Representative",87,"Republican",4408.7,"yes","David Wayne Boyer, Jr."
-"laurel libby","Representative",90,"Republican",79297.6,"yes","Laurel Libby"
-"janet beaudoin","Representative",94,"Republican",7316,NA,"Janet Beaudoin"
-"kiernan innes majeruscollins","Representative",94,"Democratic",7140,"yes","Kiernan Innes Majerus-Collins"
-"scott a harriman","Representative",94,"Democratic",4751.73,NA,"Scott A. Harriman"
-"luke jensen","Representative",96,"Democratic",20,"yes","luke jensen"
-"william j st michel","Representative",98,"Republican",825,"yes","William J. St. Michel"
-"daniel joseph ankeles","Representative",100,"Democratic",600,"yes","Daniel Joseph Ankeles"
-"poppy t arford","Representative",101,"Democratic",816.64,"yes","poppy t arford"
-"barbara anne bagshaw","Representative",106,"Republican",1000,"yes","Barbara Anne Bagshaw"
-"doris a poland","Representative",106,"Democratic",1000,"yes","Doris A Poland"
-"sean mahoney","Representative",112,"Democratic",3575,"yes","Sean Mahoney"
-"april fournier","Representative",114,"Democratic",200,"yes","april fournier"
-"matthew moonen","Representative",117,"Democratic",1250,"yes","Matthew Moonen"
-"michael dixon","Representative",119,"Democratic",79,"yes","michael dixon"
-"jason shedlock","Representative",120,"Democratic",1050,"yes","jason shedlock"
-"matthew d beck","Representative",122,"Democratic",200,"yes","Matthew D. Beck"
-"annie christy","Representative",123,"Republican",1500,"yes","annie christy"
-"marshall archer","Representative",129,"Democratic",200,"yes","Marshall Archer"
-"ryan m fecteau","Representative",132,"Democratic",125,"yes","Ryan M Fecteau"
-"marc g malon ii","Representative",133,"Democratic",275,"yes","Marc G. Malon, Ii"
-"allen anthony daggett","Representative",134,"Unenrolled",500,"yes","Allen Anthony Daggett"
-"charles edward tilburg","Representative",137,"Democratic",1000,"yes","Charles Edward Tilburg"
-"jamie k newton","Representative",139,"Republican",500,"yes","Jamie K Newton"
-"eric h small","Representative",143,"Republican",2000,"yes","Eric H Small"
-"john robert henkelman iii","Representative",143,"Democratic",700,"yes","John Robert Henkelman, Iii"
-"robert a foley","Representative",145,"Republican",125,"yes","Robert A. Foley"
-"mallory aaren cook","Representative",149,"Democratic",1000,"yes","Mallory Aaren Cook"
-"mark frederick zimmer","Representative",150,"Republican",920,"yes","Mark Frederick Zimmer"
-"alexandros orestis","Representative",150,"Democratic",700,"yes","Alexandros Orestis"
-"matthew rush","Senator",2,"Democratic",800,"yes","matthew rush"
-"joel r stetkis","Senator",3,"Republican",9645.31,"yes","Joel R Stetkis"
-"joseph paul guerin","Senator",4,"Republican",2975,"yes","Joseph Paul Guerin"
-"zachary anders wood","Senator",4,"Republican",1390,"yes","Zachary Anders Wood"
-"stacey k guerin","Senator",4,"Republican",1250,"yes","Stacey K Guerin"
-"chad richard perkins","Senator",4,"Republican",1000,"yes","Chad Richard Perkins"
-"elizabeth caruso","Senator",5,"Republican",570,"yes","Elizabeth Caruso"
-"nicole c grohoski","Senator",7,"Democratic",1025,"yes","Nicole C Grohoski"
-"leo christopher kenney","Senator",8,"Republican",2980,"yes","Leo Christopher Kenney"
-"joseph m baldacci","Senator",9,"Democratic",50,"yes","Joseph M. Baldacci"
-"ryan christopher otis","Senator",11,"Republican",1300,"yes","Ryan Christopher Otis"
-"nicole lynn kalloch","Senator",12,"Unenrolled",1500,"yes","Nicole Lynn Kalloch"
-"kati l mccormick","Senator",15,"Republican",1050,"yes","Kati L. Mccormick"
-"scott w cyrway","Senator",16,"Republican",800,"yes","Scott W. Cyrway"
-"richard mason","Senator",17,"Republican",250,"yes","richard mason"
-"jeff timberlake","Senator",17,"Republican",1.53,"yes","Jeff Timberlake"
-"john andrews","Senator",18,"Republican",8500,"yes","John Andrews"
-"shanna cox","Senator",21,"Democratic",100,"yes","shanna cox"
-"nathan burnett","Senator",22,"Democratic",1789.2,"yes","Nathan Burnett"
-"matthea elisabeth larsen daughtry","Senator",23,"Democratic",20,"yes","Matthea Elisabeth Larsen Daughtry"
-"denise tepler","Senator",24,"Democratic",225,"yes","denise tepler"
-"teresa s pierce","Senator",25,"Democratic",2400,"yes","Teresa S Pierce"
-"peter g violette","Senator",26,"Republican",3000,"yes","Peter G. Violette"
-"anne carney","Senator",29,"Democratic",2005,"yes","Anne Carney"
-"vincent maietta","Senator",29,"Republican",1000,"yes","vincent maietta"
-"henry l ingwersen","Senator",32,"Democratic",2750,"yes","Henry L Ingwersen"
-"john murphy salamone","Senator",32,"Republican",1420,"yes","John Murphy Salamone"
-"jason g litalien","Senator",32,"Unenrolled",1100,"yes","Jason G Litalien"
-"matthew a harrington","Senator",33,"Republican",150,"yes","Matthew A Harrington"
-"mark vigliotta","Senator",33,"Democratic",40,"yes","mark vigliotta"
-"jonathan reed fallon","Senator",34,"Republican",3044,"yes","Jonathan Reed Fallon"
-"daniel sayre","Senator",34,"Democratic",2257,"yes","Daniel Sayre"
-"michele meyer","Senator",35,"Democratic",3750,"yes","Michele Meyer"
-"deane rykerson","Senator",35,"Democratic",2225,"yes","Deane Rykerson"
+candidate,race,district,party,tot_con_per_cand,show_on_page,display_name
+hannah pingree,Governor,NA,Democratic,1351701.29,yes,Hannah Pingree
+shenna bellows,Governor,NA,Democratic,1232143.5,yes,Shenna Bellows
+jonathan bush,Governor,NA,Republican,926861,yes,Jonathan Bush
+angus s king iii,Governor,NA,Democratic,858719.69,yes,"Angus S. King, Iii"
+troy dale jackson,Governor,NA,Democratic,724500.68,yes,Troy Dale Jackson
+robert b charles,Governor,NA,Republican,641479.13,yes,Robert B. Charles
+richard bennett,Governor,NA,Unenrolled,490095,yes,Richard Bennett
+nirav shah,Governor,NA,Democratic,392786.08,yes,Nirav Shah
+owen mccarthy,Governor,NA,Republican,332962,yes,Owen Mccarthy
+david john jones,Governor,NA,Republican,289540.83,yes,David John Jones
+benjamin midgley,Governor,NA,Republican,269275,yes,Benjamin Midgley
+robert j wessels,Governor,NA,Republican,27630.46,yes,Robert J. Wessels
+steven christopher sheppard,Governor,NA,Republican,1100,yes,Steven Christopher Sheppard
+alexander kenneth murchison,Governor,NA,Unenrolled,671.63,yes,Alexander Kenneth Murchison
+kenneth forrest pinet,Governor,NA,Democratic,665,yes,Kenneth Forrest Pinet
+james libby,Governor,NA,Republican,264.7,yes,james libby
+john michael glowa sr,Governor,NA,Independent,180,yes,"John Michael Glowa, Sr."
+austin theriault,Representative,1,Republican,500,yes,austin theriault
+dana appleby,Representative,1,Democratic,32,yes,dana appleby
+john linnehan,Representative,13,Unenrolled,2620,yes,john linnehan
+j mark worth,Representative,13,Democratic,210,yes,j mark worth
+gary friedmann,Representative,14,Democratic,5900,yes,gary friedmann
+gary gene runnells jr,Representative,16,Independent,2435,yes,"Gary Gene Runnells, Jr."
+nina a milliken,Representative,16,Democratic,800,yes,Nina A Milliken
+steven matthew bishop iv,Representative,17,Republican,4010,yes,"Steven Matthew Bishop, Iv"
+jonathan goble,Representative,18,Democratic,946.08,yes,jonathan goble
+joschka winterling,Representative,23,Democratic,170,yes,joschka winterling
+carolyn fish,Representative,24,Republican,23460,yes,Carolyn Fish
+sean f faircloth,Representative,24,Democratic,675,yes,Sean F. Faircloth
+joseph charles perry,Representative,24,Democratic,400,yes,Joseph Charles Perry
+laurie osher,Representative,25,Democratic,720,yes,laurie osher
+gary a drinkwater,Representative,27,Republican,100,yes,gary a drinkwater
+david giles,Representative,27,Republican,30,yes,David Giles
+devan arnold,Representative,27,Democratic,10,yes,devan arnold
+james lee white,Representative,30,Republican,500,yes,James Lee White
+andrew r torbett,Representative,31,Republican,500,yes,Andrew R. Torbett
+eric boothroyd,Representative,31,Democratic,395,yes,eric boothroyd
+shawn leroy lancaster,Representative,32,Republican,500,yes,Shawn Leroy Lancaster
+kenneth wade fredette,Representative,33,Republican,1000,yes,Kenneth Wade Fredette
+stephen ellis,Representative,38,Democratic,833,yes,stephen ellis
+jason cherry,Representative,38,Democratic,200,yes,jason cherry
+michael j nicholson,Representative,39,Republican,500,yes,Michael J. Nicholson
+joshua d gerritsen,Representative,41,Democratic,700,yes,Joshua D. Gerritsen
+michael sweeny flanagan,Representative,43,Republican,1000,yes,Michael Sweeny Flanagan
+chris p austin,Representative,43,Republican,974.49,yes,Chris P Austin
+rebecca stephens,Representative,45,Republican,950,yes,rebecca stephens
+charlotte nutt,Representative,48,Democratic,1000,yes,Charlotte Nutt
+jeffrey harris,Representative,58,Republican,975,yes,jeffrey harris
+sharon c frost,Representative,58,Unenrolled,900,yes,Sharon C. Frost
+nicholas alexander,Representative,58,Republican,147.7,yes,Nicholas Alexander
+john reny,Representative,59,Republican,1250,yes,John Reny
+marcus emerson,Representative,59,Republican,1001.22,yes,Marcus Emerson
+robin crawley,Representative,61,Democratic,94,yes,robin crawley
+paul r flynn,Representative,63,Republican,300,yes,Paul R Flynn
+shawn michael packard,Representative,64,Republican,610,yes,Shawn Michael Packard
+john e ducharme iii,Representative,71,Republican,150,yes,"John E. Ducharme, Iii"
+douglas a thomas,Representative,72,Republican,1000,yes,Douglas A. Thomas
+cynthia somahernandez,Representative,72,Democratic,200,yes,cynthia somahernandez
+randall douglas gauvin,Representative,75,Republican,100,yes,Randall Douglas Gauvin
+trevor alex doiron,Representative,76,Democratic,1000,yes,Trevor Alex Doiron
+woodleigh h hughes,Representative,78,Democratic,700,yes,Woodleigh H Hughes
+christopher alfred lewey,Representative,82,Democratic,1000,yes,Christopher Alfred Lewey
+kimberly j pomerleau,Representative,85,Republican,1110,yes,Kimberly J. Pomerleau
+david wayne boyer jr,Representative,87,Republican,4408.7,yes,"David Wayne Boyer, Jr."
+laurel libby,Representative,90,Republican,79297.6,yes,Laurel Libby
+janet beaudoin,Representative,94,Republican,7316,NA,Janet Beaudoin
+kiernan innes majeruscollins,Representative,94,Democratic,7140,yes,Kiernan Innes Majerus-Collins
+scott a harriman,Representative,94,Democratic,4751.73,NA,Scott A. Harriman
+luke jensen,Representative,96,Democratic,20,yes,luke jensen
+william j st michel,Representative,98,Republican,825,yes,William J. St. Michel
+daniel joseph ankeles,Representative,100,Democratic,600,yes,Daniel Joseph Ankeles
+poppy t arford,Representative,101,Democratic,816.64,yes,poppy t arford
+barbara anne bagshaw,Representative,106,Republican,1000,yes,Barbara Anne Bagshaw
+doris a poland,Representative,106,Democratic,1000,yes,Doris A Poland
+sean mahoney,Representative,112,Democratic,3575,yes,Sean Mahoney
+april fournier,Representative,114,Democratic,200,yes,april fournier
+matthew moonen,Representative,117,Democratic,1250,yes,Matthew Moonen
+michael dixon,Representative,119,Democratic,79,yes,michael dixon
+jason shedlock,Representative,120,Democratic,1050,yes,jason shedlock
+matthew d beck,Representative,122,Democratic,200,yes,Matthew D. Beck
+annie christy,Representative,123,Republican,1500,yes,annie christy
+marshall archer,Representative,129,Democratic,200,yes,Marshall Archer
+ryan m fecteau,Representative,132,Democratic,125,yes,Ryan M Fecteau
+marc g malon ii,Representative,133,Democratic,275,yes,"Marc G. Malon, Ii"
+allen anthony daggett,Representative,134,Unenrolled,500,yes,Allen Anthony Daggett
+charles edward tilburg,Representative,137,Democratic,1000,yes,Charles Edward Tilburg
+jamie k newton,Representative,139,Republican,500,yes,Jamie K Newton
+eric h small,Representative,143,Republican,2000,yes,Eric H Small
+john robert henkelman iii,Representative,143,Democratic,700,yes,"John Robert Henkelman, Iii"
+robert a foley,Representative,145,Republican,125,yes,Robert A. Foley
+mallory aaren cook,Representative,149,Democratic,1000,yes,Mallory Aaren Cook
+mark frederick zimmer,Representative,150,Republican,920,yes,Mark Frederick Zimmer
+alexandros orestis,Representative,150,Democratic,700,yes,Alexandros Orestis
+matthew rush,Senator,2,Democratic,800,yes,matthew rush
+joel r stetkis,Senator,3,Republican,9645.31,yes,Joel R Stetkis
+joseph paul guerin,Senator,4,Republican,2975,yes,Joseph Paul Guerin
+zachary anders wood,Senator,4,Republican,1390,yes,Zachary Anders Wood
+stacey k guerin,Senator,4,Republican,1250,yes,Stacey K Guerin
+chad richard perkins,Senator,4,Republican,1000,yes,Chad Richard Perkins
+elizabeth caruso,Senator,5,Republican,570,yes,Elizabeth Caruso
+nicole c grohoski,Senator,7,Democratic,1025,yes,Nicole C Grohoski
+leo christopher kenney,Senator,8,Republican,2980,yes,Leo Christopher Kenney
+joseph m baldacci,Senator,9,Democratic,50,yes,Joseph M. Baldacci
+ryan christopher otis,Senator,11,Republican,1300,yes,Ryan Christopher Otis
+nicole lynn kalloch,Senator,12,Unenrolled,1500,yes,Nicole Lynn Kalloch
+kati l mccormick,Senator,15,Republican,1050,yes,Kati L. Mccormick
+scott w cyrway,Senator,16,Republican,800,yes,Scott W. Cyrway
+richard mason,Senator,17,Republican,250,yes,richard mason
+jeff timberlake,Senator,17,Republican,1.53,yes,Jeff Timberlake
+john andrews,Senator,18,Republican,8500,yes,John Andrews
+shanna cox,Senator,21,Democratic,100,yes,shanna cox
+nathan burnett,Senator,22,Democratic,1789.2,yes,Nathan Burnett
+matthea elisabeth larsen daughtry,Senator,23,Democratic,20,yes,Matthea Elisabeth Larsen Daughtry
+denise tepler,Senator,24,Democratic,225,yes,denise tepler
+teresa s pierce,Senator,25,Democratic,2400,yes,Teresa S Pierce
+peter g violette,Senator,26,Republican,3000,yes,Peter G. Violette
+anne carney,Senator,29,Democratic,2005,yes,Anne Carney
+vincent maietta,Senator,29,Republican,1000,yes,vincent maietta
+henry l ingwersen,Senator,32,Democratic,2750,yes,Henry L Ingwersen
+john murphy salamone,Senator,32,Republican,1420,yes,John Murphy Salamone
+jason g litalien,Senator,32,Unenrolled,1100,yes,Jason G Litalien
+matthew a harrington,Senator,33,Republican,150,yes,Matthew A Harrington
+mark vigliotta,Senator,33,Democratic,40,yes,mark vigliotta
+jonathan reed fallon,Senator,34,Republican,3044,yes,Jonathan Reed Fallon
+daniel sayre,Senator,34,Democratic,2257,yes,Daniel Sayre
+michele meyer,Senator,35,Democratic,3750,yes,Michele Meyer
+deane rykerson,Senator,35,Democratic,2225,yes,Deane Rykerson
