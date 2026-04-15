@@ -1,0 +1,400 @@
+candidate_clean,candidate_display,race,district,finance_type,party
+shenna bellows,"Bellows, Shenna",Governor,,TF,D
+richard bennett,"Bennett, Richard",Governor,,TF,U
+jonathan bush,"Bush, Jonathan",Governor,,TF,R
+robert b charles,"Charles, Robert B.",Governor,,TF,R
+w edward crockett,"Crockett, W. Edward",Governor,,TF,U
+sr john michael glowa,"Glowa, Sr., John Michael",Governor,,TF,U
+troy dale jackson,"Jackson, Troy Dale",Governor,,TF,D
+david john jones,"Jones, David John",Governor,,TF,R
+angus s king iii,"King III, Angus S.",Governor,,TF,D
+derek allen levasseur,"Levasseur, Derek Allen",Governor,,TF,U
+james delmas libby,"Libby, James Delmas",Governor,,MCEA,R
+garrett paul mason,"Mason, Garrett Paul",Governor,,TF,R
+owen mccarthy,"McCarthy, Owen",Governor,,TF,R
+benjamin midgley,"Midgley, Benjamin",Governor,,TF,R
+andrew parker,"Parker, Andrew",Governor,,TF,U
+hannah pingree,"Pingree, Hannah",Governor,,TF,D
+nirav shah,"Shah, Nirav",Governor,,TF,D
+robert j wessels,"Wessels, Robert J.",Governor,,TF,R
+dana marie appleby,"Appleby, Dana Marie",Representative,1,TF,D
+austin theriault,"Theriault, Austin",Representative,1,TF,R
+roger albert,"Albert, Roger",Representative,2,TF,R
+roland daniel martin,"Martin, Roland Daniel",Representative,2,MCEA,D
+david h mccrea,"McCrea, David H.",Representative,3,MCEA,D
+susan bernard,"Bernard, Susan",Representative,3,TF,R
+timothy conrad guerrette,"Guerrette, Timothy Conrad",Representative,4,MCEA,R
+bruce archer,"Archer, Bruce",Representative,5,MCEA,D
+jr douglas colburn carlisle,"Carlisle, Jr., Douglas Colburn",Representative,5,MCEA,R
+donald ardell,"Ardell, Donald",Representative,6,TF,R
+melanie tompkins,"Tompkins, Melanie",Representative,6,TF,D
+jantzen stephen craine,"Craine, Jantzen Stephen",Representative,7,TF,R
+matthew rush,"Rush, Matthew",Representative,7,MCEA,D
+tracy quint,"Quint, Tracy",Representative,8,TF,R
+arthur mingo,"Mingo, Arthur",Representative,9,TF,R
+nicole richards,"Richards, Nicole",Representative,9,MCEA,D
+daniel j daley,"Daley, Daniel J.",Representative,10,TF,R
+genevieve lemire,"Lemire, Genevieve",Representative,10,MCEA,D
+william r tuell,"Tuell, William R.",Representative,10,MCEA,R
+keith newman,"Newman, Keith",Representative,11,MCEA,D
+tiffany strout,"Strout, Tiffany",Representative,11,MCEA,R
+thomas hart,"Hart, Thomas",Representative,12,TF,R
+iii edward mathias kamin,"Kamin, III, Edward Mathias",Representative,12,MCEA,U
+russell white,"White, Russell",Representative,13,MCEA,R
+michael cunningham,"Cunningham, Michael",Representative,13,MCEA,D
+jean donovan,"Donovan, Jean",Representative,14,TF,R
+gary friedmann,"Friedmann, Gary",Representative,14,MCEA,D
+holly eaton,"Eaton, Holly",Representative,15,MCEA,D
+nina a milliken,"Milliken, Nina A.",Representative,16,MCEA,D
+jr gary gene runnells,"Runnells, Jr., Gary Gene",Representative,16,TF,U
+eric white,"White, Eric",Representative,16,TF,R
+bishop steven matthew,Bishop Steven Matthew,Representative,17,TF,R
+ronald russell,"Russell, Ronald",Representative,17,TF,D
+mathew mcintyre,"McIntyre, Mathew",Representative,18,TF,R
+richard h campbell,"Campbell, Richard H.",Representative,19,TF,R
+patrick jude,"Jude, Patrick",Representative,20,MCEA,R
+dani ohalloran,"O'Halloran, Dani",Representative,20,MCEA,D
+frank joseph casella,"Casella, Frank Joseph",Representative,21,MCEA,R
+andrew laverdiere,"Laverdiere, Andrew",Representative,21,TF,R
+ambureen rana,"Rana, Ambureen",Representative,21,MCEA,D
+colleen oneal,"O'Neal, Colleen",Representative,22,TF,R
+laura supica,"Supica, Laura",Representative,22,TF,D
+brian ames,"Ames, Brian",Representative,23,MCEA,R
+katie brydon,"Brydon, Katie",Representative,23,MCEA,D
+victoria porter kornfield,"Kornfield, Victoria Porter",Representative,23,MCEA,D
+joschka ab winterling,"Winterling, Joschka A.B.",Representative,23,MCEA,D
+sean faircloth,"Faircloth, Sean",Representative,24,MCEA,D
+daniel robert lapointe,"Lapointe, Daniel Robert",Representative,24,TF,R
+laurie osher,"Osher, Laurie",Representative,25,MCEA,D
+anthony m weaver,"Weaver, Anthony M.",Representative,25,MCEA,R
+edward l paradis,"Paradis, Edward L.",Representative,26,TF,R
+james f dill,"Dill, James F.",Representative,26,MCEA,D
+devan arnold,"Arnold, Devan",Representative,27,MCEA,D
+david giles,"Giles, David",Representative,27,TF,R
+irene a gifford,"Gifford, Irene A.",Representative,28,MCEA,R
+gordon powell street,"Street, Gordon Powell",Representative,28,MCEA,D
+nancy mcdowell,"McDowell, Nancy",Representative,29,MCEA,D
+james michael michaud,"Michaud, James Michael",Representative,29,MCEA,R
+nancy jean theriault,"Theriault, Nancy Jean",Representative,29,MCEA,R
+jr john j contreni,"Contreni, Jr., John J.",Representative,30,TF,D
+james lee white,"White, James Lee",Representative,30,TF,R
+eric boothroyd,"Boothroyd, Eric",Representative,31,TF,D
+andrew r torbett,"Torbett, Andrew R.",Representative,31,TF,R
+shawn leroy lancaster,"Lancaster, Shawn Leroy",Representative,32,TF,R
+michael brayson,"Brayson, Michael",Representative,33,MCEA,D
+kenneth wade fredette,"Fredette, Kenneth Wade",Representative,33,TF,R
+stacey kay guerin,"Guerin, Stacey Kay",Representative,34,TF,R
+james mcclymer,"McClymer, James",Representative,34,TF,D
+debora farnham,"Farnham, Debora",Representative,35,MCEA,D
+james e thorne,"Thorne, James E.",Representative,35,MCEA,R
+kimberly haggan,"Haggan, Kimberly",Representative,36,MCEA,R
+alan lee orcutt,"Orcutt, Alan Lee",Representative,37,MCEA,D
+reagan paul,"Paul, Reagan",Representative,37,TF,R
+jason seth cherry,"Cherry, Jason Seth",Representative,38,TF,D
+benjamin hymes,"Hymes, Benjamin",Representative,38,TF,R
+kayla miller,"Miller, Kayla",Representative,38,MCEA,D
+madison cook,"Cook, Madison",Representative,39,MCEA,D
+michael j nicholson,"Nicholson, Michael J.",Representative,39,TF,R
+joseph mclaughlin,"McLaughlin, Joseph",Representative,40,TF,R
+david michael ray,"Ray, David Michael",Representative,40,MCEA,D
+joshua daniel gerritsen,"Gerritsen, Joshua Daniel",Representative,41,MCEA,D
+marcus mrowka,"Mrowka, Marcus",Representative,41,MCEA,D
+cory c raymond,"Raymond, Cory C.",Representative,41,TF,R
+melissa byer,"Byer, Melissa",Representative,42,TF,R
+valli d geiger,"Geiger, Valli D.",Representative,42,MCEA,D
+christopher austin,"Austin, Christopher",Representative,43,TF,R
+michael sweeny flanagan,"Flanagan, Michael Sweeny",Representative,43,MCEA,R
+rhiannon hampson,"Hampson, Rhiannon",Representative,43,TF,D
+peter q jenks,"Jenks, Peter Q.",Representative,43,MCEA,D
+brady alden clark,"Clark, Brady Alden",Representative,44,TF,R
+shawn saindon,"Saindon, Shawn",Representative,44,MCEA,U
+ray thombs,"Thombs, Ray",Representative,44,TF,R
+clinton collamore,"Collamore, Clinton",Representative,45,TF,U
+rebecca stephens,"Stephens, Rebecca",Representative,45,TF,R
+jennifer f mayher,"Mayher, Jennifer F.",Representative,46,MCEA,D
+kristine a poland,"Poland, Kristine A.",Representative,46,MCEA,U
+wayne k farrin,"Farrin, Wayne K.",Representative,47,MCEA,D
+iii chester grover,"Grover, III, Chester",Representative,47,MCEA,R
+erik hobson,"Hobson, Erik",Representative,48,MCEA,R
+charlotte nutt,"Nutt, Charlotte",Representative,48,MCEA,D
+suzanne andresen,"Andresen, Suzanne",Representative,49,MCEA,R
+nicolas john hamlin,"Hamlin, Nicolas John",Representative,49,MCEA,R
+trent vellella,"Vellella, Trent",Representative,49,MCEA,D
+jedediah j rice,"Rice, Jedediah J.",Representative,50,TF,R
+david a sinclair,"Sinclair, David A.",Representative,50,MCEA,D
+rafael l macias,"Macias, Rafael L.",Representative,51,MCEA,D
+annalyse sarvinas,"Sarvinas, Annalyse",Representative,51,MCEA,R
+sally j cluchey,"Cluchey, Sally J.",Representative,52,MCEA,D
+david wayne guilmette,"Guilmette, David Wayne",Representative,52,MCEA,R
+michael lemelin,"Lemelin, Michael",Representative,53,TF,R
+richard goldman,"Goldman, Richard",Representative,53,MCEA,D
+karen l montell,"Montell, Karen L.",Representative,54,MCEA,D
+michell tucker,"Tucker, Michell",Representative,54,TF,R
+maureen aucoin,"AuCoin, Maureen",Representative,55,MCEA,D
+steven j butterfield,"Butterfield, Steven J.",Representative,55,MCEA,D
+charles l hippler,"Hippler, Charles L.",Representative,55,TF,R
+randall adam greenwood,"Greenwood, Randall Adam",Representative,56,MCEA,R
+robin uptonsukeforth,"Upton-Sukeforth, Robin",Representative,56,MCEA,D
+tavis hasenfus,"Hasenfus, Tavis",Representative,57,TF,D
+david potvin,"Potvin, David",Representative,57,TF,R
+dexter buzz bridges,"Bridges, Dexter ""Buzz""",Representative,58,MCEA,R
+sharon c frost,"Frost, Sharon C.",Representative,58,TF,U
+jeff harris,"Harris, Jeff",Representative,58,TF,R
+katrina couch raysaulis,"Couch Ray-Saulis, Katrina",Representative,59,MCEA,D
+tom keefe,"Keefe, Tom",Representative,59,TF,D
+john reny,"Reny, John",Representative,59,MCEA,R
+wyatt beaulieu,"Beaulieu, Wyatt",Representative,60,MCEA,R
+william r bridgeo,"Bridgeo, William R.",Representative,60,MCEA,D
+alicia collins,"Collins, Alicia",Representative,61,TF,R
+robin crawley,"Crawley, Robin",Representative,61,TF,D
+saige michele bird,"Bird, Saige Michele",Representative,62,MCEA,U
+katrina j smith,"Smith, Katrina J.",Representative,62,TF,R
+pamela jo swift,"Swift, Pamela Jo",Representative,62,MCEA,D
+paul r flynn,"Flynn, Paul R.",Representative,63,TF,R
+taylor west,"West, Taylor",Representative,63,MCEA,D
+flavia debrito,"DeBrito, Flavia",Representative,64,MCEA,D
+shawn michael packard,"Packard, Shawn Michael",Representative,64,TF,R
+cassie julia,"Julia, Cassie",Representative,65,MCEA,D
+scott strom,"Strom, Scott",Representative,65,TF,R
+alicia barnes,"Barnes, Alicia",Representative,66,MCEA,U
+michael d perkins,"Perkins, Michael D.",Representative,66,MCEA,R
+shawn m dixon,"Dixon, Shawn M.",Representative,67,TF,R
+matthew channing townsend,"Townsend, Matthew Channing",Representative,67,MCEA,D
+amanda collamore,"Collamore, Amanda",Representative,68,TF,R
+zachary lejonhud,"Lejonhud, Zachary",Representative,68,MCEA,U
+jessica blanchard,"Blanchard, Jessica",Representative,69,MCEA,D
+dean cray,"Cray, Dean",Representative,69,TF,R
+joseph almand,"Almand, Joseph",Representative,70,MCEA,D
+jennifer lynn poirier,"Poirier, Jennifer Lynn",Representative,70,TF,R
+iii john e ducharme,"Ducharme, III, John E.",Representative,71,TF,R
+allison perkins,"Perkins, Allison",Representative,71,TF,D
+cynthia somahernandez,"Soma-Hernandez, Cynthia",Representative,72,MCEA,D
+douglas a thomas,"Thomas, Douglas A.",Representative,72,MCEA,R
+ryan morgan,"Morgan, Ryan",Representative,73,TF,R
+daniel simonds,"Simonds, Daniel",Representative,73,MCEA,D
+mike soboleski,"Soboleski, Mike",Representative,73,TF,R
+russell john black,"Black, Russell John",Representative,74,MCEA,R
+marc edwards,"Edwards, Marc",Representative,74,MCEA,D
+randall douglas gauvin,"Gauvin, Randall Douglas",Representative,75,TF,R
+h scott landry,"Landry, H. Scott",Representative,75,TF,D
+clinton brooks,"Brooks, Clinton",Representative,76,MCEA,U
+trevor alex doiron,"Doiron, Trevor Alex",Representative,76,MCEA,D
+sheila lyman,"Lyman, Sheila",Representative,76,MCEA,R
+jr arlie hetrick,"Hetrick, Jr., Arlie",Representative,77,MCEA,D
+tammy schmersalburgess,"Schmersal-Burgess, Tammy",Representative,77,MCEA,R
+rachel a henderson,"Henderson, Rachel A.",Representative,78,TF,R
+woodleigh h hughes,"Hughes, Woodleigh H",Representative,78,MCEA,D
+michael j lance,"Lance, Michael J.",Representative,79,TF,R
+brianna lueck,"Lueck, Brianna",Representative,79,MCEA,D
+azalea cormier,"Cormier, Azalea",Representative,80,MCEA,U
+iv ernest fitts,"Fitts, IV, Ernest",Representative,80,TF,R
+gino valeriani,"Valeriani, Gino",Representative,80,TF,R
+christopher a easton,"Easton, Christopher A.",Representative,81,MCEA,D
+peter wood,"Wood, Peter",Representative,81,TF,R
+christopher alfred lewey,"Lewey, Christopher Alfred",Representative,82,MCEA,D
+caleb joshua ness,"Ness, Caleb Joshua",Representative,82,MCEA,R
+timothy becker,"Becker, Timothy",Representative,83,MCEA,D
+marygrace cimino,"Cimino, Marygrace",Representative,83,TF,R
+cassandra dove,"Dove, Cassandra",Representative,84,TF,D
+timothy nickels,"Nickels, Timothy",Representative,85,TF,R
+adrienne paul,"Paul, Adrienne",Representative,85,MCEA,R
+paul welch,"Welch, Paul",Representative,85,MCEA,D
+jr rolf arthru olsen,"Olsen, Jr. Rolf Arthru",Representative,86,MCEA,R
+abigail geer,"Geer, Abigail",Representative,86,MCEA,D
+john baldwin,"Baldwin, John",Representative,87,MCEA,G
+jr david wayne boyer,"Boyer, Jr., David Wayne",Representative,87,TF,R
+corey stephen bouchard,"Bouchard, Corey Stephen",Representative,88,TF,D
+quentin chapman,"Chapman, Quentin",Representative,88,TF,R
+dana n staples,"Staples, Dana N.",Representative,88,MCEA,D
+james berube,"Berube, James",Representative,89,TF,R
+adam r lee,"Lee, Adam R.",Representative,89,TF,D
+pamela hart,"Hart, Pamela",Representative,90,MCEA,D
+james sorcek,"Sorcek, James",Representative,90,MCEA,R
+emily dingman,"Dingman, Emily",Representative,91,TF,D
+jeffrey l timberlake,"Timberlake, Jeffrey L.",Representative,91,TF,R
+stephen j wood,"Wood, Stephen J.",Representative,92,MCEA,R
+julia mccabe,"McCabe, Julia",Representative,93,MCEA,D
+chad syphers,"Syphers, Chad",Representative,93,TF,R
+janet beaudoin,"Beaudoin, Janet",Representative,94,TF,R
+scott a harriman,"Harriman, Scott A.",Representative,94,MCEA,D
+matthew kershaw,"Kershaw, Matthew",Representative,95,MCEA,D
+kierman innes majeruscollins,"Majerus-Collins, Kierman Innes",Representative,95,TF,D
+kerryl lee clement,"Clement, Kerryl Lee",Representative,96,MCEA,R
+luke dylan jensen,"Jensen, Luke Dylan",Representative,96,MCEA,D
+dale john crafts,"Crafts, Dale John",Representative,97,TF,R
+thomas watson,"Watson, Thomas",Representative,97,MCEA,D
+guy lebida,"Lebida, Guy",Representative,98,TF,R
+william j st michel,"St. Michel, William J.",Representative,98,MCEA,R
+kilton mccarthy webb,"Webb, Kilton McCarthy",Representative,98,MCEA,D
+cheryl a golek,"Golek, Cheryl A.",Representative,99,MCEA,D
+braeden d webber,"Webber, Braeden D.",Representative,99,MCEA,R
+daniel joseph ankeles,"Ankeles, Daniel Joseph",Representative,100,MCEA,D
+poppy t arford,"Arford, Poppy T.",Representative,101,MCEA,D
+ravi jackson,"Jackson, Ravi",Representative,101,TF,R
+henry lawrence,"Lawrence, Henry",Representative,102,TF,R
+maura h pillsbury,"Pillsbury, Maura H.",Representative,102,MCEA,D
+karin orenstein,"Orenstein, Karin",Representative,103,MCEA,D
+louis samuel pfeifle,"Pfeifle, Louis Samuel",Representative,104,MCEA,U
+r melissa winslow,"Winslow, R. Melissa",Representative,104,TF,R
+susan fuller,"Fuller, Susan",Representative,105,TF,R
+anne palmer graham,"Graham, Anne Palmer",Representative,105,MCEA,D
+barbara anne bagshaw,"Bagshaw, Barbara Anne",Representative,106,MCEA,R
+bradley youngs,"Youngs, Bradley",Representative,106,MCEA,D
+joseph a campbell,"Campbell, Joseph A.",Representative,107,MCEA,D
+mark c cooper,"Cooper, Mark C.",Representative,107,MCEA,R
+kelly dearborn,"Dearborn, Kelly",Representative,108,TF,R
+parnell terry,"Terry, Parnell",Representative,108,MCEA,D
+diana kushnar,"Kushnar, Diana",Representative,109,TF,R
+seven siegel,"Siegel, Seven",Representative,109,MCEA,D
+christina rue cork mitchell,"Mitchell, Christina Rue Cork",Representative,110,MCEA,D
+jason copp,"Copp, Jason",Representative,110,TF,R
+amy d kuhn,"Kuhn, Amy D.",Representative,111,MCEA,D
+m todd chretien,"Chretien, M. Todd",Representative,112,MCEA,D
+sean mahoney,"Mahoney, Sean",Representative,112,MCEA,D
+grayson lookner,"Lookner, Grayson",Representative,113,MCEA,D
+april d fournier,"Fournier, April D.",Representative,114,TF,D
+andrew zarro,"Zarro, Andrew",Representative,115,TF,D
+samuel lewis zager,"Zager, Samuel Lewis",Representative,116,MCEA,D
+matthew moonen,"Moonen, Matthew",Representative,117,TF,D
+yusuf yusuf,"Yusuf, Yusuf",Representative,118,TF,D
+michael p dixon,"Dixon, Michael P.",Representative,119,MCEA,D
+jacob murray wakem,"Wakem, Jacob Murray",Representative,119,TF,R
+michael dougherty,"Dougherty, Michael",Representative,120,TF,R
+jason j shedlock,"Shedlock, Jason J.",Representative,120,TF,D
+robert cameron,"Cameron, Robert",Representative,121,MCEA,D
+meagan smith,"Smith, Meagan",Representative,121,MCEA,R
+matthew beck,"Beck, Matthew",Representative,122,TF,D
+michelle n boyer,"Boyer, Michelle N.",Representative,123,MCEA,D
+annie christy,"Christy, Annie",Representative,123,TF,R
+scott doherty,"Doherty, Scott",Representative,124,TF,R
+mary shannon lindstrom,"Lindstrom, Mary Shannon",Representative,124,MCEA,U
+eric nathanson,"Nathanson, Eric",Representative,124,MCEA,D
+kelly maureen noonan murphy,"Murphy, Kelly Maureen Noonan",Representative,125,MCEA,D
+andrew gattine,"Gattine, Andrew",Representative,126,TF,D
+ethan mongue,"Mongue, Ethan",Representative,126,TF,R
+morgan j rielly,"Rielly, Morgan J.",Representative,127,TF,D
+suzanne m salisbury,"Salisbury, Suzanne M.",Representative,128,MCEA,D
+marshall archer,"Archer, Marshall",Representative,129,TF,D
+lynn holland copeland,"Copeland, Lynn Holland",Representative,130,MCEA,D
+todd michael davis,"Davis, Todd Michael",Representative,130,MCEA,U
+kenneth blow,"Blow, Kenneth",Representative,131,TF,U
+robert j kelly,"Kelly, Robert J.",Representative,131,MCEA,D
+ryan fecteau,"Fecteau, Ryan",Representative,132,TF,D
+ii marc g malon,"Malon, II, Marc G.",Representative,133,TF,D
+allen anthony daggett,"Daggett, Allen Anthony",Representative,134,TF,U
+traci gere,"Gere, Traci",Representative,134,MCEA,D
+scott craig,"Craig, Scott",Representative,135,MCEA,U
+rachel mary phipps,"Phipps, Rachel Mary",Representative,135,MCEA,D
+lisa pratt,"Pratt, Lisa",Representative,135,MCEA,D
+michelle conners,"Conners, Michelle",Representative,136,MCEA,D
+john eder,"Eder, John",Representative,136,MCEA,R
+charles edward tilburg,"Tilburg, Charles Edward",Representative,137,MCEA,D
+nathan carlow,"Carlow, Nathan",Representative,137,TF,R
+jonathan l kinney,"Kinney, Jonathan L.",Representative,138,TF,R
+oliver mcavoy,"McAvoy, Oliver",Representative,138,MCEA,D
+dean lepage,"Lepage, Dean",Representative,139,MCEA,D
+jamie k newton,"Newton, Jamie K",Representative,139,TF,R
+wayne parry,"Parry, Wayne",Representative,140,TF,R
+kirstan watson,"Watson, Kirstan",Representative,140,MCEA,D
+marc anthony boisse,"Boisse, Marc Anthony",Representative,141,TF,R
+rebecca lynn flood andrews,"Flood Andrews, Rebecca Lynn",Representative,141,MCEA,D
+ii david roland mongeau,"Mongeau, II, David Roland",Representative,141,MCEA,U
+jr clinton wesley phinney,"Phinney, Jr., Clinton Wesley",Representative,141,MCEA,R
+gordon frohloff,"Frohloff, Gordon",Representative,142,TF,R
+ayn hanselmann,"Hanselmann, Ayn",Representative,142,MCEA,D
+iii john robert henkelman,"Henkelman, III, John Robert",Representative,143,MCEA,D
+eric h small,"Small, Eric H.",Representative,143,TF,R
+jeff adams,"Adams, Jeff",Representative,144,TF,R
+corrina cole,"Cole, Corrina",Representative,144,MCEA,U
+caleb joseph chase,"Chase, Caleb Joseph",Representative,145,MCEA,R
+kristin tyra davis,"Davis, Kristin Tyra",Representative,145,MCEA,D
+bradley s moulton,"Moulton, Bradley S.",Representative,146,MCEA,R
+jr walter runte,"Runte, Jr., Walter",Representative,146,MCEA,D
+holly taylor sargent,"Sargent, Holly Taylor",Representative,147,MCEA,D
+thomas lavigne,"Lavigne, Thomas",Representative,148,TF,R
+margaret wheeler,"Wheeler, Margaret",Representative,148,TF,D
+mallory aaren cook,"Cook, Mallory Aaren",Representative,149,MCEA,D
+justin aryan tahai,"Tahai, Justin Aryan",Representative,149,TF,U
+alexandros orestis,"Orestis, Alexandros",Representative,150,MCEA,D
+mark frederick zimmer,"Zimmer, Mark Frederick",Representative,150,MCEA,R
+suzanne johnson,"Johnson, Suzanne",Representative,151,TF,R
+kristi m mathieson,"Mathieson, Kristi M.",Representative,151,MCEA,D
+lucien jb daigle,"Daigle, Lucien JB",Senate,1,MCEA,R
+vaughn j mclaughlin,"Mclaughlin, Vaughn J.",Senate,1,MCEA,D
+harold hull,"Hull, Harold",Senate,2,TF,D
+iii harold stewart,"Stewart, III, Harold",Senate,2,MCEA,R
+danny e costain,"Costain, Danny E.",Senate,3,MCEA,R
+jr stanley short,"Short, Jr., Stanley",Senate,3,TF,D
+joel r stetkis,"Stetkis, Joel R.",Senate,3,TF,R
+joseph paul guerin,"Guerin, Joseph Paul",Senate,4,TF,R
+lisa kalp,"Kalp, Lisa",Senate,4,MCEA,D
+chad richard perkins,"Perkins, Chad Richard",Senate,4,TF,R
+gregory pierce,"Pierce, Gregory",Senate,4,TF,R
+zachary anders wood,"Wood, Zachary Anders",Senate,4,MCEA,R
+elizabeth caruso,"Caruso, Elizabeth",Senate,5,MCEA,R
+robert finch sullebarger,"Sullebarger, Robert Finch",Senate,5,MCEA,D
+aaron dana,"Dana, Aaron",Senate,6,MCEA,U
+kenneth davis,"Davis, Kenneth",Senate,6,MCEA,R
+billy bob faulkingham,"Faulkingham, Billy Bob",Senate,6,TF,R
+nicole c grohoski,"Grohoski, Nicole C.",Senate,7,MCEA,D
+cheryl hewes,"Hewes, Cheryl",Senate,7,MCEA,R
+leo christopher kenney,"Kenney, Leo Christopher",Senate,8,MCEA,R
+michael tipping,"Tipping, Michael",Senate,8,MCEA,D
+stephen carey,"Carey, Stephen",Senate,9,MCEA,U
+amy j roeder,"Roeder, Amy J.",Senate,9,MCEA,D
+david g haggan,"Haggan, David G.",Senate,10,MCEA,R
+kevin oconnell,"O'Connell, Kevin",Senate,10,TF,D
+glenn chip curry,"Curry, Glenn Chip",Senate,11,MCEA,D
+ryan christopher otis,"Otis, Ryan Christopher",Senate,11,MCEA,R
+nicole lynn kallock,"Kallock, Nicole Lynn",Senate,12,TF,U
+ann higgins matlack,"Matlack, Ann Higgins",Senate,12,MCEA,D
+edwin m mitchell,"Mitchell, Edwin M.",Senate,13,MCEA,U
+cameron reny,"Reny, Cameron",Senate,13,MCEA,D
+craig hickman,"Hickman, Craig",Senate,14,TF,D
+steven mcgee,"McGee, Steven",Senate,14,TF,R
+amanda ann heath,"Heath, Amanda Ann",Senate,15,MCEA,D
+kati l mccormick,"McCormick, Kati L.",Senate,15,MCEA,R
+scott w cyrway,"Cyrway, Scott W.",Senate,16,MCEA,R
+patric moore,"Moore, Patric",Senate,16,MCEA,D
+jojean c keller,"Keller, Jo-Jean C.",Senate,17,MCEA,D
+richard g mason,"Mason, Richard G.",Senate,17,TF,R
+john andrews,"Andrews, John",Senate,18,TF,R
+elizabeth d bosworth,"Bosworth, Elizabeth D.",Senate,18,MCEA,D
+joseph edward martin,"Martin, Joseph Edward",Senate,19,TF,R
+peter j southam,"Southam,Peter J.",Senate,19,MCEA,D
+bruce bickford,"Bickford, Bruce",Senate,20,MCEA,R
+michael r scott,"Scott, Michael R.",Senate,20,MCEA,D
+mana abdi,"Abdi, Mana",Senate,21,TF,D
+shanna cox,"Cox, Shanna",Senate,21,TF,D
+eryn soule,"Soule, Eryn",Senate,21,MCEA,U
+nathan burnett,"Burnett, Nathan",Senate,22,MCEA,D
+kimberly j pomerleau,"Pomerleau, Kimberly J.",Senate,22,MCEA,R
+matthea elizabeth larsen daughtry,"Daughtry, Matthea Elizabeth Larsen",Senate,23,TF,D
+bernard robert porter,"Porter, Bernard Robert",Senate,23,TF,R
+denise tepler,"Tepler, Denise",Senate,24,MCEA,D
+teresa s pierce,"Pierce, Teresa S.",Senate,25,TF,D
+james e jr read,"Read, James E. Jr.",Senate,25,TF,R
+kenneth james cianchette,"Cianchette, Kenneth James",Senate,26,TF,R
+timothy e nangle,"Nangle, Timothy E.",Senate,26,MCEA,D
+peter g violette,"Violette, Peter G.",Senate,26,MCEA,R
+jill c duson,"Duson, Jill C.",Senate,27,MCEA,D
+peter ignatius doyle,"Doyle, Peter Ignatius",Senate,28,TF,R
+rachel talbot ross,"Talbot Ross, Rachel",Senate,28,TF,D
+anne carney,"Carney, Anne",Senate,29,TF,D
+vincent maietta,"Maietta, Vincent",Senate,29,TF,R
+eleanor y sato,"Sato, Eleanor Y.",Senate,30,MCEA,D
+sophia bailey warren,"Warren, Sophia Bailey",Senate,30,MCEA,D
+harry white,"White, Harry",Senate,30,TF,R
+donna bailey,"Bailey, Donna",Senate,31,MCEA,D
+lauren marie grenier,"Grenier, Lauren Marie",Senate,31,MCEA,U
+garrett plummer,"Plummer, Garrett",Senate,31,TF,R
+henry l ingwersen,"Ingwersen, Henry L.",Senate,32,MCEA,D
+jason g litalien,"Litalien, Jason G.",Senate,32,MCEA,U
+alfred schutz,"Schutz, Alfred",Senate,32,TF,R
+matthew a harrington,"Harrington, Matthew A.",Senate,33,TF,R
+mark h vigliotta,"Vigliotta, Mark H.",Senate,33,MCEA,D
+jonathan reed fallon,"Fallon, Jonathan Reed",Senate,34,MCEA,R
+daniel sayre,"Sayre, Daniel",Senate,34,MCEA,D
+michele meyer,"Meyer, Michele",Senate,35,MCEA,D
+julie nicole rakic,"Rakic, Julie Nicole",Senate,35,MCEA,R
+deane rykerson,"Rykerson, Deane",Senate,35,MCEA,D

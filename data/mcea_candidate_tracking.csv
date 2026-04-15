@@ -1,0 +1,496 @@
+branch,district,candidate,finance_type,party
+Androscoggin,County Commissioner/District 2,"Poirer, Roland",TF,D
+Androscoggin,County Commissioner/District 3,"Chateauvert, Glenn",TF,R
+Androscoggin,County Commissioner/District 5,"Bell, Gordon",TF,R
+Androscoggin,County Commissioner/District 7,"Baumann, Coreene",TF,R
+Androscoggin,County Commissioner/District 7,"Cesare, Lisa",TF,D
+Androscoggin,Judge of Probate,"Dubois, Michael, IV",TF,R
+Androscoggin,Sheriff,"Nichols, Kevin M.",TF,U
+Androscoggin,Sheriff,"Samson, Eric G.",TF,D
+Aroostook,County Commissioner/District 1,"Dobbins, William",TF,R
+Aroostook,Register Of Deeds,"Ouellette, Amy",TF,D
+Aroostook,Register Of Deeds,"Richardson, Melissa L.",TF,R
+Cumberland,County Commissioner/District 3,"Leshure, Amy",TF,D
+Cumberland,County Commissioner/District 3,"Mahaffey, Joel",TF,D
+Cumberland,County Commissioner/District 4,"Olson, Sidgrid",TF,D
+Cumberland,County Commissioner/District 4,"Smith, Patricia A.",TF,D
+Cumberland,County Commissioner/District 5,"Boykin, Atiim Bomani",TF,D
+Cumberland,County Commissioner/District 5,"Chann, Marpheen",TF,D
+Cumberland,Judge of Probate,"Aranson, Paul",TF,D
+Cumberland,Sheriff,"Joyce, Kevin J.",TF,D
+Franklin,County Commissioner/District 4,"Ireland, Earl",TF,R
+Franklin,County Commissioner/District 4,"Carlton, Robert",TF,R
+Franklin,County Commissioner/District 5,"Gilbert, Jeffrey P.",TF,R
+Franklin,County Commissioner/District 5,"Martin, Jr., Earl",TF,R
+Franklin,County Treasurer,"Pratt, Susan",TF,R
+Franklin,County Treasurer,"Prodan, Pamela",TF,D
+Franklin,Judge of Probate,"Joly, Margot",TF,D
+Franklin,Register Of Deeds,"Black, Susan A.",TF,R
+Hancock,County Treasurer,"Cease, Monica",TF,D
+Hancock,Judge of Probate,"Foster, Matthew",TF,R
+Hancock,Judge of Probate,"Thomas, Brian",TF,D
+Hancock,Register Of Deeds,"Curtis, Julie A",TF,R
+Hancock,Sheriff,"Bagley, Corey Leigh",TF,R
+Hancock,Sheriff,"Dupuis, Dakota",TF,D
+Kennebec,County Commissioner/District 2,"Pietroski, Joseph",TF,R
+Kennebec,County Commissioner/District 2,"Madore, Noel",TF,D
+Kennebec,County Treasurer,"Mason, Joanne",TF,D
+Kennebec,Register Of Deeds,"Boucher, Matthew",TF,R
+Kennebec,Register Of Deeds,"Lamoreau, Kevin M.",TF,D
+Knox,County Commissioner/District 1,"Glaser, Edward",TF,D
+Knox,Judge of Probate,"Emery, Carol R.",TF,R
+Knox,Sheriff,"Hansen, John",TF,D
+Knox,Sheriff,"Joy, Albert",TF,U
+Knox,Sheriff,"Polky, Patrick William",TF,D
+Lincoln,County Treasurer,"Kane, Michelle M.",TF,R
+Lincoln,County Commissioner/District 2,"Voskian, Walter John",TF,D
+Lincoln,Register Of Deeds,"Wotton, Rebecca Sue",TF,R
+Lincoln,Register Of Probate,"Moore, Catherine H.",TF,R
+Lincoln,Sheriff,"Brackett, Todd",TF,D
+Oxford,County Commissioner/District 3,"Herrick, Lloyd C.",TF,R
+Oxford,County Commissioner/District 3,"Jamison, Janet",TF,D
+Oxford,County Treasurer,"Davis, Christopher J.",TF,R
+Oxford,County Treasurer,"Dolloff, Rebecca",TF,R
+Oxford,County Treasurer,"Sessions, Savannah",TF,U
+Oxford,County Treasurer,"Whitney, Daniel",TF,R
+Oxford,Register Of Deeds,"Crockett, Cherri L.",TF,R
+Oxford,Sheriff,"Blauvelt, Jr., Frank Mawson",TF,R
+Oxford,Sheriff,"Gagne, Richard",TF,R
+Oxford,Sheriff,"Holland, Timothy L.",TF,D
+Oxford,Sheriff,"Wainwright, Christopher Robert",TF,R
+Penobscot,Judge of Probate,"Seaney, Beth",TF,R
+Penobscot,Register Of Deeds,"Bulay, Susan F.",TF,R
+Penobscot,Sheriff,"Morton, Troy",TF,R
+Penobscot,Treasurer,"Mower, Glen",TF,R
+Piscataquis,County Commissioner/District 1,"Davis, Sr., Paul Titcomb",TF,R
+Piscataquis,County Commissioner/District 1,"Zimmerman, Paul R.",TF,R
+Piscataquis,County Treasurer,"Turner, Johanna D.",TF,R
+Piscataquis,County Treasurer,"White, Trisha E.",TF,R
+Piscataquis,Register Of Deeds,"Clark, Gail J.",TF,R
+Piscataquis,Sheriff,"Dow, Guy E.",TF,R
+Piscataquis,Sheriff,"Kane, James Brent",TF,R
+Piscataquis,Sheriff,"Lyford, Todd",TF,R
+Sagadahoc,County Commissioner/District 2,"August, Stephen",TF,D
+Sagadahoc,County Treasurer,"Eaton, Gail",TF,D
+Sagadahoc,Register Of Deeds,"Moore, Lynn C.",TF,R
+Somerset,County Commissioner/District 3,"Seekins, Scott Allen",TF,U
+Somerset,County Commissioner/District 4,"Alsop, John",TF,U
+Somerset,County Commissioner/District 5,"Dunphy, Larry C.",TF,U
+Somerset,Register Of Deeds,"Belanger, Tanya",TF,U
+Somerset,Sheriff,"Lancaster, Dale P.",TF,U
+Waldo,County Commissioner/District 1,"Pinkham Bebb, Breanna",TF,D
+Waldo,County Commissioner/District 1,"Wagner, III, Alphonzo",TF,R
+Waldo,Register Of Deeds,"Grant, Stacy L.",TF,D
+Waldo,Sheriff,"Trundy, Jason",TF,D
+Washington,County Commissioner/District 3,"Hammond, Courtney",TF,R
+Washington,County Commissioner/District 3,"Look, William",TF,R
+Washington,Judge of Probate,"Mahar, Dennis",TF,D
+Washington,Register of Deeds,"Gay, Tammy",TF,R
+Washington,Sheriff,"Crabtree, Michael L.",TF,R
+York,County Commissioner/District 1,"Andrews, Robert",TF,R
+York,County Commissioner/District 2,"Ortiz, Doris",TF,D
+York,County Commissioner/District 3,"Chenette, Justin",TF,D
+York,County Treasurer,"Mills, Bobby J.",TF,D
+York,Register Of Deeds,"Caiazzo, Wendy",TF,U
+York,Sheriff,"Corbett, David",TF,R
+York,Sheriff,"King, Jr., William L.",TF,D
+York,Sheriff,"Pellerin, Brian R.",TF,U
+Governor,,"Bellows, Shenna",TF,D
+Governor,,"Bennett, Richard",TF,U
+Governor,,"Bush, Jonathan",TF,R
+Governor,,"Charles, Robert B.",TF,R
+Governor,,"Crockett, W. Edward",TF,U
+Governor,,"Glowa, Sr., John Michael",TF,U
+Governor,,"Jackson, Troy Dale",TF,D
+Governor,,"Jones, David John",TF,R
+Governor,,"King III, Angus S.",TF,D
+Governor,,"Levasseur, Derek Allen",TF,U
+Governor,,"Libby, James Delmas",MCEA,R
+Governor,,"Mason, Garrett Paul",TF,R
+Governor,,"McCarthy, Owen",TF,R
+Governor,,"Midgley, Benjamin",TF,R
+Governor,,"Parker, Andrew",TF,U
+Governor,,"Pingree, Hannah",TF,D
+Governor,,"Shah, Nirav",TF,D
+Governor,,"Wessels, Robert J.",TF,R
+House,1,"Appleby, Dana Marie",TF,D
+House,1,"Theriault, Austin",TF,R
+House,2,"Albert, Roger",TF,R
+House,2,"Martin, Roland Daniel",MCEA,D
+House,3,"McCrea, David H.",MCEA,D
+House,3,"Bernard, Susan",TF,R
+House,4,"Guerrette, Timothy Conrad",MCEA,R
+House,5,"Archer, Bruce",MCEA,D
+House,5,"Carlisle, Jr., Douglas Colburn",MCEA,R
+House,6,"Ardell, Donald",TF,R
+House,6,"Tompkins, Melanie",TF,D
+House,7,"Craine, Jantzen Stephen",TF,R
+House,7,"Rush, Matthew",MCEA,D
+House,8,"Quint, Tracy",TF,R
+House,9,"Mingo, Arthur",TF,R
+House,9,"Richards, Nicole",MCEA,D
+House,10,"Daley, Daniel J.",TF,R
+House,10,"Lemire, Genevieve",MCEA,D
+House,10,"Tuell, William R.",MCEA,R
+House,11,"Newman, Keith",MCEA,D
+House,11,"Strout, Tiffany",MCEA,R
+House,12,"Hart, Thomas",TF,R
+House,12,"Kamin, III, Edward Mathias",MCEA,U
+House,13,"White, Russell",MCEA,R
+House,13,"Cunningham, Michael",MCEA,D
+House,14,"Donovan, Jean",TF,R
+House,14,"Friedmann, Gary",MCEA,D
+House,15,"Eaton, Holly",MCEA,D
+House,16,"Milliken, Nina A.",MCEA,D
+House,16,"Runnells, Jr., Gary Gene",TF,U
+House,16,"White, Eric",TF,R
+House,17,Bishop Steven Matthew,TF,R
+House,17,"Russell, Ronald",TF,D
+House,18,"McIntyre, Mathew",TF,R
+House,19,"Campbell, Richard H.",TF,R
+House,20,"Jude, Patrick",MCEA,R
+House,20,"O'Halloran, Dani",MCEA,D
+House,21,"Casella, Frank Joseph",MCEA,R
+House,21,"Laverdiere, Andrew",TF,R
+House,21,"Rana, Ambureen",MCEA,D
+House,22,"O'Neal, Colleen",TF,R
+House,22,"Supica, Laura",TF,D
+House,23,"Ames, Brian",MCEA,R
+House,23,"Brydon, Katie",MCEA,D
+House,23,"Kornfield, Victoria Porter",MCEA,D
+House,23,"Winterling, Joschka A.B.",MCEA,D
+House,24,"Faircloth, Sean",MCEA,D
+House,24,"Lapointe, Daniel Robert",TF,R
+House,25,"Osher, Laurie",MCEA,D
+House,25,"Weaver, Anthony M.",MCEA,R
+House,26,"Paradis, Edward L.",TF,R
+House,26,"Dill, James F.",MCEA,D
+House,27,"Arnold, Devan",MCEA,D
+House,27,"Giles, David",TF,R
+House,28,"Gifford, Irene A.",MCEA,R
+House,28,"Street, Gordon Powell",MCEA,D
+House,29,"McDowell, Nancy",MCEA,D
+House,29,"Michaud, James Michael",MCEA,R
+House,29,"Theriault, Nancy Jean",MCEA,R
+House,30,"Contreni, Jr., John J.",TF,D
+House,30,"White, James Lee",TF,R
+House,31,"Boothroyd, Eric",TF,D
+House,31,"Torbett, Andrew R.",TF,R
+House,32,"Lancaster, Shawn Leroy",TF,R
+House,33,"Brayson, Michael",MCEA,D
+House,33,"Fredette, Kenneth Wade",TF,R
+House,34,"Guerin, Stacey Kay",TF,R
+House,34,"McClymer, James",TF,D
+House,35,"Farnham, Debora",MCEA,D
+House,35,"Thorne, James E.",MCEA,R
+House,36,"Haggan, Kimberly",MCEA,R
+House,37,"Orcutt, Alan Lee",MCEA,D
+House,37,"Paul, Reagan",TF,R
+House,38,"Cherry, Jason Seth",TF,D
+House,38,"Hymes, Benjamin",TF,R
+House,38,"Miller, Kayla",MCEA,D
+House,39,"Cook, Madison",MCEA,D
+House,39,"Nicholson, Michael J.",TF,R
+House,40,"McLaughlin, Joseph",TF,R
+House,40,"Ray, David Michael",MCEA,D
+House,41,"Gerritsen, Joshua Daniel",MCEA,D
+House,41,"Mrowka, Marcus",MCEA,D
+House,41,"Raymond, Cory C.",TF,R
+House,42,"Byer, Melissa",TF,R
+House,42,"Geiger, Valli D.",MCEA,D
+House,43,"Austin, Christopher",TF,R
+House,43,"Flanagan, Michael Sweeny",MCEA,R
+House,43,"Hampson, Rhiannon",TF,D
+House,43,"Jenks, Peter Q.",MCEA,D
+House,44,"Clark, Brady Alden",TF,R
+House,44,"Saindon, Shawn",MCEA,U
+House,44,"Thombs, Ray",TF,R
+House,45,"Collamore, Clinton",TF,U
+House,45,"Stephens, Rebecca",TF,R
+House,46,"Mayher, Jennifer F.",MCEA,D
+House,46,"Poland, Kristine A.",MCEA,U
+House,47,"Farrin, Wayne K.",MCEA,D
+House,47,"Grover, III, Chester",MCEA,R
+House,48,"Hobson, Erik",MCEA,R
+House,48,"Nutt, Charlotte",MCEA,D
+House,49,"Andresen, Suzanne",MCEA,R
+House,49,"Hamlin, Nicolas John",MCEA,R
+House,49,"Vellella, Trent",MCEA,D
+House,50,"Rice, Jedediah J.",TF,R
+House,50,"Sinclair, David A.",MCEA,D
+House,51,"Macias, Rafael L.",MCEA,D
+House,51,"Sarvinas, Annalyse",MCEA,R
+House,52,"Cluchey, Sally J.",MCEA,D
+House,52,"Guilmette, David Wayne",MCEA,R
+House,53,"Lemelin, Michael",TF,R
+House,53,"Goldman, Richard",MCEA,D
+House,54,"Montell, Karen L.",MCEA,D
+House,54,"Tucker, Michell",TF,R
+House,55,"AuCoin, Maureen",MCEA,D
+House,55,"Butterfield, Steven J.",MCEA,D
+House,55,"Hippler, Charles L.",TF,R
+House,56,"Greenwood, Randall Adam",MCEA,R
+House,56,"Upton-Sukeforth, Robin",MCEA,D
+House,57,"Hasenfus, Tavis",TF,D
+House,57,"Potvin, David",TF,R
+House,58,"Bridges, Dexter ""Buzz""",MCEA,R
+House,58,"Frost, Sharon C.",TF,U
+House,58,"Harris, Jeff",TF,R
+House,59,"Couch Ray-Saulis, Katrina",MCEA,D
+House,59,"Keefe, Tom",TF,D
+House,59,"Reny, John",MCEA,R
+House,60,"Beaulieu, Wyatt",MCEA,R
+House,60,"Bridgeo, William R.",MCEA,D
+House,61,"Collins, Alicia",TF,R
+House,61,"Crawley, Robin",TF,D
+House,62,"Bird, Saige Michele",MCEA,U
+House,62,"Smith, Katrina J.",TF,R
+House,62,"Swift, Pamela Jo",MCEA,D
+House,63,"Flynn, Paul R.",TF,R
+House,63,"West, Taylor",MCEA,D
+House,64,"DeBrito, Flavia",MCEA,D
+House,64,"Packard, Shawn Michael",TF,R
+House,65,"Julia, Cassie",MCEA,D
+House,65,"Strom, Scott",TF,R
+House,66,"Barnes, Alicia",MCEA,U
+House,66,"Perkins, Michael D.",MCEA,R
+House,67,"Dixon, Shawn M.",TF,R
+House,67,"Townsend, Matthew Channing",MCEA,D
+House,68,"Collamore, Amanda",TF,R
+House,68,"Lejonhud, Zachary",MCEA,U
+House,69,"Blanchard, Jessica",MCEA,D
+House,69,"Cray, Dean",TF,R
+House,70,"Almand, Joseph",MCEA,D
+House,70,"Poirier, Jennifer Lynn",TF,R
+House,71,"Ducharme, III, John E.",TF,R
+House,71,"Perkins, Allison",TF,D
+House,72,"Soma-Hernandez, Cynthia",MCEA,D
+House,72,"Thomas, Douglas A.",MCEA,R
+House,73,"Morgan, Ryan",TF,R
+House,73,"Simonds, Daniel",MCEA,D
+House,73,"Soboleski, Mike",TF,R
+House,74,"Black, Russell John",MCEA,R
+House,74,"Edwards, Marc",MCEA,D
+House,75,"Gauvin, Randall Douglas",TF,R
+House,75,"Landry, H. Scott",TF,D
+House,76,"Brooks, Clinton",MCEA,U
+House,76,"Doiron, Trevor Alex",MCEA,D
+House,76,"Lyman, Sheila",MCEA,R
+House,77,"Hetrick, Jr., Arlie",MCEA,D
+House,77,"Schmersal-Burgess, Tammy",MCEA,R
+House,78,"Henderson, Rachel A.",TF,R
+House,78,"Hughes, Woodleigh H",MCEA,D
+House,79,"Lance, Michael J.",TF,R
+House,79,"Lueck, Brianna",MCEA,D
+House,80,"Cormier, Azalea",MCEA,U
+House,80,"Fitts, IV, Ernest",TF,R
+House,80,"Valeriani, Gino",TF,R
+House,81,"Easton, Christopher A.",MCEA,D
+House,81,"Wood, Peter",TF,R
+House,82,"Lewey, Christopher Alfred",MCEA,D
+House,82,"Ness, Caleb Joshua",MCEA,R
+House,83,"Becker, Timothy",MCEA,D
+House,83,"Cimino, Marygrace",TF,R
+House,84,"Dove, Cassandra",TF,D
+House,85,"Nickels, Timothy",TF,R
+House,85,"Paul, Adrienne",MCEA,R
+House,85,"Welch, Paul",MCEA,D
+House,86,"Olsen, Jr. Rolf Arthru",MCEA,R
+House,86,"Geer, Abigail",MCEA,D
+House,87,"Baldwin, John",MCEA,G
+House,87,"Boyer, Jr., David Wayne",TF,R
+House,88,"Bouchard, Corey Stephen",TF,D
+House,88,"Chapman, Quentin",TF,R
+House,88,"Staples, Dana N.",MCEA,D
+House,89,"Berube, James",TF,R
+House,89,"Lee, Adam R.",TF,D
+House,90,"Hart, Pamela",MCEA,D
+House,90,"Sorcek, James",MCEA,R
+House,91,"Dingman, Emily",TF,D
+House,91,"Timberlake, Jeffrey L.",TF,R
+House,92,"Wood, Stephen J.",MCEA,R
+House,93,"McCabe, Julia",MCEA,D
+House,93,"Syphers, Chad",TF,R
+House,94,"Beaudoin, Janet",TF,R
+House,94,"Harriman, Scott A.",MCEA,D
+House,95,"Kershaw, Matthew",MCEA,D
+House,95,"Majerus-Collins, Kierman Innes",TF,D
+House,96,"Clement, Kerryl Lee",MCEA,R
+House,96,"Jensen, Luke Dylan",MCEA,D
+House,97,"Crafts, Dale John",TF,R
+House,97,"Watson, Thomas",MCEA,D
+House,98,"Lebida, Guy",TF,R
+House,98,"St. Michel, William J.",MCEA,R
+House,98,"Webb, Kilton McCarthy",MCEA,D
+House,99,"Golek, Cheryl A.",MCEA,D
+House,99,"Webber, Braeden D.",MCEA,R
+House,100,"Ankeles, Daniel Joseph",MCEA,D
+House,101,"Arford, Poppy T.",MCEA,D
+House,101,"Jackson, Ravi",TF,R
+House,102,"Lawrence, Henry",TF,R
+House,102,"Pillsbury, Maura H.",MCEA,D
+House,103,"Orenstein, Karin",MCEA,D
+House,104,"Pfeifle, Louis Samuel",MCEA,U
+House,104,"Winslow, R. Melissa",TF,R
+House,105,"Fuller, Susan",TF,R
+House,105,"Graham, Anne Palmer",MCEA,D
+House,106,"Bagshaw, Barbara Anne",MCEA,R
+House,106,"Youngs, Bradley",MCEA,D
+House,107,"Campbell, Joseph A.",MCEA,D
+House,107,"Cooper, Mark C.",MCEA,R
+House,108,"Dearborn, Kelly",TF,R
+House,108,"Terry, Parnell",MCEA,D
+House,109,"Kushnar, Diana",TF,R
+House,109,"Siegel, Seven",MCEA,D
+House,110,"Mitchell, Christina Rue Cork",MCEA,D
+House,110,"Copp, Jason",TF,R
+House,111,"Kuhn, Amy D.",MCEA,D
+House,112,"Chretien, M. Todd",MCEA,D
+House,112,"Mahoney, Sean",MCEA,D
+House,113,"Lookner, Grayson",MCEA,D
+House,114,"Fournier, April D.",TF,D
+House,115,"Zarro, Andrew",TF,D
+House,116,"Zager, Samuel Lewis",MCEA,D
+House,117,"Moonen, Matthew",TF,D
+House,118,"Yusuf, Yusuf",TF,D
+House,119,"Dixon, Michael P.",MCEA,D
+House,119,"Wakem, Jacob Murray",TF,R
+House,120,"Dougherty, Michael",TF,R
+House,120,"Shedlock, Jason J.",TF,D
+House,121,"Cameron, Robert",MCEA,D
+House,121,"Smith, Meagan",MCEA,R
+House,122,"Beck, Matthew",TF,D
+House,123,"Boyer, Michelle N.",MCEA,D
+House,123,"Christy, Annie",TF,R
+House,124,"Doherty, Scott",TF,R
+House,124,"Lindstrom, Mary Shannon",MCEA,U
+House,124,"Nathanson, Eric",MCEA,D
+House,125,"Murphy, Kelly Maureen Noonan",MCEA,D
+House,126,"Gattine, Andrew",TF,D
+House,126,"Mongue, Ethan",TF,R
+House,127,"Rielly, Morgan J.",TF,D
+House,128,"Salisbury, Suzanne M.",MCEA,D
+House,129,"Archer, Marshall",TF,D
+House,130,"Copeland, Lynn Holland",MCEA,D
+House,130,"Davis, Todd Michael",MCEA,U
+House,131,"Blow, Kenneth",TF,U
+House,131,"Kelly, Robert J.",MCEA,D
+House,132,"Fecteau, Ryan",TF,D
+House,133,"Malon, II, Marc G.",TF,D
+House,134,"Daggett, Allen Anthony",TF,U
+House,134,"Gere, Traci",MCEA,D
+House,135,"Craig, Scott",MCEA,U
+House,135,"Phipps, Rachel Mary",MCEA,D
+House,135,"Pratt, Lisa",MCEA,D
+House,136,"Conners, Michelle",MCEA,D
+House,136,"Eder, John",MCEA,R
+House,137,"Tilburg, Charles Edward",MCEA,D
+House,137,"Carlow, Nathan",TF,R
+House,138,"Kinney, Jonathan L.",TF,R
+House,138,"McAvoy, Oliver",MCEA,D
+House,139,"Lepage, Dean",MCEA,D
+House,139,"Newton, Jamie K",TF,R
+House,140,"Parry, Wayne",TF,R
+House,140,"Watson, Kirstan",MCEA,D
+House,141,"Boisse, Marc Anthony",TF,R
+House,141,"Flood Andrews, Rebecca Lynn",MCEA,D
+House,141,"Mongeau, II, David Roland",MCEA,U
+House,141,"Phinney, Jr., Clinton Wesley",MCEA,R
+House,142,"Frohloff, Gordon",TF,R
+House,142,"Hanselmann, Ayn",MCEA,D
+House,143,"Henkelman, III, John Robert",MCEA,D
+House,143,"Small, Eric H.",TF,R
+House,144,"Adams, Jeff",TF,R
+House,144,"Cole, Corrina",MCEA,U
+House,145,"Chase, Caleb Joseph",MCEA,R
+House,145,"Davis, Kristin Tyra",MCEA,D
+House,146,"Moulton, Bradley S.",MCEA,R
+House,146,"Runte, Jr., Walter",MCEA,D
+House,147,"Sargent, Holly Taylor",MCEA,D
+House,148,"Lavigne, Thomas",TF,R
+House,148,"Wheeler, Margaret",TF,D
+House,149,"Cook, Mallory Aaren",MCEA,D
+House,149,"Tahai, Justin Aryan",TF,U
+House,150,"Orestis, Alexandros",MCEA,D
+House,150,"Zimmer, Mark Frederick",MCEA,R
+House,151,"Johnson, Suzanne",TF,R
+House,151,"Mathieson, Kristi M.",MCEA,D
+Senate,1,"Daigle, Lucien JB",MCEA,R
+Senate,1,"Mclaughlin, Vaughn J.",MCEA,D
+Senate,2,"Hull, Harold",TF,D
+Senate,2,"Stewart, III, Harold",MCEA,R
+Senate,3,"Costain, Danny E.",MCEA,R
+Senate,3,"Short, Jr., Stanley",TF,D
+Senate,3,"Stetkis, Joel R.",TF,R
+Senate,4,"Guerin, Joseph Paul",TF,R
+Senate,4,"Kalp, Lisa",MCEA,D
+Senate,4,"Perkins, Chad Richard",TF,R
+Senate,4,"Pierce, Gregory",TF,R
+Senate,4,"Wood, Zachary Anders",MCEA,R
+Senate,5,"Caruso, Elizabeth",MCEA,R
+Senate,5,"Sullebarger, Robert Finch",MCEA,D
+Senate,6,"Dana, Aaron",MCEA,U
+Senate,6,"Davis, Kenneth",MCEA,R
+Senate,6,"Faulkingham, Billy Bob",TF,R
+Senate,7,"Grohoski, Nicole C.",MCEA,D
+Senate,7,"Hewes, Cheryl",MCEA,R
+Senate,8,"Kenney, Leo Christopher",MCEA,R
+Senate,8,"Tipping, Michael",MCEA,D
+Senate,9,"Carey, Stephen",MCEA,U
+Senate,9,"Roeder, Amy J.",MCEA,D
+Senate,10,"Haggan, David G.",MCEA,R
+Senate,10,"O'Connell, Kevin",TF,D
+Senate,11,"Curry, Glenn Chip",MCEA,D
+Senate,11,"Otis, Ryan Christopher",MCEA,R
+Senate,12,"Kallock, Nicole Lynn",TF,U
+Senate,12,"Matlack, Ann Higgins",MCEA,D
+Senate,13,"Mitchell, Edwin M.",MCEA,U
+Senate,13,"Reny, Cameron",MCEA,D
+Senate,14,"Hickman, Craig",TF,D
+Senate,14,"McGee, Steven",TF,R
+Senate,15,"Heath, Amanda Ann",MCEA,D
+Senate,15,"McCormick, Kati L.",MCEA,R
+Senate,16,"Cyrway, Scott W.",MCEA,R
+Senate,16,"Moore, Patric",MCEA,D
+Senate,17,"Keller, Jo-Jean C.",MCEA,D
+Senate,17,"Mason, Richard G.",TF,R
+Senate,18,"Andrews, John",TF,R
+Senate,18,"Bosworth, Elizabeth D.",MCEA,D
+Senate,19,"Martin, Joseph Edward",TF,R
+Senate,19,"Southam,Peter J.",MCEA,D
+Senate,20,"Bickford, Bruce",MCEA,R
+Senate,20,"Scott, Michael R.",MCEA,D
+Senate,21,"Abdi, Mana",TF,D
+Senate,21,"Cox, Shanna",TF,D
+Senate,21,"Soule, Eryn",MCEA,U
+Senate,22,"Burnett, Nathan",MCEA,D
+Senate,22,"Pomerleau, Kimberly J.",MCEA,R
+Senate,23,"Daughtry, Matthea Elizabeth Larsen",TF,D
+Senate,23,"Porter, Bernard Robert",TF,R
+Senate,24,"Tepler, Denise",MCEA,D
+Senate,25,"Pierce, Teresa S.",TF,D
+Senate,25,"Read, James E. Jr.",TF,R
+Senate,26,"Cianchette, Kenneth James",TF,R
+Senate,26,"Nangle, Timothy E.",MCEA,D
+Senate,26,"Violette, Peter G.",MCEA,R
+Senate,27,"Duson, Jill C.",MCEA,D
+Senate,28,"Doyle, Peter Ignatius",TF,R
+Senate,28,"Talbot Ross, Rachel",TF,D
+Senate,29,"Carney, Anne",TF,D
+Senate,29,"Maietta, Vincent",TF,R
+Senate,30,"Sato, Eleanor Y.",MCEA,D
+Senate,30,"Warren, Sophia Bailey",MCEA,D
+Senate,30,"White, Harry",TF,R
+Senate,31,"Bailey, Donna",MCEA,D
+Senate,31,"Grenier, Lauren Marie",MCEA,U
+Senate,31,"Plummer, Garrett",TF,R
+Senate,32,"Ingwersen, Henry L.",MCEA,D
+Senate,32,"Litalien, Jason G.",MCEA,U
+Senate,32,"Schutz, Alfred",TF,R
+Senate,33,"Harrington, Matthew A.",TF,R
+Senate,33,"Vigliotta, Mark H.",MCEA,D
+Senate,34,"Fallon, Jonathan Reed",MCEA,R
+Senate,34,"Sayre, Daniel",MCEA,D
+Senate,35,"Meyer, Michele",MCEA,D
+Senate,35,"Rakic, Julie Nicole",MCEA,R
+Senate,35,"Rykerson, Deane",MCEA,D

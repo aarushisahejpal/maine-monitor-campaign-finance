@@ -22,6 +22,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(SCRIPT_DIR, "..", "data")
 
 RECEIPT_FIELDS = [
+    'transaction_id',
     'candidate_name', 'candidate_id', 'office', 'district', 'party', 'committee_id',
     'contributor_name', 'contributor_city', 'contributor_state', 'contributor_zip',
     'contributor_employer', 'contributor_occupation',
@@ -30,6 +31,7 @@ RECEIPT_FIELDS = [
 ]
 
 DISBURSEMENT_FIELDS = [
+    'transaction_id',
     'candidate_name', 'candidate_id', 'office', 'district', 'party', 'committee_id',
     'recipient_name', 'recipient_city', 'recipient_state', 'recipient_zip',
     'disbursement_description', 'disbursement_purpose_category',
@@ -59,6 +61,7 @@ def save_checkpoint(path, data):
 
 def row_from_receipt(cand, r):
     return {
+        'transaction_id': r.get('transaction_id', ''),
         'candidate_name': cand['name'],
         'candidate_id': cand['candidate_id'],
         'office': cand['office'],
@@ -81,6 +84,7 @@ def row_from_receipt(cand, r):
 
 def row_from_disbursement(cand, r):
     return {
+        'transaction_id': r.get('transaction_id', ''),
         'candidate_name': cand['name'],
         'candidate_id': cand['candidate_id'],
         'office': cand['office'],
@@ -155,6 +159,7 @@ def pull(cycle, schedule):
             writer.writeheader()
 
         total_rows = 0
+        seen_txn_ids = set()
         for comm_id, cand in remaining.items():
             print(f"\n  {cand['name']} ({comm_id})...", end='', flush=True)
 
@@ -188,9 +193,13 @@ def pull(cycle, schedule):
                     break
 
                 for r in results:
+                    txn_id = r.get('transaction_id', '')
+                    if txn_id and txn_id in seen_txn_ids:
+                        continue
+                    if txn_id:
+                        seen_txn_ids.add(txn_id)
                     writer.writerow(cfg['row_fn'](cand, r))
-
-                cand_rows += len(results)
+                    cand_rows += 1
 
                 pagination = data.get('pagination', {})
                 last_index = pagination.get('last_indexes', {}).get('last_index')

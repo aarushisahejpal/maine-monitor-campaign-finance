@@ -181,7 +181,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 28px 36px;
         }
-        .donor-card {}
+        .donor-card { min-width: 0; overflow: hidden; }
         .donor-card-header {
             display: flex;
             justify-content: space-between;
@@ -309,9 +309,10 @@ function loadCSV(file) {
 }
 
 async function loadData() {
-    const [totalsRaw, donorsRaw] = await Promise.all([
+    const [totalsRaw, donorsRaw, smallRaw] = await Promise.all([
         loadCSV('maine_total_contributions_by_filer.csv'),
-        loadCSV('maine_top_5contributors_by_filer.csv')
+        loadCSV('maine_top_5contributors_by_filer.csv'),
+        loadCSV('maine_small_dollar_by_filer.csv')
     ]);
 
     const TOTALS = totalsRaw
@@ -323,18 +324,23 @@ async function loadData() {
         .filter(r => r.race === RACE_FILTER)
         .map(r => ({c: r.display_name || r.candidate, e: r.entity, a: parseFloat(r.total_contributed)}));
 
-    return { TOTALS, DONORS };
+    const SMALL = {};
+    smallRaw.filter(r => r.race === RACE_FILTER).forEach(r => {
+        SMALL[r.display_name || r.candidate] = parseFloat(r.small_dollar_total);
+    });
+
+    return { TOTALS, DONORS, SMALL };
 }
 
 // Load and render
-loadData().then(({ TOTALS, DONORS }) => {
-    render(TOTALS, DONORS);
+loadData().then(({ TOTALS, DONORS, SMALL }) => {
+    render(TOTALS, DONORS, SMALL);
 }).catch(err => {
     console.error('Failed to load data:', err);
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data. Check console.</p>';
 });
 
-function render(TOTALS, DONORS) {
+function render(TOTALS, DONORS, SMALL) {
 
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
@@ -365,7 +371,8 @@ PARTY_ORDER.forEach(party => {
     if (!byParty[party]) return;
     const g = document.createElement('div');
     g.className = 'party-group ' + party.toLowerCase();
-    g.innerHTML = `<div class="party-heading">${party}s</div>`;
+    const partyLabel = party === 'Democratic' ? 'Democrat' : party;
+    g.innerHTML = `<div class="party-heading">${partyLabel}</div>`;
     byParty[party].forEach(d => {
         const c = document.createElement('div');
         c.className = 'cand';
@@ -438,7 +445,7 @@ bars.on('mouseenter', function(evt, d) {
     const rank = chartData.indexOf(d) + 1;
     const donors = DONORS.filter(x => x.c === d.c);
     let html = `<div class="tip-name">${d.c}</div>
-        <div class="tip-party">${d.p}</div>
+        <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
     if (donors.length) {
@@ -460,13 +467,17 @@ bars.on('mouseenter', function(evt, d) {
 const total = TOTALS.reduce((a, b) => a + b.t, 0);
 document.getElementById('chartTotal').textContent = 'Total raised across all candidates: ' + fmt(total);
 
-// ─── TOP DONORS ───
+// ─── TOP DONORS (scrollable tables) ───
 const donorsEl = document.getElementById('donors');
 const topCands = TOTALS.slice(0, 8);
 
 topCands.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
     if (!cd.length) return;
+
+    const smallAmt = SMALL[cand.c];
+    // Show all donors (up to 25 for ties), not just 5
+    const namedDonors = cd.slice(0, 25);
 
     const card = document.createElement('div');
     card.className = 'donor-card';
@@ -476,12 +487,33 @@ topCands.forEach(cand => {
             <span class="donor-card-total">${fmt(cand.t)} total</span>
         </div>`;
 
-    cd.forEach((d, i) => {
+    // Small-dollar highlight
+    if (smallAmt) {
+        const sd = document.createElement('div');
+        sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:700;">${fmt(smallAmt)}</span>`;
+        card.appendChild(sd);
+    }
+
+    // Top donors header
+    if (namedDonors.length) {
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
+        hdr.textContent = 'Top Individual Donors';
+        card.appendChild(hdr);
+    }
+
+    // Scrollable container
+    const scrollWrap = document.createElement('div');
+    scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
+
+    namedDonors.forEach((d, i) => {
         const row = document.createElement('div');
         row.className = 'd-row';
         row.innerHTML = `<span class="d-rank">${i + 1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
-        card.appendChild(row);
+        scrollWrap.appendChild(row);
     });
+    card.appendChild(scrollWrap);
     donorsEl.appendChild(card);
 });
 } // end render()

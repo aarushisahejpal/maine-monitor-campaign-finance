@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Finances: U.S. Senate — The Maine Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        :root {
+            --blue: #2c6fbb; --red: #c0392b; --gray: #6b6b6b; --purple: #8e44ad;
+            --accent: #8989f1; --text: #1a1a1a; --text-secondary: #666;
+            --text-muted: #999; --border: #e5e5e5; --bg-hover: #fafafc;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--text); background: #fff; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 780px; margin: 0 auto; padding: 0 20px 80px; }
+
+        .page-header { padding: 56px 0 24px; text-align: center; }
+        .page-header .kicker { font-size: 0.7em; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 12px; }
+        .page-header h1 { font-family: 'Lora', Georgia, serif; font-size: 2.4em; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+        .page-header .dek { font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 1.05em; color: var(--text-secondary); margin-top: 12px; max-width: 560px; margin-left: auto; margin-right: auto; }
+        .header-rule { width: 60px; height: 3px; background: var(--accent); margin: 28px auto 0; border: none; }
+
+        .section { margin-top: 48px; }
+        .section-label { font-size: 0.65em; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); }
+        .section-title { font-family: 'Lora', Georgia, serif; font-size: 1.35em; font-weight: 600; margin-top: 4px; margin-bottom: 20px; }
+
+        .party-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px; }
+        .party-heading { font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding-bottom: 8px; margin-bottom: 4px; }
+        .party-group.republican .party-heading { color: var(--red); border-bottom: 2px solid var(--red); }
+        .party-group.democrat .party-heading { color: var(--blue); border-bottom: 2px solid var(--blue); }
+        .party-group.independent .party-heading { color: var(--purple); border-bottom: 2px solid var(--purple); }
+        .party-group.other .party-heading { color: var(--gray); border-bottom: 2px solid var(--gray); }
+        .cand { padding: 8px 10px; border-radius: 4px; transition: background 0.12s; }
+        .cand:hover { background: var(--bg-hover); }
+        .cand-name { font-weight: 600; font-size: 0.88em; text-transform: capitalize; }
+        .cand-meta { font-size: 0.75em; color: var(--text-muted); }
+
+        .chart-svg { width: 100%; overflow: visible; }
+        .chart-svg text { font-family: 'Inter', sans-serif; }
+        .chart-svg .bar { transition: opacity 0.15s; }
+        .chart-svg.has-hover .bar { opacity: 0.35; }
+        .chart-svg.has-hover .bar.active { opacity: 1; }
+        .chart-svg .label { fill: var(--text); font-size: 13px; font-weight: 500; }
+        .chart-svg .value { fill: var(--text-secondary); font-size: 12px; font-weight: 600; }
+        .chart-total { text-align: right; font-family: 'Lora', Georgia, serif; font-size: 1em; color: var(--text-muted); margin-top: 8px; }
+
+        .tip { position: fixed; pointer-events: none; z-index: 9999; background: var(--text); color: #fff; border-radius: 8px; padding: 14px 18px; font-size: 0.8em; line-height: 1.55; max-width: 300px; box-shadow: 0 8px 30px rgba(0,0,0,0.18); opacity: 0; transform: translateY(4px); transition: opacity 0.12s, transform 0.12s; }
+        .tip.on { opacity: 1; transform: translateY(0); }
+        .tip-name { font-weight: 700; font-size: 1.05em; text-transform: capitalize; }
+        .tip-party { font-size: 0.85em; opacity: 0.6; margin-bottom: 6px; }
+        .tip-total { font-size: 1.2em; font-weight: 700; }
+        .tip-divider { border: none; border-top: 1px solid rgba(255,255,255,0.15); margin: 8px 0; }
+        .tip-donor-row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+        .tip-donor-name { opacity: 0.75; }
+        .tip-donor-amt { font-weight: 600; white-space: nowrap; }
+        .tip-header { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 4px; }
+
+        .donors-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 36px; }
+        .donor-card { min-width: 0; overflow: hidden; }
+        .donor-card-header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 2px; }
+        .donor-card-name { font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 0.95em; text-transform: capitalize; }
+        .donor-card-total { font-size: 0.75em; color: var(--text-muted); }
+        .d-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; border-radius: 3px; transition: background 0.1s; gap: 8px; }
+        .d-row:hover { background: var(--bg-hover); }
+        .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 600; min-width: 18px; }
+        .d-name { flex: 1; font-size: 0.85em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .d-amt { font-size: 0.85em; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+        /* ── BREAKDOWN CHARTS ── */
+        .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 48px; }
+        .breakdown-card { margin-bottom: 8px; }
+        .breakdown-card h4 { font-family: 'Lora', Georgia, serif; font-size: 0.95em; font-weight: 600; text-transform: capitalize; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+        .breakdown-bar { display: flex; align-items: center; margin-bottom: 10px; }
+        .breakdown-label { width: 110px; min-width: 110px; font-size: 0.75em; color: var(--text-secondary); text-align: right; padding-right: 10px; line-height: 1.3; }
+        .breakdown-track { flex: 1; height: 20px; position: relative; margin-right: 70px; }
+        .breakdown-fill { height: 100%; border-radius: 2px; }
+        .breakdown-val { position: absolute; right: -70px; top: 50%; transform: translateY(-50%); font-size: 0.75em; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+
+        /* ── FILINGS ── */
+        .filings-list { }
+        .filing-candidate { margin-bottom: 28px; }
+        .filing-candidate-header {
+            font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 0.95em;
+            text-transform: capitalize; padding-bottom: 6px; border-bottom: 2px solid var(--text);
+            margin-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; cursor: pointer;
+        }
+        .filing-candidate-header:hover { color: var(--accent); }
+        .filing-candidate-header .toggle { font-size: 0.75em; color: var(--text-muted); }
+        .filing-rows { }
+        .filing-rows.collapsed { display: none; }
+        .filing-row {
+            display: grid; grid-template-columns: 1fr 140px 100px 100px 100px 40px;
+            gap: 8px; padding: 8px; border-bottom: 1px solid #f0f0f0; font-size: 0.8em;
+            align-items: center; transition: background 0.1s;
+        }
+        .filing-row:hover { background: var(--bg-hover); }
+        .filing-row .f-title { font-weight: 500; }
+        .filing-row .f-period { color: var(--text-secondary); font-size: 0.9em; }
+        .filing-row .f-num { text-align: right; font-variant-numeric: tabular-nums; }
+        .filing-row .f-pdf a {
+            color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95em;
+        }
+        .filing-row .f-pdf a:hover { text-decoration: underline; }
+        .filing-header {
+            display: grid; grid-template-columns: 1fr 140px 100px 100px 100px 40px;
+            gap: 8px; padding: 6px 8px; font-size: 0.65em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        .filing-header .f-num { text-align: right; }
+        @media (max-width: 600px) {
+            .filing-row, .filing-header { grid-template-columns: 1fr 1fr; }
+            .filing-row .f-period, .filing-header .f-period { display: none; }
+        }
+
+        .page-footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.72em; color: var(--text-muted); line-height: 1.7; }
+        .page-footer strong { font-weight: 600; color: var(--text-secondary); }
+
+        @media (max-width: 600px) {
+            .page-header h1 { font-size: 1.7em; }
+            .party-columns { grid-template-columns: 1fr; }
+            .donors-grid { grid-template-columns: 1fr; }
+            .breakdown-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="page-header">
+        <div class="kicker">2026 Maine Elections &middot; Federal</div>
+        <h1>U.S. Senate Race</h1>
+        <p class="dek">Tracking campaign contributions and expenditures for Maine's 2026 U.S. Senate election.</p>
+        <hr class="header-rule">
+    </header>
+
+    <section class="section">
+        <div class="section-label">The Field</div>
+        <h2 class="section-title">Declared Candidates</h2>
+        <div class="party-columns" id="candidates"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Money Raised</div>
+        <h2 class="section-title">Total Contributions by Candidate</h2>
+        <div id="chartContributions"></div>
+        <div class="chart-total" id="contribTotal"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Follow the Money</div>
+        <h2 class="section-title">Top Donors</h2>
+        <div class="donors-grid" id="donors"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Contribution Breakdown</div>
+        <h2 class="section-title">By Source</h2>
+        <div class="breakdown-grid" id="bySource"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Contribution Breakdown</div>
+        <h2 class="section-title">By Geography</h2>
+        <div class="breakdown-grid" id="byState"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Money Spent</div>
+        <h2 class="section-title">Total Expenditures by Candidate</h2>
+        <div id="chartExpenditures"></div>
+        <div class="chart-total" id="expTotal"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Where The Money Goes</div>
+        <h2 class="section-title">Top Payees</h2>
+        <div class="donors-grid" id="payees"></div>
+    </section>
+
+    <footer class="page-footer">
+        <strong>Source:</strong> Federal Election Commission (FEC). Processed data for the 2026 election cycle.<br>
+        <strong>Last updated:</strong> April 2026. Federal data is refreshed quarterly.
+    </footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const PARTY_COLORS = {
+    'REPUBLICAN PARTY':'#c0392b', 'DEMOCRATIC PARTY':'#2c6fbb',
+    'INDEPENDENT':'#8e44ad', 'INDEPENDENT PARTY':'#8e44ad',
+    'UNAFFILIATED':'#6b6b6b', '':'#6b6b6b'
+};
+const PARTY_LABELS = {
+    'REPUBLICAN PARTY':'Republican', 'DEMOCRATIC PARTY':'Democrat',
+    'INDEPENDENT':'Independent', 'INDEPENDENT PARTY':'Independent',
+    'UNAFFILIATED':'Unenrolled', '':'Other'
+};
+const PARTY_ORDER = ['DEMOCRATIC PARTY','REPUBLICAN PARTY','INDEPENDENT','INDEPENDENT PARTY','UNAFFILIATED'];
+const SOURCE_COLORS = { Individual:'#2c6fbb', 'PAC/Committee':'#e67e22', 'Party Committee':'#27ae60', Other:'#999', 'Candidate/Self':'#8e44ad' };
+const GEO_COLORS = { 'In State':'#2c6fbb', 'Out of State':'#c0392b', Unknown:'#999' };
+
+const BASE = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/viz/data/clean/';
+const OFFICE = 'Senate';
+
+function loadCSV(f) {
+    return new Promise((res, rej) => {
+        Papa.parse(BASE + f, { download:true, header:true, skipEmptyLines:true, complete: r => res(r.data), error: rej });
+    });
+}
+
+async function loadData() {
+    const [tot, don, src, geo, exp, pay] = await Promise.all([
+        loadCSV('total_contributions_by_federal_candidate.csv'),
+        loadCSV('top_5contributors_by_federal_candidate.csv'),
+        loadCSV('contributions_by_source_federal.csv'),
+        loadCSV('contributions_by_state_federal.csv'),
+        loadCSV('total_expenditures_by_federal_candidate.csv'),
+        loadCSV('top_5payees_by_federal_candidate.csv')
+    ]);
+    const f = r => r.office === OFFICE;
+    return {
+        TOTALS: tot.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_con})).sort((a,b)=>b.t-a.t),
+        DONORS: don.filter(f).map(r => ({c:r.candidate_name, e:r.contributor_name, a:+r.contribution_amount})),
+        BY_SOURCE: src.filter(f).map(r => ({c:r.candidate_name, s:r.source_type, t:+r.total})),
+        BY_STATE: geo.filter(f).map(r => ({c:r.candidate_name, g:r.geo, t:+r.total})),
+        EXP_TOTALS: exp.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_exp})).sort((a,b)=>b.t-a.t),
+        TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid}))
+    };
+}
+
+loadData().then(d => render(d)).catch(e => {
+    console.error(e);
+    document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
+});
+
+function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES }) {
+
+const fmt = n => '$' + Math.round(n).toLocaleString();
+const tip = document.getElementById('tip');
+function showTip(evt, html) { tip.innerHTML = html; tip.classList.add('on'); moveTip(evt); }
+function moveTip(evt) {
+    const pad=16; let x=evt.clientX+pad, y=evt.clientY+pad;
+    const r=tip.getBoundingClientRect();
+    if(x+r.width>window.innerWidth-pad) x=evt.clientX-r.width-pad;
+    if(y+r.height>window.innerHeight-pad) y=evt.clientY-r.height-pad;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+function hideTip() { tip.classList.remove('on'); }
+
+function titleCase(s) {
+    // Flip "LAST, FIRST MIDDLE" to "First Middle Last"
+    if (s.includes(',')) {
+        const parts = s.split(',', 2);
+        s = parts[1].trim() + ' ' + parts[0].trim();
+    }
+    return s.replace(/\b\w+/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase())
+            .replace(/\bIii\b/g, 'III').replace(/\bIi\b/g, 'II').replace(/\bIv\b/g, 'IV')
+            .replace(/\bJr\b/g, 'Jr.').replace(/\bSr\b/g, 'Sr.');
+}
+
+// ── CANDIDATES ──
+const byParty = {};
+TOTALS.forEach(d => { (byParty[d.p] ??= []).push(d); });
+const cEl = document.getElementById('candidates');
+PARTY_ORDER.forEach(party => {
+    if (!byParty[party]) return;
+    const cls = (PARTY_LABELS[party] || 'other').toLowerCase();
+    const g = document.createElement('div');
+    g.className = 'party-group ' + cls;
+    g.innerHTML = `<div class="party-heading">${PARTY_LABELS[party] || party}</div>`;
+    byParty[party].forEach(d => {
+        const c = document.createElement('div');
+        c.className = 'cand';
+        c.innerHTML = `<div class="cand-name">${titleCase(d.c)}</div><div class="cand-meta">${fmt(d.t)} raised</div>`;
+        g.appendChild(c);
+    });
+    cEl.appendChild(g);
+});
+
+// ── HELPER: build horizontal bar chart ──
+function buildChart(containerId, data, totalId) {
+    const chartData = data.filter(d => d.t >= 10000);
+    if (!chartData.length) return;
+    const margin = { top: 4, right: 110, bottom: 4, left: 200 };
+    const barH = 30, barGap = 6;
+    const width = 780;
+    const height = chartData.length * (barH + barGap) + margin.top + margin.bottom;
+    const svg = d3.select('#' + containerId).append('svg').attr('class','chart-svg')
+        .attr('viewBox', `0 0 ${width} ${height}`).attr('preserveAspectRatio','xMidYMid meet');
+    const x = d3.scaleLinear().domain([0, d3.max(chartData, d=>d.t)]).range([margin.left, width-margin.right]);
+    const y = d3.scaleBand().domain(chartData.map(d=>d.c)).range([margin.top, height-margin.bottom]).padding(0.15);
+    const bars = svg.selectAll('.bar-g').data(chartData).join('g').attr('class','bar-g');
+    bars.append('rect').attr('class','bar').attr('x',margin.left).attr('y',d=>y(d.c)).attr('width',0)
+        .attr('height',y.bandwidth()).attr('rx',2).attr('fill',d=>PARTY_COLORS[d.p]||'#999')
+        .transition().duration(700).delay((d,i)=>i*40).attr('width',d=>x(d.t)-margin.left);
+    bars.append('text').attr('class','label').attr('x',margin.left-10).attr('y',d=>y(d.c)+y.bandwidth()/2)
+        .attr('dy','0.35em').attr('text-anchor','end').text(d=>titleCase(d.c));
+    bars.append('text').attr('class','value').attr('x',d=>x(d.t)+8).attr('y',d=>y(d.c)+y.bandwidth()/2)
+        .attr('dy','0.35em').text(d=>fmt(d.t)).style('opacity',0)
+        .transition().duration(400).delay((d,i)=>i*40+500).style('opacity',1);
+    bars.on('mouseenter', function(evt,d) {
+        svg.classed('has-hover',true); d3.select(this).select('.bar').classed('active',true);
+        showTip(evt, `<div class="tip-name">${titleCase(d.c)}</div><div class="tip-party">${PARTY_LABELS[d.p]||d.p}</div><div class="tip-total">${fmt(d.t)}</div>`);
+    }).on('mousemove',moveTip).on('mouseleave', function() {
+        svg.classed('has-hover',false); d3.select(this).select('.bar').classed('active',false); hideTip();
+    });
+    if (totalId) {
+        const total = data.reduce((a,b)=>a+b.t,0);
+        document.getElementById(totalId).textContent = 'Total: ' + fmt(total);
+    }
+}
+
+// ── CONTRIBUTIONS CHART ──
+buildChart('chartContributions', TOTALS, 'contribTotal');
+
+// ── TOP DONORS ──
+function buildDonorGrid(containerId, data, totals, topN) {
+    const el = document.getElementById(containerId);
+    totals.slice(0, topN).forEach(cand => {
+        const cd = data.filter(d => d.c === cand.c).slice(0, 5);
+        if (!cd.length) return;
+        const card = document.createElement('div');
+        card.className = 'donor-card';
+        card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name">${titleCase(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
+        cd.forEach((d, i) => {
+            const row = document.createElement('div');
+            row.className = 'd-row';
+            row.innerHTML = `<span class="d-rank">${i+1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
+            card.appendChild(row);
+        });
+        el.appendChild(card);
+    });
+}
+buildDonorGrid('donors', DONORS, TOTALS, 6);
+
+// ── BREAKDOWN HELPER ──
+function buildBreakdown(containerId, data, totals, colorMap, topN) {
+    const el = document.getElementById(containerId);
+    totals.slice(0, topN).forEach(cand => {
+        const cd = data.filter(d => d.c === cand.c).sort((a,b) => b.t - a.t);
+        if (!cd.length) return;
+        const maxVal = d3.max(cd, d => d.t);
+        const card = document.createElement('div');
+        card.className = 'breakdown-card';
+        card.innerHTML = `<h4>${titleCase(cand.c)}</h4>`;
+        cd.forEach(d => {
+            const pct = maxVal > 0 ? (d.t / maxVal * 100) : 0;
+            const label = d.s || d.g;
+            const color = colorMap[label] || '#999';
+            const row = document.createElement('div');
+            row.className = 'breakdown-bar';
+            row.innerHTML = `<div class="breakdown-label">${label}</div><div class="breakdown-track"><div class="breakdown-fill" style="width:${pct}%;background:${color}"></div><span class="breakdown-val">${fmt(d.t)}</span></div>`;
+            card.appendChild(row);
+        });
+        el.appendChild(card);
+    });
+}
+
+// ── BY SOURCE ──
+buildBreakdown('bySource', BY_SOURCE, TOTALS, SOURCE_COLORS, 6);
+
+// ── BY STATE ──
+buildBreakdown('byState', BY_STATE, TOTALS, GEO_COLORS, 6);
+
+// ── EXPENDITURES CHART ──
+buildChart('chartExpenditures', EXP_TOTALS, 'expTotal');
+
+// ── TOP PAYEES ──
+buildDonorGrid('payees', TOP_PAYEES, EXP_TOTALS, 6);
+
+} // end render
+</script>
+</body>
+</html>
