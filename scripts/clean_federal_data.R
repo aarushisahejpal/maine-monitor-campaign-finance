@@ -27,6 +27,7 @@ cand_by_source <- fed_df %>%
       str_detect(line_number_label, "(?i)individual") ~ "Individual",
       str_detect(line_number_label, "(?i)party") ~ "Party Committee",
       str_detect(line_number_label, "(?i)other.*committee|PAC") ~ "PAC/Committee",
+      str_detect(line_number_label, "(?i)transfer") ~ "Transfers (Own Committees)",
       str_detect(line_number_label, "(?i)candidate") ~ "Candidate/Self",
       TRUE ~ "Other"
     )

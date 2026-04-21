@@ -1,9 +1,10 @@
 "candidate_name","office","district","source_type","total"
 "CALABRESE, CARMEM VINCENT MR.","Senate","00","Individual",17759.71
-"COLLINS, SUSAN M.","Senate","00","Other",5239956.84
+"COLLINS, SUSAN M.","Senate","00","Transfers (Own Committees)",5185035.02
 "COLLINS, SUSAN M.","Senate","00","Individual",3997671.37
 "COLLINS, SUSAN M.","Senate","00","PAC/Committee",536550
 "COLLINS, SUSAN M.","Senate","00","Party Committee",62000
+"COLLINS, SUSAN M.","Senate","00","Other",54921.82
 "COSTELLO, DAVID","Senate","00","Candidate/Self",82930.68
 "COSTELLO, DAVID","Senate","00","Individual",5959.7
 "DUNLAP, MATT","House","02","Individual",339655
@@ -13,16 +14,17 @@
 "FAVREAU, TUCKER","Senate","00","Candidate/Self",8670.25
 "FAVREAU, TUCKER","Senate","00","Individual",642.77
 "GOLDEN, JARED","House","02","Individual",1852100.31
-"GOLDEN, JARED","House","02","Other",396070.51
+"GOLDEN, JARED","House","02","Transfers (Own Committees)",373060.15
 "GOLDEN, JARED","House","02","PAC/Committee",311500
+"GOLDEN, JARED","House","02","Other",23010.36
 "GOLDEN, JARED","House","02","Party Committee",547.83
 "KLEBAN, DAN","Senate","00","Candidate/Self",214666.84
 "KLEBAN, DAN","Senate","00","Individual",195950
 "LEPAGE, PAUL","House","02","Individual",1353562.62
 "LEPAGE, PAUL","House","02","PAC/Committee",59428.25
-"LEPAGE, PAUL","House","02","Other",34854.17
+"LEPAGE, PAUL","House","02","Transfers (Own Committees)",34854.17
 "MILLS, JANET TRAFTON","Senate","00","Individual",1671991.71
-"MILLS, JANET TRAFTON","Senate","00","Other",107499
+"MILLS, JANET TRAFTON","Senate","00","Transfers (Own Committees)",107499
 "MILLS, JANET TRAFTON","Senate","00","PAC/Committee",73500
 "PIETROWICZ, JOSHUA JAMES","House","01","Candidate/Self",500
 "PINGREE, CHELLIE M","House","01","PAC/Committee",148050
