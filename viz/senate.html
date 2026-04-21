@@ -213,22 +213,26 @@ function loadCSV(f) {
 }
 
 async function loadData() {
-    const [tot, don, src, geo, exp, pay] = await Promise.all([
+    const [tot, don, src, geo, exp, pay, sm] = await Promise.all([
         loadCSV('total_contributions_by_federal_candidate.csv'),
         loadCSV('top_5contributors_by_federal_candidate.csv'),
         loadCSV('contributions_by_source_federal.csv'),
         loadCSV('contributions_by_state_federal.csv'),
         loadCSV('total_expenditures_by_federal_candidate.csv'),
-        loadCSV('top_5payees_by_federal_candidate.csv')
+        loadCSV('top_5payees_by_federal_candidate.csv'),
+        loadCSV('small_dollar_by_federal_candidate.csv')
     ]);
     const f = r => r.office === OFFICE;
+    const SMALL = {};
+    sm.filter(f).forEach(r => { SMALL[r.candidate_name] = +r.small_dollar_total; });
     return {
         TOTALS: tot.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_con})).sort((a,b)=>b.t-a.t),
         DONORS: don.filter(f).map(r => ({c:r.candidate_name, e:r.contributor_name, a:+r.contribution_amount})),
         BY_SOURCE: src.filter(f).map(r => ({c:r.candidate_name, s:r.source_type, t:+r.total})),
         BY_STATE: geo.filter(f).map(r => ({c:r.candidate_name, g:r.geo, t:+r.total})),
         EXP_TOTALS: exp.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_exp})).sort((a,b)=>b.t-a.t),
-        TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid}))
+        TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid})),
+        SMALL
     };
 }
 
@@ -237,7 +241,7 @@ loadData().then(d => render(d)).catch(e => {
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
 });
 
-function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES }) {
+function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES, SMALL }) {
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const tip = document.getElementById('tip');
@@ -325,16 +329,36 @@ function buildChart(containerId, data, totalId) {
 buildChart('chartContributions', TOTALS, 'contribTotal');
 
 // ── TOP DONORS ──
-function buildDonorGrid(containerId, data, totals, topN) {
+function buildDonorGrid(containerId, data, totals, topN, smallData) {
     const el = document.getElementById(containerId);
     totals.slice(0, topN).forEach(cand => {
         let cd = data.filter(d => d.c === cand.c);
         let filtered = cd.filter(d => d.a >= 3000);
         cd = filtered.length ? filtered.slice(0, 25) : cd.slice(0, 5);
         if (!cd.length) return;
+
         const card = document.createElement('div');
         card.className = 'donor-card';
         card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name">${displayName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
+
+        // Small-dollar highlight
+        const smallAmt = smallData ? smallData[cand.c] : null;
+        if (smallAmt) {
+            const sd = document.createElement('div');
+            sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+            sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:700;">${fmt(smallAmt)}</span>`;
+            card.appendChild(sd);
+        }
+
+        // Top donors header
+        if (cd.length) {
+            const hdr = document.createElement('div');
+            hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
+            hdr.textContent = 'Top Individual Donors';
+            card.appendChild(hdr);
+        }
+
+        // Scrollable container
         const scrollWrap = document.createElement('div');
         scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
         cd.forEach((d, i) => {
@@ -347,7 +371,7 @@ function buildDonorGrid(containerId, data, totals, topN) {
         el.appendChild(card);
     });
 }
-buildDonorGrid('donors', DONORS, TOTALS, 6);
+buildDonorGrid('donors', DONORS, TOTALS, 6, SMALL);
 
 // ── BREAKDOWN HELPER ──
 function buildBreakdown(containerId, data, totals, colorMap, topN) {

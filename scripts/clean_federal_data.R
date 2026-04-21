@@ -50,6 +50,12 @@ cand_by_state <- fed_df %>%
   arrange(candidate_name, -total)
 
 
+# Small-dollar totals (contributions of $50 or less) per candidate
+small_dollar_federal <- fed_df %>%
+  filter(contribution_receipt_amount > 0 & contribution_receipt_amount <= 50) %>%
+  group_by(candidate_name, office, district, party) %>%
+  summarise(small_dollar_total = sum(contribution_receipt_amount, na.rm = TRUE), .groups = "drop")
+
 # ── EXPENDITURES (disbursements) ──
 fed_exp <- read_csv("data/federal_2026/expenditures.csv")
 
@@ -90,3 +96,4 @@ write.csv(cand_by_state, file = "viz/data/clean/contributions_by_state_federal.c
 write.csv(cand_exp_sum, file = "viz/data/clean/total_expenditures_by_federal_candidate.csv", row.names = FALSE)
 write.csv(cand_top5_payees, file = "viz/data/clean/top_5payees_by_federal_candidate.csv", row.names = FALSE)
 write.csv(cand_exp_by_purpose, file = "viz/data/clean/expenditures_by_purpose_federal.csv", row.names = FALSE)
+write.csv(small_dollar_federal, file = "viz/data/clean/small_dollar_by_federal_candidate.csv", row.names = FALSE)
