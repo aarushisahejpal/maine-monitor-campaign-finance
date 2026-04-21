@@ -77,20 +77,53 @@
 
         /* ── SECTIONS ── */
         .section { margin-top: 48px; }
-        .section-label {
-            font-size: 0.65em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent);
+
+        /* ── TIER 1: BANNERS ── */
+        .section-banner {
+            display: inline-flex;
+            align-items: stretch;
+            margin-bottom: 24px;
         }
-        .section-title {
+        .banner-icon {
+            background: #1e4d6e;
+            color: #fff;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .banner-text {
+            background: #3a7cb8;
+            color: #fff;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            padding: 10px 28px 10px 14px;
+            position: relative;
+        }
+        .banner-text::after {
+            content: '';
+            position: absolute;
+            right: -18px;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-top: 20px solid #3a7cb8;
+            border-bottom: 20px solid #3a7cb8;
+            border-right: 18px solid transparent;
+        }
+
+        /* ── TIER 2: SUB-SECTION TITLES ── */
+        .sub-section-title {
             font-family: 'Lora', Georgia, serif;
-            font-size: 1.35em;
+            font-size: 1.3em;
             font-weight: 600;
             color: var(--text);
-            margin-top: 4px;
             margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #3a7cb8;
         }
 
         /* ── CANDIDATES ── */
@@ -261,22 +294,28 @@
         <hr class="header-rule">
     </header>
 
+    <!-- TIER 1: Candidates -->
     <section class="section">
-        <div class="section-label">The Field</div>
-        <h2 class="section-title">Declared Candidates</h2>
+        <div class="section-banner">
+            <div class="banner-icon">&#x1F465;</div>
+            <div class="banner-text">Candidates</div>
+        </div>
         <div class="party-columns" id="candidates"></div>
     </section>
 
+    <!-- TIER 1: Contributions -->
     <section class="section">
-        <div class="section-label">Money Raised</div>
-        <h2 class="section-title">Total Contributions by Candidate</h2>
+        <div class="section-banner">
+            <div class="banner-icon">&#x1F4CA;</div>
+            <div class="banner-text">Contributions</div>
+        </div>
         <div id="chartContainer"></div>
         <div class="chart-total" id="chartTotal"></div>
     </section>
 
+    <!-- TIER 2: Top Donors -->
     <section class="section">
-        <div class="section-label">Follow the Money</div>
-        <h2 class="section-title">Top Donors</h2>
+        <h2 class="sub-section-title">Top Donors</h2>
         <div class="donors-grid" id="donors"></div>
     </section>
 

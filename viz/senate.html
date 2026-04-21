@@ -25,8 +25,54 @@
         .header-rule { width: 60px; height: 3px; background: var(--accent); margin: 28px auto 0; border: none; }
 
         .section { margin-top: 48px; }
-        .section-label { font-size: 0.65em; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); }
-        .section-title { font-family: 'Lora', Georgia, serif; font-size: 1.35em; font-weight: 600; margin-top: 4px; margin-bottom: 20px; }
+
+        /* ── TIER 1: BANNERS (high-level sections) ── */
+        .section-banner {
+            display: inline-flex;
+            align-items: stretch;
+            margin-bottom: 24px;
+        }
+        .banner-icon {
+            background: #1e4d6e;
+            color: #fff;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .banner-text {
+            background: #3a7cb8;
+            color: #fff;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            padding: 10px 28px 10px 14px;
+            position: relative;
+        }
+        .banner-text::after {
+            content: '';
+            position: absolute;
+            right: -18px;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-top: 20px solid #3a7cb8;
+            border-bottom: 20px solid #3a7cb8;
+            border-right: 18px solid transparent;
+        }
+
+        /* ── TIER 2: SUB-SECTION TITLES (granular sections) ── */
+        .sub-section-title {
+            font-family: 'Lora', Georgia, serif;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #3a7cb8;
+        }
 
         .party-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px; }
         .party-heading { font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding-bottom: 8px; margin-bottom: 4px; }
@@ -123,53 +169,62 @@
         <hr class="header-rule">
     </header>
 
+    <!-- TIER 1: Candidates -->
     <section class="section">
-        <div class="section-label">The Field</div>
-        <h2 class="section-title">Declared Candidates</h2>
+        <div class="section-banner">
+            <div class="banner-icon">&#x1F465;</div>
+            <div class="banner-text">Candidates</div>
+        </div>
         <div class="party-columns" id="candidates"></div>
     </section>
 
+    <!-- TIER 1: Contributions -->
     <section class="section">
-        <div class="section-label">Money Raised</div>
-        <h2 class="section-title">Total Contributions by Candidate</h2>
+        <div class="section-banner">
+            <div class="banner-icon">&#x1F4CA;</div>
+            <div class="banner-text">Contributions</div>
+        </div>
         <div id="chartContributions"></div>
         <div class="chart-total" id="contribTotal"></div>
     </section>
 
+    <!-- TIER 2: Top Donors -->
     <section class="section">
-        <div class="section-label">Follow the Money</div>
-        <h2 class="section-title">Top Donors</h2>
+        <h2 class="sub-section-title">Top Donors</h2>
         <div class="donors-grid" id="donors"></div>
     </section>
 
+    <!-- TIER 2: By Source -->
     <section class="section">
-        <div class="section-label">Contribution Breakdown</div>
-        <h2 class="section-title">By Source</h2>
+        <h2 class="sub-section-title">By Source</h2>
         <div class="breakdown-grid" id="bySource"></div>
     </section>
 
+    <!-- TIER 2: By Geography -->
     <section class="section">
-        <div class="section-label">Contribution Breakdown</div>
-        <h2 class="section-title">By Geography</h2>
+        <h2 class="sub-section-title">In State vs. Out of State</h2>
         <div class="breakdown-grid" id="byState"></div>
     </section>
 
+    <!-- TIER 1: Expenditures -->
     <section class="section">
-        <div class="section-label">Money Spent</div>
-        <h2 class="section-title">Total Expenditures by Candidate</h2>
+        <div class="section-banner">
+            <div class="banner-icon">&#x1F4B8;</div>
+            <div class="banner-text">Expenditures</div>
+        </div>
         <div id="chartExpenditures"></div>
         <div class="chart-total" id="expTotal"></div>
     </section>
 
+    <!-- TIER 2: Top Payees -->
     <section class="section">
-        <div class="section-label">Where The Money Goes</div>
-        <h2 class="section-title">Top Payees</h2>
+        <h2 class="sub-section-title">Top Payees</h2>
         <div class="donors-grid" id="payees"></div>
     </section>
 
+    <!-- TIER 2: Filings -->
     <section class="section">
-        <div class="section-label">FEC Filings</div>
-        <h2 class="section-title">Filing Documents</h2>
+        <h2 class="sub-section-title">Filing Documents</h2>
         <div style="margin-bottom:16px;">
             <label for="filingSelect" style="font-size:0.8em;font-weight:600;color:var(--text-secondary);margin-right:8px;">Candidate:</label>
             <select id="filingSelect" style="font-family:'Inter',sans-serif;font-size:0.85em;padding:6px 12px;border:1px solid var(--border);border-radius:4px;background:#fff;color:var(--text);cursor:pointer;min-width:220px;">
