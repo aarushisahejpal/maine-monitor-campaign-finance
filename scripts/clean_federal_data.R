@@ -15,7 +15,7 @@ cand_top5_contribs <- fed_df %>%
   group_by(candidate_name, contributor_name, office, district) %>%
   summarize(contribution_amount = sum(contribution_receipt_amount, na.rm = T), .groups = "drop") %>%
   group_by(candidate_name) %>%
-  slice_max(contribution_amount, n = 5, with_ties = FALSE) %>%
+  slice_max(contribution_amount, n = 25, with_ties = FALSE) %>%
   arrange(candidate_name, desc(contribution_amount)) %>%
   ungroup()
 
