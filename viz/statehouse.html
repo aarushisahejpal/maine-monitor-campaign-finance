@@ -6,6 +6,7 @@
     <title>House District 94 — Campaign Finances — The Maine Monitor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
@@ -131,41 +132,50 @@
         .tip-donor-name { opacity: 0.75; }
         .tip-donor-amt { font-weight: 600; white-space: nowrap; }
 
-        /* ── SECTION BANNERS (mock-up style) ── */
-        .section-banner {
-            display: inline-flex;
-            align-items: stretch;
-            margin-bottom: 20px;
-        }
-        .banner-icon {
-            background: #1e4d6e;
-            color: #fff;
-            width: 38px;
+        /* ── TIER 1: RIBBON BANNERS (George's design) ── */
+        .ribbon-header-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            margin-bottom: 24px;
         }
-        .banner-text {
-            background: #3a7cb8;
-            color: #fff;
-            font-size: 0.8em;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            padding: 9px 24px 9px 14px;
+        .ribbon-main {
             position: relative;
+            background: linear-gradient(135deg, #0073aa 0%, #005a84 100%);
+            color: white;
+            padding: 0 45px 0 0;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%);
+            min-width: 280px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
         }
-        .banner-text::after {
-            content: '';
+        .ribbon-main::before {
+            content: "";
             position: absolute;
-            right: -16px;
-            top: 0;
-            width: 0;
-            height: 0;
-            border-top: 19px solid #3a7cb8;
-            border-bottom: 19px solid #3a7cb8;
-            border-right: 16px solid transparent;
+            left: 0; top: 0; bottom: 0;
+            width: 6px;
+            background-color: #e67e22;
+        }
+        .ribbon-icon-area {
+            width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            background-color: rgba(0,0,0,0.12);
+            margin-right: 16px; margin-left: 6px;
+        }
+        .ribbon-icon-area i { font-size: 20px; color: #ffffff; }
+        .ribbon-text {
+            font-family: 'Lora', serif;
+            font-size: 18px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+        @media (max-width: 600px) {
+            .ribbon-main { height: 44px; padding-right: 24px; min-width: 240px; }
+            .ribbon-icon-area { width: 44px; height: 44px; }
+            .ribbon-text { font-size: 15px; }
         }
 
         /* ── DONORS (side-by-side grid) ── */
@@ -218,26 +228,32 @@
     </header>
 
     <section class="section" id="candidatesSection">
-        <div class="section-banner">
-            <div class="banner-icon">&#x1F465;</div>
-            <div class="banner-text">Candidates</div>
+        <div class="ribbon-header-wrapper">
+            <div class="ribbon-main">
+                <div class="ribbon-icon-area"><i class="fa-solid fa-users"></i></div>
+                <div class="ribbon-text">Candidates</div>
+            </div>
         </div>
         <div id="candCards"></div>
     </section>
 
     <section class="section">
-        <div class="section-banner">
-            <div class="banner-icon">&#x1F4CA;</div>
-            <div class="banner-text">Contributions</div>
+        <div class="ribbon-header-wrapper">
+            <div class="ribbon-main">
+                <div class="ribbon-icon-area"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                <div class="ribbon-text">Contributions</div>
+            </div>
         </div>
         <div id="chartContainer"></div>
         <div class="chart-total" id="chartTotal"></div>
     </section>
 
     <section class="section">
-        <div class="section-banner">
-            <div class="banner-icon">&#x1F4B0;</div>
-            <div class="banner-text">Top Donors</div>
+        <div class="ribbon-header-wrapper">
+            <div class="ribbon-main">
+                <div class="ribbon-icon-area"><i class="fa-solid fa-magnifying-glass-dollar"></i></div>
+                <div class="ribbon-text">Top Donors</div>
+            </div>
         </div>
         <div class="donors-grid" id="donors"></div>
     </section>
