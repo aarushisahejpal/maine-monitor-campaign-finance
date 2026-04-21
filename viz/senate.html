@@ -46,7 +46,7 @@
         .chart-svg.has-hover .bar.active { opacity: 1; }
         .chart-svg .label { fill: var(--text); font-size: 13px; font-weight: 500; }
         .chart-svg .value { fill: var(--text-secondary); font-size: 12px; font-weight: 600; }
-        .chart-total { text-align: right; font-family: 'Lora', Georgia, serif; font-size: 1em; color: var(--text-muted); margin-top: 8px; }
+        .chart-total { text-align: right; font-family: 'Lora', Georgia, serif; font-size: 1em; color: var(--text); margin-top: 8px; }
 
         .tip { position: fixed; pointer-events: none; z-index: 9999; background: var(--text); color: #fff; border-radius: 8px; padding: 14px 18px; font-size: 0.8em; line-height: 1.55; max-width: 300px; box-shadow: 0 8px 30px rgba(0,0,0,0.18); opacity: 0; transform: translateY(4px); transition: opacity 0.12s, transform 0.12s; }
         .tip.on { opacity: 1; transform: translateY(0); }
@@ -63,7 +63,7 @@
         .donor-card { min-width: 0; overflow: hidden; }
         .donor-card-header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 2px; }
         .donor-card-name { font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 0.95em; text-transform: capitalize; }
-        .donor-card-total { font-size: 0.75em; color: var(--text-muted); }
+        .donor-card-total { font-size: 1.05em; color: var(--text); font-weight: 700; }
         .d-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; border-radius: 3px; transition: background 0.1s; gap: 8px; }
         .d-row:hover { background: var(--bg-hover); }
         .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 600; min-width: 18px; }
@@ -81,44 +81,30 @@
         .breakdown-val { position: absolute; right: -70px; top: 50%; transform: translateY(-50%); font-size: 0.75em; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
 
         /* ── FILINGS ── */
-        .filings-list { }
-        .filing-candidate { margin-bottom: 28px; }
-        .filing-candidate-header {
-            font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 0.95em;
-            text-transform: capitalize; padding-bottom: 6px; border-bottom: 2px solid var(--text);
-            margin-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; cursor: pointer;
+        .filing-table { width: 100%; border-collapse: collapse; }
+        .filing-table th {
+            font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-muted); text-align: left;
+            padding: 8px; border-bottom: 2px solid var(--border);
         }
-        .filing-candidate-header:hover { color: var(--accent); }
-        .filing-candidate-header .toggle { font-size: 0.75em; color: var(--text-muted); }
-        .filing-rows { }
-        .filing-rows.collapsed { display: none; }
-        .filing-row {
-            display: grid; grid-template-columns: 1fr 140px 100px 100px 100px 40px;
-            gap: 8px; padding: 8px; border-bottom: 1px solid #f0f0f0; font-size: 0.8em;
-            align-items: center; transition: background 0.1s;
+        .filing-table td {
+            font-size: 0.8em; padding: 10px 8px; border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
         }
-        .filing-row:hover { background: var(--bg-hover); }
-        .filing-row .f-title { font-weight: 500; }
-        .filing-row .f-period { color: var(--text-secondary); font-size: 0.9em; }
-        .filing-row .f-num { text-align: right; font-variant-numeric: tabular-nums; }
-        .filing-row .f-pdf a {
-            color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95em;
+        .filing-table tr:hover td { background: var(--bg-hover); }
+        .filing-table .f-date { white-space: nowrap; color: var(--text-secondary); }
+        .filing-table .f-nums { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .filing-table .f-pdf a {
+            color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.9em;
         }
-        .filing-row .f-pdf a:hover { text-decoration: underline; }
-        .filing-header {
-            display: grid; grid-template-columns: 1fr 140px 100px 100px 100px 40px;
-            gap: 8px; padding: 6px 8px; font-size: 0.65em; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
-        }
-        .filing-header .f-num { text-align: right; }
+        .filing-table .f-pdf a:hover { text-decoration: underline; }
+        .filing-empty { font-size: 0.85em; color: var(--text-muted); padding: 20px 0; }
         @media (max-width: 600px) {
-            .filing-row, .filing-header { grid-template-columns: 1fr 1fr; }
-            .filing-row .f-period, .filing-header .f-period { display: none; }
+            .filing-table .f-nums { display: none; }
         }
 
-        .page-footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.72em; color: var(--text-muted); line-height: 1.7; }
-        .page-footer strong { font-weight: 600; color: var(--text-secondary); }
+        .page-footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.72em; color: var(--text); line-height: 1.7; }
+        .page-footer strong { font-weight: 600; color: var(--text); }
 
         @media (max-width: 600px) {
             .page-header h1 { font-size: 1.7em; }
@@ -181,9 +167,22 @@
         <div class="donors-grid" id="payees"></div>
     </section>
 
+    <section class="section">
+        <div class="section-label">FEC Filings</div>
+        <h2 class="section-title">Filing Documents</h2>
+        <div style="margin-bottom:16px;">
+            <label for="filingSelect" style="font-size:0.8em;font-weight:600;color:var(--text-secondary);margin-right:8px;">Candidate:</label>
+            <select id="filingSelect" style="font-family:'Inter',sans-serif;font-size:0.85em;padding:6px 12px;border:1px solid var(--border);border-radius:4px;background:#fff;color:var(--text);cursor:pointer;min-width:220px;">
+                <option value="">Select a candidate</option>
+            </select>
+        </div>
+        <div id="filingsTable"></div>
+    </section>
+
     <footer class="page-footer">
         <strong>Source:</strong> Federal Election Commission (FEC). Processed data for the 2026 election cycle.<br>
-        <strong>Last updated:</strong> April 2026. Federal data is refreshed quarterly.
+        <strong>Last updated:</strong> April 21, 2026. Federal data is refreshed quarterly.<br><br>
+        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democratic candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
     </footer>
 </div>
 
@@ -262,6 +261,13 @@ function titleCase(s) {
             .replace(/\bIii\b/g, 'III').replace(/\bIi\b/g, 'II').replace(/\bIv\b/g, 'IV')
             .replace(/\bJr\b/g, 'Jr.').replace(/\bSr\b/g, 'Sr.');
 }
+function removeMiddleName(name) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length <= 2) return name;
+    return parts[0] + ' ' + parts[parts.length - 1];
+}
+// Wrap titleCase + removeMiddleName for display
+function displayName(s) { return removeMiddleName(titleCase(s)); }
 
 // ── CANDIDATES ──
 const byParty = {};
@@ -276,7 +282,7 @@ PARTY_ORDER.forEach(party => {
     byParty[party].forEach(d => {
         const c = document.createElement('div');
         c.className = 'cand';
-        c.innerHTML = `<div class="cand-name">${titleCase(d.c)}</div><div class="cand-meta">${fmt(d.t)} raised</div>`;
+        c.innerHTML = `<div class="cand-name">${displayName(d.c)}</div><div class="cand-meta">${fmt(d.t)} raised</div>`;
         g.appendChild(c);
     });
     cEl.appendChild(g);
@@ -284,7 +290,7 @@ PARTY_ORDER.forEach(party => {
 
 // ── HELPER: build horizontal bar chart ──
 function buildChart(containerId, data, totalId) {
-    const chartData = data.filter(d => d.t >= 10000);
+    const chartData = data;
     if (!chartData.length) return;
     const margin = { top: 4, right: 110, bottom: 4, left: 200 };
     const barH = 30, barGap = 6;
@@ -299,13 +305,13 @@ function buildChart(containerId, data, totalId) {
         .attr('height',y.bandwidth()).attr('rx',2).attr('fill',d=>PARTY_COLORS[d.p]||'#999')
         .transition().duration(700).delay((d,i)=>i*40).attr('width',d=>x(d.t)-margin.left);
     bars.append('text').attr('class','label').attr('x',margin.left-10).attr('y',d=>y(d.c)+y.bandwidth()/2)
-        .attr('dy','0.35em').attr('text-anchor','end').text(d=>titleCase(d.c));
+        .attr('dy','0.35em').attr('text-anchor','end').text(d=>displayName(d.c));
     bars.append('text').attr('class','value').attr('x',d=>x(d.t)+8).attr('y',d=>y(d.c)+y.bandwidth()/2)
         .attr('dy','0.35em').text(d=>fmt(d.t)).style('opacity',0)
         .transition().duration(400).delay((d,i)=>i*40+500).style('opacity',1);
     bars.on('mouseenter', function(evt,d) {
         svg.classed('has-hover',true); d3.select(this).select('.bar').classed('active',true);
-        showTip(evt, `<div class="tip-name">${titleCase(d.c)}</div><div class="tip-party">${PARTY_LABELS[d.p]||d.p}</div><div class="tip-total">${fmt(d.t)}</div>`);
+        showTip(evt, `<div class="tip-name">${displayName(d.c)}</div><div class="tip-party">${PARTY_LABELS[d.p]||d.p}</div><div class="tip-total">${fmt(d.t)}</div>`);
     }).on('mousemove',moveTip).on('mouseleave', function() {
         svg.classed('has-hover',false); d3.select(this).select('.bar').classed('active',false); hideTip();
     });
@@ -322,17 +328,22 @@ buildChart('chartContributions', TOTALS, 'contribTotal');
 function buildDonorGrid(containerId, data, totals, topN) {
     const el = document.getElementById(containerId);
     totals.slice(0, topN).forEach(cand => {
-        const cd = data.filter(d => d.c === cand.c).slice(0, 5);
+        let cd = data.filter(d => d.c === cand.c);
+        let filtered = cd.filter(d => d.a >= 3000);
+        cd = filtered.length ? filtered.slice(0, 25) : cd.slice(0, 5);
         if (!cd.length) return;
         const card = document.createElement('div');
         card.className = 'donor-card';
-        card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name">${titleCase(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
+        card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name">${displayName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
+        const scrollWrap = document.createElement('div');
+        scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
         cd.forEach((d, i) => {
             const row = document.createElement('div');
             row.className = 'd-row';
             row.innerHTML = `<span class="d-rank">${i+1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
-            card.appendChild(row);
+            scrollWrap.appendChild(row);
         });
+        card.appendChild(scrollWrap);
         el.appendChild(card);
     });
 }
@@ -347,7 +358,7 @@ function buildBreakdown(containerId, data, totals, colorMap, topN) {
         const maxVal = d3.max(cd, d => d.t);
         const card = document.createElement('div');
         card.className = 'breakdown-card';
-        card.innerHTML = `<h4>${titleCase(cand.c)}</h4>`;
+        card.innerHTML = `<h4>${displayName(cand.c)}</h4>`;
         cd.forEach(d => {
             const pct = maxVal > 0 ? (d.t / maxVal * 100) : 0;
             const label = d.s || d.g;
@@ -372,6 +383,75 @@ buildChart('chartExpenditures', EXP_TOTALS, 'expTotal');
 
 // ── TOP PAYEES ──
 buildDonorGrid('payees', TOP_PAYEES, EXP_TOTALS, 6);
+
+// ── FILINGS ──
+// Try remote first, fall back to local relative path
+function loadFilings() {
+    return loadCSV('federal_filings.csv').catch(() => {
+        return new Promise((res, rej) => {
+            Papa.parse('data/clean/federal_filings.csv', {
+                download:true, header:true, skipEmptyLines:true,
+                complete: r => res(r.data), error: rej
+            });
+        });
+    });
+}
+loadFilings().then(filings => {
+    const filtered = filings.filter(r => r.office === OFFICE);
+    if (!filtered.length) return;
+
+    // Build candidate list for dropdown
+    const candidates = [...new Set(filtered.map(r => r.candidate_name))].sort();
+    const select = document.getElementById('filingSelect');
+    candidates.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = displayName(c);
+        select.appendChild(opt);
+    });
+
+    const tableEl = document.getElementById('filingsTable');
+
+    select.addEventListener('change', () => {
+        const chosen = select.value;
+        if (!chosen) { tableEl.innerHTML = '<div class="filing-empty">Select a candidate to view their FEC filings.</div>'; return; }
+
+        const docs = filtered.filter(r => r.candidate_name === chosen)
+            .sort((a, b) => (b.receipt_date || '').localeCompare(a.receipt_date || ''));
+
+        if (!docs.length) { tableEl.innerHTML = '<div class="filing-empty">No filings found.</div>'; return; }
+
+        let html = `<table class="filing-table">
+            <thead><tr>
+                <th>Report</th>
+                <th>Filing Date</th>
+                <th>Receipts</th>
+                <th>Disbursements</th>
+                <th>Cash on Hand</th>
+                <th></th>
+            </tr></thead><tbody>`;
+
+        docs.forEach(d => {
+            const date = d.receipt_date ? d.receipt_date.slice(0, 10) : '';
+            const receipts = d.total_receipts ? fmt(+d.total_receipts) : '—';
+            const disb = d.total_disbursements ? fmt(+d.total_disbursements) : '—';
+            const cash = d.cash_on_hand ? fmt(+d.cash_on_hand) : '—';
+            html += `<tr>
+                <td>${d.document_description || d.report_type || ''}</td>
+                <td class="f-date">${date}</td>
+                <td class="f-nums">${receipts}</td>
+                <td class="f-nums">${disb}</td>
+                <td class="f-nums">${cash}</td>
+                <td class="f-pdf">${d.pdf_url ? `<a href="${d.pdf_url}" target="_blank">View PDF</a>` : ''}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        tableEl.innerHTML = html;
+    });
+
+    // Show initial state
+    tableEl.innerHTML = '<div class="filing-empty">Select a candidate to view their FEC filings.</div>';
+}).catch(e => console.warn('Could not load filings:', e));
 
 } // end render
 </script>

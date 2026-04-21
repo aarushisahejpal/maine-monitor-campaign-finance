@@ -231,6 +231,15 @@ display_names <- state_df %>%
   slice_max(nchar(display), n = 1, with_ties = FALSE) %>%
   ungroup()
 
+# Override with editorially reviewed display names
+if (file.exists("data/display_name_overrides.csv")) {
+  name_overrides <- read_csv("data/display_name_overrides.csv")
+  display_names <- display_names %>%
+    left_join(name_overrides, by = c("clean" = "candidate")) %>%
+    mutate(display = coalesce(final_display_name, display)) %>%
+    select(-final_display_name)
+}
+
 # Add display names to outputs
 cand_con_total <- cand_con_total %>%
   left_join(display_names, by = c("candidate" = "clean")) %>%
