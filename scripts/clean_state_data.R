@@ -202,6 +202,7 @@ small_dollar <- state_df %>%
 # Top 5 named donors (exclude the aggregate "Contributors giving $50 or less" row)
 cand_top5_contribs <- all_contribs %>%
   filter(!str_detect(tolower(entity), "contributors giving")) %>%
+  filter(!entity %in% c("-", "--", "", NA)) %>%
   group_by(candidate) %>%
   slice_max(total_contributed, n = 25, with_ties = FALSE) %>%
   arrange(race, district, candidate, desc(total_contributed))
