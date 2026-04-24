@@ -132,50 +132,21 @@
         .tip-donor-name { opacity: 0.75; }
         .tip-donor-amt { font-weight: 600; white-space: nowrap; }
 
-        /* ── TIER 1: RIBBON BANNERS (George's design) ── */
-        .ribbon-header-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 24px;
-        }
+        /* ── TIER 1: SECTION HEADERS ── */
+        .ribbon-header-wrapper { margin-bottom: 24px; }
         .ribbon-main {
-            position: relative;
-            background: linear-gradient(135deg, #0073aa 0%, #005a84 100%);
-            color: white;
-            padding: 0 45px 0 0;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%);
-            min-width: 280px;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+            padding-bottom: 10px;
+            border-bottom: 4px solid #0073aa;
+            display: inline-block;
         }
-        .ribbon-main::before {
-            content: "";
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 6px;
-            background-color: #e67e22;
-        }
-        .ribbon-icon-area {
-            width: 50px; height: 50px;
-            display: flex; justify-content: center; align-items: center;
-            background-color: rgba(0,0,0,0.12);
-            margin-right: 16px; margin-left: 6px;
-        }
-        .ribbon-icon-area i { font-size: 20px; color: #ffffff; }
+        .ribbon-icon-area { display: none; }
         .ribbon-text {
             font-family: 'Lora', serif;
-            font-size: 18px;
-            font-weight: 900;
+            font-size: 1.5em;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2px;
-            white-space: nowrap;
-        }
-        @media (max-width: 600px) {
-            .ribbon-main { height: 44px; padding-right: 24px; min-width: 240px; }
-            .ribbon-icon-area { width: 44px; height: 44px; }
-            .ribbon-text { font-size: 15px; }
+            color: var(--text);
         }
 
         /* ── DONORS (side-by-side grid) ── */
@@ -193,15 +164,15 @@
             font-family: 'Lora', Georgia, serif;
             font-weight: 600; font-size: 0.95em; text-transform: capitalize;
         }
-        .donor-block-total { font-size: 1.05em; color: var(--text); font-weight: 700; }
+        .donor-block-total { font-size: 1.05em; color: var(--text); font-weight: 700; white-space: nowrap; }
         .d-row {
             display: flex; justify-content: space-between; align-items: baseline;
             padding: 7px 8px; border-radius: 3px; transition: background 0.1s; gap: 8px;
         }
         .d-row:hover { background: var(--bg-hover); }
-        .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 600; min-width: 18px; }
+        .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 400; min-width: 18px; }
         .d-name { flex: 1; font-size: 0.85em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .d-amt { font-size: 0.85em; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .d-amt { font-size: 0.85em; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
         /* ── FOOTER ── */
         .page-footer {
@@ -261,7 +232,7 @@
     <footer class="page-footer">
         <strong>Source:</strong> Maine Campaign Finance Disclosure System. Includes direct contributions and contributions routed through committees and PACs.<br>
         <strong>Last updated:</strong> April 21, 2026. Data is refreshed biweekly.<br><br>
-        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democratic candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
+        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
     </footer>
 </div>
 
@@ -295,31 +266,38 @@ function loadCSV(file) {
 }
 
 async function loadData() {
-    const [totalsRaw, donorsRaw] = await Promise.all([
+    const [totalsRaw, donorsRaw, smallRaw] = await Promise.all([
         loadCSV('maine_total_contributions_by_filer.csv'),
-        loadCSV('maine_top_5contributors_by_filer.csv')
+        loadCSV('maine_top_5contributors_by_filer.csv'),
+        loadCSV('maine_small_dollar_by_filer.csv').catch(() => [])
     ]);
 
     const TOTALS = totalsRaw
         .filter(r => r.race === RACE && String(r.district) === DISTRICT)
-        .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand)}))
+        .map(r => ({c: r.candidate, d: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand)}))
         .sort((a, b) => b.t - a.t);
 
     const DONORS = donorsRaw
         .filter(r => r.race === RACE && String(r.district) === DISTRICT)
-        .map(r => ({c: r.display_name || r.candidate, e: r.entity, a: parseFloat(r.total_contributed)}));
+        .map(r => ({c: r.candidate, e: r.entity, a: parseFloat(r.total_contributed)}))
+        .filter(r => r.e && r.e !== '-' && r.e !== '--');
 
-    return { TOTALS, DONORS };
+    const SMALL = {};
+    smallRaw.filter(r => r.race === RACE && String(r.district) === DISTRICT).forEach(r => {
+        SMALL[r.candidate] = parseFloat(r.small_dollar_total);
+    });
+
+    return { TOTALS, DONORS, SMALL };
 }
 
-loadData().then(({ TOTALS, DONORS }) => {
-    render(TOTALS, DONORS);
+loadData().then(({ TOTALS, DONORS, SMALL }) => {
+    render(TOTALS, DONORS, SMALL);
 }).catch(err => {
     console.error('Failed to load data:', err);
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
 });
 
-function render(TOTALS, DONORS) {
+function render(TOTALS, DONORS, SMALL) {
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const tip = document.getElementById('tip');
@@ -363,8 +341,8 @@ PARTY_ORDER.forEach(party => {
         const pc = d.p.toLowerCase();
         card.className = `cand-card ${pc}`;
         card.innerHTML = `
-            <div class="cc-party">${d.p}</div>
-            <div class="cc-name">${d.c}</div>
+            <div class="cc-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
+            <div class="cc-name">${d.d}</div>
             <div class="cc-amount">${fmt(d.t)}</div>
             <div class="cc-label">total raised</div>
         `;
@@ -392,7 +370,7 @@ const x = d3.scaleLinear()
     .range([margin.left, width - margin.right]);
 
 const y = d3.scaleBand()
-    .domain(TOTALS.map(d => d.c))
+    .domain(TOTALS.map(d => d.d))
     .range([margin.top, height - margin.bottom])
     .padding(0.15);
 
@@ -401,7 +379,7 @@ const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g
 bars.append('rect')
     .attr('class', 'bar')
     .attr('x', margin.left)
-    .attr('y', d => y(d.c))
+    .attr('y', d => y(d.d))
     .attr('width', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
@@ -412,15 +390,15 @@ bars.append('rect')
 bars.append('text')
     .attr('class', 'label')
     .attr('x', margin.left - 10)
-    .attr('y', d => y(d.c) + y.bandwidth() / 2)
+    .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
     .attr('text-anchor', 'end')
-    .text(d => d.c);
+    .text(d => d.d);
 
 bars.append('text')
     .attr('class', 'value')
     .attr('x', d => x(d.t) + 8)
-    .attr('y', d => y(d.c) + y.bandwidth() / 2)
+    .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
     .text(d => fmt(d.t))
     .style('opacity', 0)
@@ -433,7 +411,7 @@ document.getElementById('chartTotal').textContent = 'Total raised across all can
 bars.on('mouseenter', function(evt, d) {
     svg.classed('has-hover', true);
     d3.select(this).select('.bar').classed('active', true);
-    let html = `<div class="tip-name">${d.c}</div>
+    let html = `<div class="tip-name">${d.d}</div>
         <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>`;
     showTip(evt, html);
@@ -447,28 +425,48 @@ bars.on('mouseenter', function(evt, d) {
 
 // ── TOP DONORS ──
 const donorsEl = document.getElementById('donors');
-// Only show candidates with donors
 const candsWithDonors = TOTALS.filter(t => DONORS.some(d => d.c === t.c));
 
 candsWithDonors.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
     if (!cd.length) return;
 
-    const block = document.createElement('div');
-    block.className = 'donor-block';
-    block.innerHTML = `
+    const card = document.createElement('div');
+    card.className = 'donor-block';
+    card.innerHTML = `
         <div class="donor-block-header">
-            <span class="donor-block-name">${cand.c}</span>
+            <span class="donor-block-name">${cand.d}</span>
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
 
+    // Small-dollar highlight
+    const smallAmt = SMALL ? SMALL[cand.c] : null;
+    if (smallAmt) {
+        const sd = document.createElement('div');
+        sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
+        card.appendChild(sd);
+    }
+
+    // Top donors header
+    if (cd.length) {
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
+        hdr.textContent = 'Top Individual Donors';
+        card.appendChild(hdr);
+    }
+
+    // Scrollable container
+    const scrollWrap = document.createElement('div');
+    scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
     cd.forEach((d, i) => {
         const row = document.createElement('div');
         row.className = 'd-row';
         row.innerHTML = `<span class="d-rank">${i + 1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
-        block.appendChild(row);
+        scrollWrap.appendChild(row);
     });
-    donorsEl.appendChild(block);
+    card.appendChild(scrollWrap);
+    donorsEl.appendChild(card);
 });
 } // end render()
 </script>

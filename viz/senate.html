@@ -27,50 +27,21 @@
 
         .section { margin-top: 48px; }
 
-        /* ── TIER 1: RIBBON BANNERS (George's design) ── */
-        .ribbon-header-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 24px;
-        }
+        /* ── TIER 1: SECTION HEADERS ── */
+        .ribbon-header-wrapper { margin-bottom: 24px; }
         .ribbon-main {
-            position: relative;
-            background: linear-gradient(135deg, #0073aa 0%, #005a84 100%);
-            color: white;
-            padding: 0 45px 0 0;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%);
-            min-width: 280px;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+            padding-bottom: 10px;
+            border-bottom: 4px solid #0073aa;
+            display: inline-block;
         }
-        .ribbon-main::before {
-            content: "";
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 6px;
-            background-color: #e67e22;
-        }
-        .ribbon-icon-area {
-            width: 50px; height: 50px;
-            display: flex; justify-content: center; align-items: center;
-            background-color: rgba(0,0,0,0.12);
-            margin-right: 16px; margin-left: 6px;
-        }
-        .ribbon-icon-area i { font-size: 20px; color: #ffffff; }
+        .ribbon-icon-area { display: none; }
         .ribbon-text {
             font-family: 'Lora', serif;
-            font-size: 18px;
-            font-weight: 900;
+            font-size: 1.5em;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2px;
-            white-space: nowrap;
-        }
-        @media (max-width: 600px) {
-            .ribbon-main { height: 44px; padding-right: 24px; min-width: 240px; }
-            .ribbon-icon-area { width: 44px; height: 44px; }
-            .ribbon-text { font-size: 15px; }
+            color: var(--text);
         }
 
         /* ── TIER 2: SUB-SECTION TITLES (granular sections) ── */
@@ -119,12 +90,12 @@
         .donor-card { min-width: 0; overflow: hidden; }
         .donor-card-header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 2px; }
         .donor-card-name { font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 0.95em; text-transform: capitalize; }
-        .donor-card-total { font-size: 1.05em; color: var(--text); font-weight: 700; }
+        .donor-card-total { font-size: 1.05em; color: var(--text); font-weight: 700; white-space: nowrap; }
         .d-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; border-radius: 3px; transition: background 0.1s; gap: 8px; }
         .d-row:hover { background: var(--bg-hover); }
-        .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 600; min-width: 18px; }
+        .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 400; min-width: 18px; }
         .d-name { flex: 1; font-size: 0.85em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .d-amt { font-size: 0.85em; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .d-amt { font-size: 0.85em; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
         /* ── BREAKDOWN CHARTS ── */
         .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 48px; }
@@ -253,7 +224,7 @@
     <footer class="page-footer">
         <strong>Source:</strong> Federal Election Commission (FEC). Processed data for the 2026 election cycle.<br>
         <strong>Last updated:</strong> April 21, 2026. Federal data is refreshed quarterly.<br><br>
-        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democratic candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
+        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
     </footer>
 </div>
 
@@ -417,7 +388,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData) {
         if (smallAmt) {
             const sd = document.createElement('div');
             sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-            sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:700;">${fmt(smallAmt)}</span>`;
+            sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
             card.appendChild(sd);
         }
 
