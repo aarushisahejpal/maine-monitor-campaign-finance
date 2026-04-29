@@ -395,9 +395,12 @@ function render(TOTALS, DONORS, SMALL) {
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
 function removeMiddleName(name) {
+    const suffixes = /^(Jr\.?|Sr\.?|II|III|IV|V)$/i;
     const parts = name.trim().split(/\s+/);
     if (parts.length <= 2) return name;
-    return parts[0] + ' ' + parts[parts.length - 1];
+    const suffix = suffixes.test(parts[parts.length - 1]) ? ' ' + parts[parts.length - 1] : '';
+    const lastName = suffix ? parts[parts.length - 2] : parts[parts.length - 1];
+    return parts[0] + ' ' + lastName + suffix;
 }
 const tip = document.getElementById('tip');
 

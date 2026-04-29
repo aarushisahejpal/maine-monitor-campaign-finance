@@ -400,9 +400,13 @@ function render(TOTALS, DONORS, SMALL) {
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
 function removeMiddleName(name) {
+    const suffixes = /^(Jr\.?|Sr\.?|II|III|IV|V)$/i;
     const parts = name.trim().split(/\s+/);
     if (parts.length <= 2) return name;
-    return parts[0] + ' ' + parts[parts.length - 1];
+    // Keep first name, last name, and any suffix
+    const suffix = suffixes.test(parts[parts.length - 1]) ? ' ' + parts[parts.length - 1] : '';
+    const lastName = suffix ? parts[parts.length - 2] : parts[parts.length - 1];
+    return parts[0] + ' ' + lastName + suffix;
 }
 const tip = document.getElementById('tip');
 
@@ -537,7 +541,7 @@ topCands.forEach(cand => {
     card.className = 'donor-card';
     card.innerHTML = `
         <div class="donor-card-header">
-            <span class="donor-card-name">${removeMiddleName(cand.c)}</span>
+            <span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c)}</span>
             <span class="donor-card-total">${fmt(cand.t)} total</span>
         </div>`;
 
