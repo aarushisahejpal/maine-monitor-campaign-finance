@@ -79,55 +79,40 @@
         /* ── SECTIONS ── */
         .section { margin-top: 48px; }
 
-        /* ── TIER 1: RIBBON BANNERS (no icon) ── */
+        /* ── TIER 1: SECTION HEADERS ── */
         .ribbon-header-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
         .ribbon-main {
-            position: relative;
-            background: linear-gradient(135deg, #0073aa 0%, #005a84 100%);
-            color: white;
-            padding: 0 45px 0 0;
-            height: 50px;
             display: flex;
-            align-items: center;
-            clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%);
-            min-width: 280px;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
-        }
-        .ribbon-main::before {
-            content: "";
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 6px;
-            background-color: #e67e22;
+            align-items: baseline;
+            gap: 14px;
         }
         .ribbon-icon-area { display: none; }
         .ribbon-text {
             font-family: 'Lora', serif;
-            font-size: 18px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            white-space: nowrap;
-            margin-left: 16px;
+            font-size: 1.65em;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.2;
         }
-        @media (max-width: 600px) {
-            .ribbon-main { height: 44px; padding-right: 24px; min-width: 240px; }
-            .ribbon-text { font-size: 15px; }
+        .ribbon-main::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, var(--border), transparent);
+            margin-top: 4px;
         }
 
         /* ── TIER 2: SUB-SECTION TITLES ── */
         .sub-section-title {
             font-family: 'Lora', Georgia, serif;
-            font-size: 1.3em;
+            font-size: 1.1em;
             font-weight: 600;
-            color: var(--text);
+            color: var(--text-secondary);
             margin-bottom: 20px;
-            padding-bottom: 8px;
-            border-bottom: 3px solid #3a7cb8;
+            padding-left: 12px;
+            border-left: 3px solid var(--accent);
         }
 
         /* ── CANDIDATES ── */
@@ -155,8 +140,23 @@
             border-radius: 4px;
             transition: background 0.12s;
             cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .cand:hover { background: var(--bg-hover); }
+        .cand-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e5e5e5;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 16px;
+        }
         .cand-name {
             font-weight: 600;
             font-size: 0.88em;
@@ -229,8 +229,8 @@
         }
         .donor-card-name {
             font-family: 'Lora', Georgia, serif;
-            font-weight: 600;
-            font-size: 0.95em;
+            font-weight: 700;
+            font-size: 1.2em;
             text-transform: capitalize;
         }
         .donor-card-total {
@@ -304,7 +304,7 @@
         <div class="ribbon-header-wrapper">
             <div class="ribbon-main">
                 <div class="ribbon-icon-area"><i class="fa-solid fa-users"></i></div>
-                <div class="ribbon-text">Candidates</div>
+                <div class="ribbon-text">Who's Running</div>
             </div>
         </div>
         <div class="party-columns" id="candidates"></div>
@@ -314,17 +314,22 @@
     <section class="section">
         <div class="ribbon-header-wrapper">
             <div class="ribbon-main">
-                <div class="ribbon-icon-area"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                <div class="ribbon-text">Contributions</div>
+                <div class="ribbon-icon-area"></div>
+                <div class="ribbon-text">Follow the Money</div>
             </div>
         </div>
         <div id="chartContainer"></div>
         <div class="chart-total" id="chartTotal"></div>
     </section>
 
-    <!-- TIER 2: Top Donors -->
+    <!-- TIER 1: Top Donors -->
     <section class="section">
-        <h2 class="sub-section-title">Top Donors</h2>
+        <div class="ribbon-header-wrapper">
+            <div class="ribbon-main">
+                <div class="ribbon-icon-area"></div>
+                <div class="ribbon-text">Who's Giving?</div>
+            </div>
+        </div>
         <div class="donors-grid" id="donors"></div>
     </section>
 
@@ -431,7 +436,8 @@ PARTY_ORDER.forEach(party => {
     byParty[party].forEach(d => {
         const c = document.createElement('div');
         c.className = 'cand';
-        c.innerHTML = `<div class="cand-name">${removeMiddleName(d.c)}</div>`;
+        const initials = removeMiddleName(d.c).split(' ').map(w => w[0]).join('').toUpperCase();
+        c.innerHTML = `<div class="cand-avatar">${initials}</div><div class="cand-name">${removeMiddleName(d.c)}</div>`;
         g.appendChild(c);
     });
     cEl.appendChild(g);

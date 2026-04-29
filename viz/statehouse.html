@@ -453,6 +453,10 @@ candsWithDonors.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
     if (!cd.length) return;
 
+    // Separate platform donations
+    const platformDonors = cd.filter(d => /actblue|winred/i.test(d.e));
+    const namedDonors = cd.filter(d => !/actblue|winred/i.test(d.e));
+
     const card = document.createElement('div');
     card.className = 'donor-block';
     card.innerHTML = `
@@ -460,6 +464,14 @@ candsWithDonors.forEach(cand => {
             <span class="donor-block-name">${cand.d}</span>
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
+
+    // Platform donations (ActBlue/WinRed)
+    platformDonors.forEach(d => {
+        const pb = document.createElement('div');
+        pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#eef4fb;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${d.e}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
+        card.appendChild(pb);
+    });
 
     // Small-dollar highlight
     const smallAmt = SMALL ? SMALL[cand.c] : null;
@@ -471,7 +483,7 @@ candsWithDonors.forEach(cand => {
     }
 
     // Top donors header
-    if (cd.length) {
+    if (namedDonors.length) {
         const hdr = document.createElement('div');
         hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
         hdr.textContent = 'Top Individual Donors';
@@ -481,7 +493,7 @@ candsWithDonors.forEach(cand => {
     // Scrollable container
     const scrollWrap = document.createElement('div');
     scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
-    cd.forEach((d, i) => {
+    namedDonors.forEach((d, i) => {
         const row = document.createElement('div');
         row.className = 'd-row';
         row.innerHTML = `<span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;

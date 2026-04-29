@@ -401,9 +401,21 @@ function buildDonorGrid(containerId, data, totals, topN, smallData) {
         const cd = data.filter(d => d.c === cand.c);
         if (!cd.length) return;
 
+        // Separate platform donations
+        const platformDonors = cd.filter(d => /actblue|winred/i.test(d.e));
+        const namedDonors = cd.filter(d => !/actblue|winred/i.test(d.e));
+
         const card = document.createElement('div');
         card.className = 'donor-card';
         card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name">${displayName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
+
+        // Platform donations (ActBlue/WinRed)
+        platformDonors.forEach(d => {
+            const pb = document.createElement('div');
+            pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#eef4fb;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+            pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${d.e}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
+            card.appendChild(pb);
+        });
 
         // Small-dollar highlight
         const smallAmt = smallData ? smallData[cand.c] : null;
@@ -415,7 +427,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData) {
         }
 
         // Top donors header
-        if (cd.length) {
+        if (namedDonors.length) {
             const hdr = document.createElement('div');
             hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
             hdr.textContent = 'Top Individual Donors';
@@ -425,7 +437,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData) {
         // Scrollable container
         const scrollWrap = document.createElement('div');
         scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
-        cd.forEach((d, i) => {
+        namedDonors.forEach((d, i) => {
             const row = document.createElement('div');
             row.className = 'd-row';
             row.innerHTML = `<span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
@@ -485,7 +497,8 @@ function loadFilings() {
     });
 }
 loadFilings().then(filings => {
-    const filtered = filings.filter(r => r.office === OFFICE);
+    const skipTypes = /statement of organization|termination|miscellaneous|48-hour|rfai|notice of paper/i;
+    const filtered = filings.filter(r => r.office === OFFICE && !skipTypes.test(r.document_description || ''));
     if (!filtered.length) return;
 
     // Build candidate list for dropdown
