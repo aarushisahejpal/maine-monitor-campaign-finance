@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campaign Finances: U.S. Senate — The Maine Monitor</title>
+    <title>Campaign Finances: U.S. House — The Maine Monitor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -168,8 +168,8 @@
 <div class="container">
     <header class="page-header">
         <div class="kicker">2026 Maine Elections &middot; Federal</div>
-        <h1>U.S. Senate Race</h1>
-        <p class="dek">Tracking campaign contributions and expenditures for Maine's 2026 U.S. Senate election.</p>
+        <h1>U.S. House Races</h1>
+        <p class="dek">Tracking campaign contributions and expenditures for Maine's 2026 U.S. House elections.</p>
         <hr class="header-rule">
     </header>
 
@@ -270,7 +270,7 @@ const SOURCE_COLORS = { Individual:'#2c6fbb', 'PAC/Committee':'#e67e22', 'Party 
 const GEO_COLORS = { 'In State':'#2c6fbb', 'Out of State':'#c0392b', Unknown:'#999' };
 
 const BASE = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/viz/data/clean/';
-const OFFICE = 'Senate';
+const OFFICE = 'House';
 
 function loadCSV(f) {
     return new Promise((res, rej) => {

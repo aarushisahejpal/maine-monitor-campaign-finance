@@ -204,8 +204,9 @@ cand_top5_contribs <- all_contribs %>%
   filter(!str_detect(tolower(entity), "contributors giving")) %>%
   filter(!entity %in% c("-", "--", "", NA)) %>%
   group_by(candidate) %>%
-  slice_max(total_contributed, n = 25, with_ties = FALSE) %>%
-  arrange(race, district, candidate, desc(total_contributed))
+  arrange(desc(total_contributed), entity) %>%
+  filter(total_contributed >= 3000 | row_number() <= 5) %>%
+  arrange(race, district, candidate, desc(total_contributed), entity)
 
 
 # filter out candidates who lost primary (after June primary, update data/candidate_status.csv)

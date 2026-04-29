@@ -15,8 +15,9 @@ cand_top5_contribs <- fed_df %>%
   group_by(candidate_name, contributor_name, office, district) %>%
   summarize(contribution_amount = sum(contribution_receipt_amount, na.rm = T), .groups = "drop") %>%
   group_by(candidate_name) %>%
-  slice_max(contribution_amount, n = 25, with_ties = FALSE) %>%
-  arrange(candidate_name, desc(contribution_amount)) %>%
+  arrange(desc(contribution_amount), contributor_name) %>%
+  filter(contribution_amount >= 3000 | row_number() <= 5) %>%
+  arrange(candidate_name, desc(contribution_amount), contributor_name) %>%
   ungroup()
 
 # Contributions by source (line_number_label categorizes contributor type)

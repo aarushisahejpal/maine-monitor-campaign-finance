@@ -132,21 +132,44 @@
         .tip-donor-name { opacity: 0.75; }
         .tip-donor-amt { font-weight: 600; white-space: nowrap; }
 
-        /* ── TIER 1: SECTION HEADERS ── */
-        .ribbon-header-wrapper { margin-bottom: 24px; }
+        /* ── TIER 1: RIBBON BANNERS (no icon) ── */
+        .ribbon-header-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
         .ribbon-main {
-            padding-bottom: 10px;
-            border-bottom: 4px solid #0073aa;
-            display: inline-block;
+            position: relative;
+            background: linear-gradient(135deg, #0073aa 0%, #005a84 100%);
+            color: white;
+            padding: 0 45px 0 0;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%);
+            min-width: 280px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+        }
+        .ribbon-main::before {
+            content: "";
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 6px;
+            background-color: #e67e22;
         }
         .ribbon-icon-area { display: none; }
         .ribbon-text {
             font-family: 'Lora', serif;
-            font-size: 1.5em;
-            font-weight: 800;
+            font-size: 18px;
+            font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: var(--text);
+            white-space: nowrap;
+            margin-left: 16px;
+        }
+        @media (max-width: 600px) {
+            .ribbon-main { height: 44px; padding-right: 24px; min-width: 240px; }
+            .ribbon-text { font-size: 15px; }
         }
 
         /* ── DONORS (side-by-side grid) ── */
@@ -231,7 +254,8 @@
 
     <footer class="page-footer">
         <strong>Source:</strong> Maine Campaign Finance Disclosure System. Includes direct contributions and contributions routed through committees and PACs.<br>
-        <strong>Last updated:</strong> April 21, 2026. Data is refreshed biweekly.<br><br>
+        <strong>Data range:</strong> January 1, 2025 – April 27, 2026.<br>
+        <strong>Last updated:</strong> April 28, 2026. Data is refreshed biweekly.<br><br>
         <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
     </footer>
 </div>
@@ -343,8 +367,6 @@ PARTY_ORDER.forEach(party => {
         card.innerHTML = `
             <div class="cc-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
             <div class="cc-name">${d.d}</div>
-            <div class="cc-amount">${fmt(d.t)}</div>
-            <div class="cc-label">total raised</div>
         `;
         grid.appendChild(card);
     });
@@ -462,7 +484,7 @@ candsWithDonors.forEach(cand => {
     cd.forEach((d, i) => {
         const row = document.createElement('div');
         row.className = 'd-row';
-        row.innerHTML = `<span class="d-rank">${i + 1}</span><span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
+        row.innerHTML = `<span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
         scrollWrap.appendChild(row);
     });
     card.appendChild(scrollWrap);
