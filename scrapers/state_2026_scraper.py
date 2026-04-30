@@ -108,16 +108,25 @@ def scrape_window(session, start_date, end_date, seen_urls):
     page = 1
     total_pages = None
     total_records = None
+    max_retries = 5
+    empty_retries = 0
 
     while True:
         params = build_params(page, start_date, end_date)
-        try:
-            resp = session.get(BASE_URL, params=params, timeout=30)
-            resp.raise_for_status()
-        except requests.RequestException as e:
-            print(f"    Error on page {page}: {e}. Retrying in 10s...")
-            time.sleep(10)
-            continue
+        retries = 0
+        resp = None
+        while retries < max_retries:
+            try:
+                resp = session.get(BASE_URL, params=params, timeout=30)
+                resp.raise_for_status()
+                break
+            except requests.RequestException as e:
+                retries += 1
+                if retries >= max_retries:
+                    print(f"    FAILED page {page} after {max_retries} retries: {e}")
+                    return new_rows, total_records or 0
+                print(f"    Error on page {page}: {e}. Retry {retries}/{max_retries} in 10s...")
+                time.sleep(10)
 
         rows, total = parse_page(resp.text)
 
@@ -125,11 +134,23 @@ def scrape_window(session, start_date, end_date, seen_urls):
             total_records = total
             total_pages = (total + 49) // 50
 
+        # Empty page: retry once in case of transient glitch
         if not rows:
+            empty_retries += 1
+            if empty_retries <= 2:
+                print(f"    Empty page {page}, retrying ({empty_retries}/2)...")
+                time.sleep(3)
+                continue
             break
+
+        empty_retries = 0  # reset on success
 
         for row in rows:
             url = row["filer_url"]
+            # Skip empty URLs to avoid false dedup
+            if not url:
+                new_rows.append(row)
+                continue
             if url not in seen_urls:
                 seen_urls.add(url)
                 new_rows.append(row)
@@ -164,9 +185,13 @@ def main():
 
         # First, check how many records this window has
         params = build_params(1, w_start.isoformat(), w_end.isoformat())
-        resp = session.get(BASE_URL, params=params, timeout=30)
-        _, window_total = parse_page(resp.text)
-        window_total = window_total or 0
+        try:
+            resp = session.get(BASE_URL, params=params, timeout=30)
+            _, window_total = parse_page(resp.text)
+            window_total = window_total or 0
+        except requests.RequestException as e:
+            print(f"{label} — error checking window size: {e}, scraping anyway...")
+            window_total = 0
 
         if window_total > MAX_PER_WINDOW:
             # Too many — split into weekly windows
@@ -175,9 +200,13 @@ def main():
             for j, (ws, we) in enumerate(weeks):
                 # Check if this week also needs splitting into days
                 params_check = build_params(1, ws.isoformat(), we.isoformat())
-                resp_check = session.get(BASE_URL, params=params_check, timeout=30)
-                _, week_total = parse_page(resp_check.text)
-                week_total = week_total or 0
+                try:
+                    resp_check = session.get(BASE_URL, params=params_check, timeout=30)
+                    _, week_total = parse_page(resp_check.text)
+                    week_total = week_total or 0
+                except requests.RequestException as e:
+                    print(f"  Error checking week size: {e}, scraping without split...")
+                    week_total = 0
 
                 if week_total > MAX_PER_WINDOW:
                     # Split into individual days

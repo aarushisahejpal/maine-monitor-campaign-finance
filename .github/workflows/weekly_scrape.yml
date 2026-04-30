@@ -1,14 +1,14 @@
-name: Biweekly State 2026 Scrape + Aggregate
+name: Biweekly Scrape + Aggregate (State + Federal)
 
 on:
   schedule:
-    - cron: '0 6 * * 1/2'  # Every other Monday at 6am UTC
+    - cron: '0 6 * * 1'  # Every Monday at 6am UTC
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
   scrape-and-aggregate:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
 
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +26,44 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Scrape state 2026 data
+      - name: Scrape state data (full re-scrape from new site)
         run: python scrapers/state_2026_scraper.py
+
+      - name: Validate state data
+        run: |
+          python3 -c "
+          import csv
+          with open('data/state_2026/transactions.csv') as f:
+              rows = list(csv.DictReader(f))
+          urls = [r['filer_url'] for r in rows if r['filer_url']]
+          dupes = len(urls) - len(set(urls))
+          print(f'State: {len(rows):,} rows, {dupes} duplicates')
+          if dupes > 0:
+              print('WARNING: Duplicates found!')
+              exit(1)
+          if len(rows) < 100000:
+              print(f'WARNING: Row count seems low ({len(rows):,}), expected 100K+')
+              exit(1)
+          print('State data validation passed')
+          "
+
+      - name: Scrape FEC receipts (2026 cycle)
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 a
+
+      - name: Scrape FEC expenditures (2026 cycle)
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 b
+
+      - name: Scrape FEC filings (2026 cycle)
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: |
+          if [ -f scrapers/fec_filings_scraper.py ]; then
+            python scrapers/fec_filings_scraper.py 2026
+          fi
 
       - name: Run R aggregation scripts
         run: |
@@ -38,10 +74,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/state_2026/transactions.csv viz/data/clean/
+          git add data/ viz/data/clean/
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Biweekly update: scrape + aggregate $(date +%Y-%m-%d)"
+            git commit -m "Weekly update: scrape + aggregate $(date +%Y-%m-%d)"
             git push
           fi
