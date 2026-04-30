@@ -79,44 +79,29 @@
         /* ── SECTIONS ── */
         .section { margin-top: 48px; }
 
-        /* ── TIER 1: RIBBON BANNERS (no icon) ── */
+        /* ── TIER 1: SECTION HEADERS ── */
         .ribbon-header-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
         .ribbon-main {
-            position: relative;
-            background: linear-gradient(135deg, #0073aa 0%, #005a84 100%);
-            color: white;
-            padding: 0 45px 0 0;
-            height: 50px;
             display: flex;
-            align-items: center;
-            clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%);
-            min-width: 280px;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
-        }
-        .ribbon-main::before {
-            content: "";
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 6px;
-            background-color: #e67e22;
+            align-items: baseline;
+            gap: 14px;
         }
         .ribbon-icon-area { display: none; }
         .ribbon-text {
             font-family: 'Lora', serif;
-            font-size: 18px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            white-space: nowrap;
-            margin-left: 16px;
+            font-size: 1.65em;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.2;
         }
-        @media (max-width: 600px) {
-            .ribbon-main { height: 44px; padding-right: 24px; min-width: 240px; }
-            .ribbon-text { font-size: 15px; }
+        .ribbon-main::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, var(--border), transparent);
+            margin-top: 4px;
         }
 
         /* ── TIER 2: SUB-SECTION TITLES ── */
@@ -169,6 +154,13 @@
         }
 
         /* ── CHART ── */
+        .chart-card {
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
         .chart-svg { width: 100%; overflow: visible; }
         .chart-svg text { font-family: 'Inter', sans-serif; }
         .chart-svg .bar { transition: opacity 0.15s; }
@@ -319,8 +311,10 @@
             </div>
         </div>
         <p style="font-size:0.85em;color:#666;margin-top:-16px;margin-bottom:16px;">Total campaign finance contributions by candidate</p>
-        <div id="chartContainer"></div>
-        <div class="chart-total" id="chartTotal"></div>
+        <div class="chart-card">
+            <div id="chartContainer"></div>
+            <div class="chart-total" id="chartTotal"></div>
+        </div>
     </section>
 
     <!-- TIER 2: Top Donors -->
