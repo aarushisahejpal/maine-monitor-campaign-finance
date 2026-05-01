@@ -269,6 +269,11 @@ const GEO_COLORS = { 'In State':'#2c6fbb', 'Out of State':'#c0392b', Unknown:'#9
 const BASE = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/viz/data/clean/';
 const OFFICE = 'House';
 
+// Get district from URL param
+const urlParams = new URLSearchParams(window.location.search);
+const DISTRICT = urlParams.get('district') || '01';
+document.title = `U.S. House District ${DISTRICT} — Campaign Finances — The Maine Monitor`;
+
 function loadCSV(f) {
     return new Promise((res, rej) => {
         Papa.parse(BASE + f, { download:true, header:true, skipEmptyLines:true, complete: r => res(r.data), error: rej });
@@ -286,7 +291,7 @@ async function loadData() {
         loadCSV('small_dollar_by_federal_candidate.csv'),
         loadCSV('platform_totals_federal.csv').catch(() => [])
     ]);
-    const f = r => r.office === OFFICE;
+    const f = r => r.office === OFFICE && r.district === DISTRICT;
     const SMALL = {};
     sm.filter(f).forEach(r => { SMALL[r.candidate_name] = +r.small_dollar_total; });
     const PLATFORMS = {};
