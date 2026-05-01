@@ -230,7 +230,7 @@
 
     <!-- TIER 2: Top Payees -->
     <section class="section">
-        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">Top Payees</div></div></div>
+        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">Where's It Going?</div></div></div>
         <div class="donors-grid" id="payees"></div>
     </section>
 
@@ -397,7 +397,8 @@ function buildChart(containerId, data, totalId) {
 buildChart('chartContributions', TOTALS, 'contribTotal');
 
 // ── TOP DONORS ──
-function buildDonorGrid(containerId, data, totals, topN, smallData) {
+function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
+    listLabel = listLabel || 'Top Individual Donors';
     const el = document.getElementById(containerId);
     totals.slice(0, topN).forEach(cand => {
         const cd = data.filter(d => d.c === cand.c);
@@ -434,7 +435,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData) {
         if (namedDonors.length) {
             const hdr = document.createElement('div');
             hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
-            hdr.textContent = 'Top Individual Donors';
+            hdr.textContent = listLabel;
             card.appendChild(hdr);
         }
 
@@ -486,7 +487,7 @@ buildBreakdown('byState', BY_STATE, TOTALS, GEO_COLORS, 6);
 buildChart('chartExpenditures', EXP_TOTALS, 'expTotal');
 
 // ── TOP PAYEES ──
-buildDonorGrid('payees', TOP_PAYEES, EXP_TOTALS, 6);
+buildDonorGrid('payees', TOP_PAYEES, EXP_TOTALS, 6, null, 'Top Expenditures');
 
 // ── FILINGS ──
 // Try remote first, fall back to local relative path
