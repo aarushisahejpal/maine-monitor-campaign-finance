@@ -176,67 +176,99 @@ def pull(cycle, schedule):
         if not file_exists:
             writer.writeheader()
 
+        # Quarterly date windows for splitting large committees
+        quarters = []
+        for y in range(cycle - 1, cycle + 1):
+            for q_start, q_end in [('01-01','03-31'),('04-01','06-30'),('07-01','09-30'),('10-01','12-31')]:
+                quarters.append((f'{y}-{q_start}', f'{y}-{q_end}'))
+
         total_rows = 0
         for comm_id, cand in remaining.items():
             print(f"\n  {cand['name']} ({comm_id})...", end='', flush=True)
 
-            last_index = None
-            last_date = None
-            cand_rows = 0
-            max_retries = 5
-            consecutive_errors = 0
-            pages_fetched = 0
-
-            while True:
-                params = {
+            # Check total record count first
+            try:
+                check_params = {
                     'api_key': API_KEY,
                     'committee_id': comm_id,
                     'two_year_transaction_period': cycle,
-                    'per_page': 100,
-                    'sort': cfg['sort_field'],
+                    'per_page': 1,
                 }
-                if last_index:
-                    params['last_index'] = last_index
-                    params[cfg['date_key']] = last_date
+                resp = session.get(cfg['endpoint'], params=check_params, timeout=60)
+                record_count = resp.json().get('pagination', {}).get('count', 0)
+            except:
+                record_count = 0
 
-                try:
-                    resp = session.get(cfg['endpoint'], params=params, timeout=60)
-                    resp.raise_for_status()
-                    data = resp.json()
-                    consecutive_errors = 0
-                except Exception as e:
-                    consecutive_errors += 1
-                    if consecutive_errors >= max_retries:
-                        print(f"\n    FAILED after {max_retries} retries: {e}. Moving on.")
-                        break
-                    print(f"\n    Error ({consecutive_errors}/{max_retries}): {e}. Retrying in 10s...")
-                    time.sleep(10)
-                    continue
+            # Use date windows for large committees (>5000 records)
+            use_windows = record_count > 5000
+            if use_windows:
+                print(f" ({record_count:,} records, using quarterly windows)", end='', flush=True)
+                windows = quarters
+            else:
+                windows = [(None, None)]  # single pass, no date filter
 
-                results = data.get('results', [])
-                if not results:
-                    break
+            cand_rows = 0
+            for w_start, w_end in windows:
+                last_index = None
+                last_date = None
+                max_retries = 5
+                consecutive_errors = 0
+                pages_fetched = 0
 
-                for r in results:
-                    txn_id = r.get('transaction_id', '')
-                    if txn_id and txn_id in seen_txn_ids:
+                while True:
+                    params = {
+                        'api_key': API_KEY,
+                        'committee_id': comm_id,
+                        'two_year_transaction_period': cycle,
+                        'per_page': 100,
+                        'sort': cfg['sort_field'],
+                    }
+                    if w_start:
+                        date_field = 'contribution_receipt_date' if schedule == 'a' else 'disbursement_date'
+                        params[f'min_{date_field}'] = w_start
+                        params[f'max_{date_field}'] = w_end
+                    if last_index:
+                        params['last_index'] = last_index
+                        params[cfg['date_key']] = last_date
+
+                    try:
+                        resp = session.get(cfg['endpoint'], params=params, timeout=60)
+                        resp.raise_for_status()
+                        data = resp.json()
+                        consecutive_errors = 0
+                    except Exception as e:
+                        consecutive_errors += 1
+                        if consecutive_errors >= max_retries:
+                            print(f"\n    FAILED after {max_retries} retries: {e}. Moving on.")
+                            break
+                        print(f"\n    Error ({consecutive_errors}/{max_retries}): {e}. Retrying in 10s...")
+                        time.sleep(10)
                         continue
-                    if txn_id:
-                        seen_txn_ids.add(txn_id)
-                    writer.writerow(cfg['row_fn'](cand, r))
-                    cand_rows += 1
 
-                pagination = data.get('pagination', {})
-                last_index = pagination.get('last_indexes', {}).get('last_index')
-                last_date = pagination.get('last_indexes', {}).get(cfg['date_key'])
+                    results = data.get('results', [])
+                    if not results:
+                        break
 
-                pages_fetched += 1
-                if pages_fetched % 50 == 0:
-                    print(f" {cand_rows:,}...", end='', flush=True)
+                    for r in results:
+                        txn_id = r.get('transaction_id', '')
+                        if txn_id and txn_id in seen_txn_ids:
+                            continue
+                        if txn_id:
+                            seen_txn_ids.add(txn_id)
+                        writer.writerow(cfg['row_fn'](cand, r))
+                        cand_rows += 1
 
-                if not last_index:
-                    break
-                time.sleep(0.5)
+                    pagination = data.get('pagination', {})
+                    last_index = pagination.get('last_indexes', {}).get('last_index')
+                    last_date = pagination.get('last_indexes', {}).get(cfg['date_key'])
+
+                    pages_fetched += 1
+                    if pages_fetched % 50 == 0:
+                        print(f" {cand_rows:,}...", end='', flush=True)
+
+                    if not last_index:
+                        break
+                    time.sleep(0.5)
 
             csvfile.flush()
             total_rows += cand_rows

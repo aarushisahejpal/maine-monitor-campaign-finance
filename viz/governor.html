@@ -329,6 +329,29 @@
         <div class="donors-grid" id="donors"></div>
     </section>
 
+    <section class="section">
+        <div class="ribbon-header-wrapper">
+            <div class="ribbon-main">
+                <div class="ribbon-text">Expenditures</div>
+            </div>
+        </div>
+        <div class="chart-card">
+            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Total campaign expenditures by candidate</p>
+            <div id="chartExpenditures"></div>
+            <div class="chart-total" id="expTotal"></div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="ribbon-header-wrapper">
+            <div class="ribbon-main">
+                <div class="ribbon-text">Where's It Going?</div>
+            </div>
+        </div>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Top payees by candidate</p>
+        <div class="donors-grid" id="payees"></div>
+    </section>
+
     <footer class="page-footer">
         <strong>Source:</strong> Maine Campaign Finance Disclosure System. Includes direct contributions and contributions routed through committees and PACs.<br>
         <strong>Data range:</strong> January 1, 2025 – April 27, 2026.<br>
@@ -360,10 +383,12 @@ function loadCSV(file) {
 }
 
 async function loadData() {
-    const [totalsRaw, donorsRaw, smallRaw] = await Promise.all([
+    const [totalsRaw, donorsRaw, smallRaw, expRaw, payeesRaw] = await Promise.all([
         loadCSV('maine_total_contributions_by_filer.csv'),
         loadCSV('maine_top_5contributors_by_filer.csv'),
-        loadCSV('maine_small_dollar_by_filer.csv')
+        loadCSV('maine_small_dollar_by_filer.csv'),
+        loadCSV('maine_total_expenditures_by_filer.csv'),
+        loadCSV('maine_top_5payees_by_filer.csv')
     ]);
 
     const TOTALS = totalsRaw
@@ -380,18 +405,27 @@ async function loadData() {
         SMALL[r.display_name || r.candidate] = parseFloat(r.small_dollar_total);
     });
 
-    return { TOTALS, DONORS, SMALL };
+    const EXP_TOTALS = expRaw
+        .filter(r => r.race === RACE_FILTER)
+        .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_exp)}))
+        .sort((a, b) => b.t - a.t);
+
+    const TOP_PAYEES = payeesRaw
+        .filter(r => r.race === RACE_FILTER)
+        .map(r => ({c: r.display_name || r.candidate, e: r.entity, a: parseFloat(r.total_paid)}));
+
+    return { TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES };
 }
 
 // Load and render
-loadData().then(({ TOTALS, DONORS, SMALL }) => {
-    render(TOTALS, DONORS, SMALL);
+loadData().then(({ TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES }) => {
+    render(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES);
 }).catch(err => {
     console.error('Failed to load data:', err);
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data. Check console.</p>';
 });
 
-function render(TOTALS, DONORS, SMALL) {
+function render(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
 
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
@@ -581,6 +615,93 @@ topCands.forEach(cand => {
     card.appendChild(scrollWrap);
     donorsEl.appendChild(card);
 });
+// ─── EXPENDITURES BAR CHART ───
+const expData = EXP_TOTALS;
+if (expData.length) {
+    const expMargin = { top: 4, right: 110, bottom: 4, left: 175 };
+    const expBarH = 30, expBarGap = 6;
+    const expWidth = 780;
+    const expHeight = expData.length * (expBarH + expBarGap) + expMargin.top + expMargin.bottom;
+
+    const expSvg = d3.select('#chartExpenditures')
+        .append('svg')
+        .attr('class', 'chart-svg')
+        .attr('viewBox', `0 0 ${expWidth} ${expHeight}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+
+    const expX = d3.scaleLinear()
+        .domain([0, d3.max(expData, d => d.t)])
+        .range([expMargin.left, expWidth - expMargin.right]);
+
+    const expY = d3.scaleBand()
+        .domain(expData.map(d => d.c))
+        .range([expMargin.top, expHeight - expMargin.bottom])
+        .padding(0.15);
+
+    const expBars = expSvg.selectAll('.bar-g')
+        .data(expData).join('g').attr('class', 'bar-g');
+
+    expBars.append('rect').attr('class', 'bar')
+        .attr('x', expMargin.left).attr('y', d => expY(d.c))
+        .attr('width', 0).attr('height', expY.bandwidth()).attr('rx', 2)
+        .attr('fill', d => COLORS[d.p] || '#999')
+        .transition().duration(700).delay((d, i) => i * 40)
+        .attr('width', d => expX(d.t) - expMargin.left);
+
+    expBars.append('text').attr('class', 'label')
+        .attr('x', expMargin.left - 10).attr('y', d => expY(d.c) + expY.bandwidth() / 2)
+        .attr('dy', '0.35em').attr('text-anchor', 'end')
+        .text(d => removeMiddleName(d.c));
+
+    expBars.append('text').attr('class', 'value')
+        .attr('x', d => expX(d.t) + 8).attr('y', d => expY(d.c) + expY.bandwidth() / 2)
+        .attr('dy', '0.35em').text(d => fmt(d.t))
+        .style('opacity', 0).transition().duration(400).delay((d, i) => i * 40 + 500).style('opacity', 1);
+
+    expBars.on('mouseenter', function(evt, d) {
+        expSvg.classed('has-hover', true);
+        d3.select(this).select('.bar').classed('active', true);
+        showTip(evt, `<div class="tip-name">${removeMiddleName(d.c)}</div><div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div><div class="tip-total">${fmt(d.t)} spent</div>`);
+    }).on('mousemove', moveTip).on('mouseleave', function() {
+        expSvg.classed('has-hover', false);
+        d3.select(this).select('.bar').classed('active', false);
+        hideTip();
+    });
+
+    const expTotal = EXP_TOTALS.reduce((a, b) => a + b.t, 0);
+    document.getElementById('expTotal').textContent = 'Total spent across all candidates: ' + fmt(expTotal);
+}
+
+// ─── TOP PAYEES ───
+const payeesEl = document.getElementById('payees');
+const topExpCands = EXP_TOTALS.slice(0, 8);
+topExpCands.forEach(cand => {
+    const cd = TOP_PAYEES.filter(d => d.c === cand.c);
+    if (!cd.length) return;
+
+    const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3', Independent: '#f3eef8' };
+    const card = document.createElement('div');
+    card.className = 'donor-card';
+    card.style.background = tints[cand.p] || '#fff';
+    card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} spent</span></div>`;
+
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
+    hdr.textContent = 'Top Expenditures';
+    card.appendChild(hdr);
+
+    const scrollWrap = document.createElement('div');
+    scrollWrap.style.cssText = 'max-height:220px;overflow-y:auto;';
+    cd.forEach((d, i) => {
+        const row = document.createElement('div');
+        row.className = 'd-row';
+        row.innerHTML = `<span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`;
+        scrollWrap.appendChild(row);
+    });
+    card.appendChild(scrollWrap);
+    payeesEl.appendChild(card);
+});
+
 } // end render()
 </script>
 </body>
