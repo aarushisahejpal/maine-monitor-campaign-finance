@@ -545,7 +545,7 @@ topCands.forEach(cand => {
     platformDonors.forEach(d => {
         const pb = document.createElement('div');
         pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-        pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${d.e}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
+        pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${/actblue/i.test(d.e) ? "ActBlue" : "WinRed"}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
         card.appendChild(pb);
     });
 
