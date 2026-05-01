@@ -296,8 +296,9 @@ cand_top5_payees <- state_df %>%
   filter(race %in% c("Governor", "Senator", "Representative")) %>%
   rename(candidate = filer_name, entity = source_payee) %>%
   group_by(candidate) %>%
-  slice_max(total_paid, n = 5, with_ties = FALSE) %>%
-  arrange(race, district, candidate, desc(total_paid))
+  arrange(desc(total_paid), entity) %>%
+  filter(total_paid >= 3000 | row_number() <= 5) %>%
+  arrange(race, district, candidate, desc(total_paid), entity)
 
 # Apply candidate status filter
 cand_exp_total <- cand_exp_total %>%
