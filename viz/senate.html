@@ -276,18 +276,24 @@ function loadCSV(f) {
 }
 
 async function loadData() {
-    const [tot, don, src, geo, exp, pay, sm] = await Promise.all([
+    const [tot, don, src, geo, exp, pay, sm, plat] = await Promise.all([
         loadCSV('total_contributions_by_federal_candidate.csv'),
         loadCSV('top_5contributors_by_federal_candidate.csv'),
         loadCSV('contributions_by_source_federal.csv'),
         loadCSV('contributions_by_state_federal.csv'),
         loadCSV('total_expenditures_by_federal_candidate.csv'),
         loadCSV('top_5payees_by_federal_candidate.csv'),
-        loadCSV('small_dollar_by_federal_candidate.csv')
+        loadCSV('small_dollar_by_federal_candidate.csv'),
+        loadCSV('platform_totals_federal.csv').catch(() => [])
     ]);
     const f = r => r.office === OFFICE;
     const SMALL = {};
     sm.filter(f).forEach(r => { SMALL[r.candidate_name] = +r.small_dollar_total; });
+    const PLATFORMS = {};
+    plat.filter(f).forEach(r => {
+        if (!PLATFORMS[r.candidate_name]) PLATFORMS[r.candidate_name] = [];
+        PLATFORMS[r.candidate_name].push({e: r.contributor_name, a: +r.platform_total});
+    });
     return {
         TOTALS: tot.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_con, unitemized:+(r.individual_unitemized||0)})).sort((a,b)=>b.t-a.t),
         DONORS: don.filter(f).map(r => ({c:r.candidate_name, e:r.contributor_name, a:+r.contribution_amount})),
@@ -295,7 +301,7 @@ async function loadData() {
         BY_STATE: geo.filter(f).map(r => ({c:r.candidate_name, g:r.geo, t:+r.total})),
         EXP_TOTALS: exp.filter(f).map(r => ({c:r.candidate_name, p:r.party, t:+r.tot_exp})).sort((a,b)=>b.t-a.t),
         TOP_PAYEES: pay.filter(f).map(r => ({c:r.candidate_name, e:r.recipient_name, a:+r.total_paid})),
-        SMALL
+        SMALL, PLATFORMS
     };
 }
 
@@ -304,7 +310,7 @@ loadData().then(d => render(d)).catch(e => {
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
 });
 
-function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES, SMALL }) {
+function render({ TOTALS, DONORS, BY_SOURCE, BY_STATE, EXP_TOTALS, TOP_PAYEES, SMALL, PLATFORMS }) {
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const tip = document.getElementById('tip');
@@ -392,15 +398,11 @@ function buildChart(containerId, data, totalId) {
 buildChart('chartContributions', TOTALS, 'contribTotal');
 
 // ── TOP DONORS ──
-function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
+function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, platformData) {
     listLabel = listLabel || 'Top Individual Donors';
     const el = document.getElementById(containerId);
     totals.slice(0, topN).forEach(cand => {
         const cd = data.filter(d => d.c === cand.c);
-        if (!cd.length) return;
-
-        // Separate platform donations
-        const platformDonors = cd.filter(d => /actblue|winred/i.test(d.e));
         const namedDonors = cd.filter(d => !/actblue|winred/i.test(d.e));
 
         const tints = { 'REPUBLICAN PARTY': '#fdf0ee', 'DEMOCRATIC PARTY': '#eef4fb', 'INDEPENDENT': '#f3eef8', 'INDEPENDENT PARTY': '#f3eef8', 'UNAFFILIATED': '#f3f3f3' };
@@ -409,8 +411,9 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
         card.style.background = tints[cand.p] || '#fff';
         card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${PARTY_COLORS[cand.p] || '#6b6b6b'}">${displayName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
 
-        // Platform donations (ActBlue/WinRed)
-        platformDonors.forEach(d => {
+        // Platform donations (ActBlue/WinRed) from separate dataset
+        const platforms = platformData ? (platformData[cand.c] || []) : [];
+        platforms.forEach(d => {
             const pb = document.createElement('div');
             pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
             pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${d.e}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
@@ -425,14 +428,6 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
             card.appendChild(ui);
         }
 
-        // Small-dollar highlight
-        const smallAmt = smallData ? smallData[cand.c] : null;
-        if (smallAmt) {
-            const sd = document.createElement('div');
-            sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-            sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
-            card.appendChild(sd);
-        }
 
         // Top donors header
         if (namedDonors.length) {
@@ -455,7 +450,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
         el.appendChild(card);
     });
 }
-buildDonorGrid('donors', DONORS, TOTALS, 6, SMALL);
+buildDonorGrid('donors', DONORS, TOTALS, 6, SMALL, null, PLATFORMS);
 
 // ── BREAKDOWN HELPER ──
 function buildBreakdown(containerId, data, totals, colorMap, topN) {

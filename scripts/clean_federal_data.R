@@ -61,6 +61,13 @@ small_dollar_federal <- fed_df_no_memo %>%
   group_by(candidate_name, office, district, party) %>%
   summarise(small_dollar_total = sum(contribution_receipt_amount, na.rm = TRUE), .groups = "drop")
 
+# ActBlue/WinRed platform totals (from unfiltered data to capture all earmarked donations)
+platform_totals <- fed_df %>%
+  filter(contribution_receipt_amount > 0) %>%
+  filter(str_detect(toupper(contributor_name), "ACTBLUE|WINRED")) %>%
+  group_by(candidate_name, office, district, contributor_name) %>%
+  summarise(platform_total = sum(contribution_receipt_amount, na.rm = TRUE), .groups = "drop")
+
 # ── EXPENDITURES (disbursements) ──
 fed_exp <- read_csv("data/federal_2026/expenditures.csv")
 
@@ -100,4 +107,6 @@ write.csv(cand_by_source, file = "viz/data/clean/contributions_by_source_federal
 write.csv(cand_by_state, file = "viz/data/clean/contributions_by_state_federal.csv", row.names = FALSE)
 write.csv(cand_top5_payees, file = "viz/data/clean/top_5payees_by_federal_candidate.csv", row.names = FALSE)
 write.csv(cand_exp_by_purpose, file = "viz/data/clean/expenditures_by_purpose_federal.csv", row.names = FALSE)
+write.csv(small_dollar_federal, file = "viz/data/clean/small_dollar_by_federal_candidate.csv", row.names = FALSE)
+write.csv(platform_totals, file = "viz/data/clean/platform_totals_federal.csv", row.names = FALSE)
 write.csv(small_dollar_federal, file = "viz/data/clean/small_dollar_by_federal_candidate.csv", row.names = FALSE)
