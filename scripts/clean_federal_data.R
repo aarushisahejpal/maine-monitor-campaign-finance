@@ -88,8 +88,9 @@ cand_top5_payees <- fed_exp %>%
   group_by(candidate_name, recipient_name, office, district) %>%
   summarize(total_paid = sum(disbursement_amount, na.rm = T), .groups = "drop") %>%
   group_by(candidate_name) %>%
-  slice_max(total_paid, n = 5, with_ties = FALSE) %>%
-  arrange(candidate_name, desc(total_paid)) %>%
+  arrange(desc(total_paid), recipient_name) %>%
+  filter(total_paid >= 3000 | row_number() <= 5) %>%
+  arrange(candidate_name, desc(total_paid), recipient_name) %>%
   ungroup()
 
 # Expenditures by purpose category
