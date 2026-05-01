@@ -30,7 +30,7 @@
             line-height: 1.55;
             -webkit-font-smoothing: antialiased;
         }
-        .container { max-width: 680px; margin: 0 auto; padding: 0 20px 80px; }
+        .container { max-width: 780px; margin: 0 auto; padding: 0 20px 80px; }
 
         /* ── HEADER ── */
         .page-header { padding: 56px 0 24px; }
@@ -51,7 +51,7 @@
         .header-rule { width: 60px; height: 3px; background: var(--accent); margin: 24px 0 0; border: none; }
 
         /* ── SECTIONS ── */
-        .section { margin-top: 44px; }
+        .section { margin-top: 48px; }
         .section-label {
             font-size: 0.65em; font-weight: 700; text-transform: uppercase;
             letter-spacing: 2px; color: var(--accent);
@@ -106,11 +106,11 @@
         }
         .chart-svg { width: 100%; overflow: visible; }
         .chart-svg text { font-family: 'Inter', sans-serif; }
-        .chart-svg .bar { transition: opacity 0.15s; cursor: pointer; }
-        .chart-svg.has-hover .bar { opacity: 0.3; }
+        .chart-svg .bar { transition: opacity 0.15s; }
+        .chart-svg.has-hover .bar { opacity: 0.35; }
         .chart-svg.has-hover .bar.active { opacity: 1; }
         .chart-svg .label { fill: var(--text); font-size: 13px; font-weight: 500; }
-        .chart-svg .value { fill: var(--text-secondary); font-size: 12.5px; font-weight: 600; }
+        .chart-svg .value { fill: var(--text-secondary); font-size: 12px; font-weight: 600; }
 
         .chart-total {
             text-align: right;
@@ -125,7 +125,7 @@
             position: fixed; pointer-events: none; z-index: 9999;
             background: var(--text); color: #fff; border-radius: 8px;
             padding: 14px 18px; font-size: 0.8em; line-height: 1.55;
-            max-width: 280px; box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+            max-width: 300px; box-shadow: 0 8px 30px rgba(0,0,0,0.18);
             opacity: 0; transform: translateY(4px);
             transition: opacity 0.12s, transform 0.12s;
         }
@@ -200,13 +200,13 @@
 
         /* ── FOOTER ── */
         .page-footer {
-            margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border);
+            margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border);
             font-size: 0.72em; color: var(--text); line-height: 1.7;
         }
         .page-footer strong { font-weight: 600; color: var(--text); }
 
         @media (max-width: 600px) {
-            .page-header h1 { font-size: 1.5em; }
+            .page-header h1 { font-size: 1.7em; }
             .cand-cards { grid-template-columns: 1fr; }
             .donors-grid { grid-template-columns: 1fr; }
         }
@@ -254,7 +254,7 @@
         <strong>Source:</strong> Maine Campaign Finance Disclosure System. Includes direct contributions and contributions routed through committees and PACs.<br>
         <strong>Data range:</strong> January 1, 2025 – April 27, 2026.<br>
         <strong>Last updated:</strong> April 28, 2026. Data is refreshed biweekly.<br><br>
-        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
+        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates. WinRed serves the same function for Republican candidates. Contributions listed under these platforms are from individual donors who used them to make their donations — they are not contributions from the platforms themselves.</span>
     </footer>
 </div>
 
