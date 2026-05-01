@@ -243,7 +243,9 @@
         <strong>Source:</strong> Federal Election Commission (FEC). Processed data for the 2026 election cycle.<br>
         <strong>Data range:</strong> 2025–2026 election cycle.<br>
         <strong>Last updated:</strong> April 28, 2026. Federal data is refreshed quarterly.<br><br>
-        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates and progressive organizations. Contributions listed under ActBlue are from individual donors who used the platform to make their donations — they are not contributions from ActBlue itself.</span>
+        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates. WinRed serves the same function for Republican candidates. Contributions listed under these platforms are from individual donors who used them to make their donations — they are not contributions from the platforms themselves.</span><br><br>
+        <span style="font-size:0.95em;">**Unitemized contributions are donations under $200 that the FEC does not require to be individually reported. They are included in the candidate's total but cannot be attributed to specific donors.</span><br><br>
+        <span style="font-size:0.95em;">Total raised and total spent figures are from official FEC filings. Donor and payee breakdowns are based on itemized transaction records and may not sum to the total.</span>
     </footer>
 </div>
 
@@ -410,7 +412,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
         // Platform donations (ActBlue/WinRed)
         platformDonors.forEach(d => {
             const pb = document.createElement('div');
-            pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#eef4fb;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+            pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
             pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${d.e}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
             card.appendChild(pb);
         });
@@ -418,8 +420,8 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
         // Unitemized contributions
         if (cand.unitemized > 0) {
             const ui = document.createElement('div');
-            ui.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-            ui.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Unitemized contributions (&lt;$200)</span><span style="font-size:0.95em;font-weight:400;">${fmt(cand.unitemized)}</span>`;
+            ui.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+            ui.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Unitemized contributions (&lt;$200)**</span><span style="font-size:0.95em;font-weight:400;">${fmt(cand.unitemized)}</span>`;
             card.appendChild(ui);
         }
 
@@ -427,7 +429,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel) {
         const smallAmt = smallData ? smallData[cand.c] : null;
         if (smallAmt) {
             const sd = document.createElement('div');
-            sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+            sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
             sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
             card.appendChild(sd);
         }

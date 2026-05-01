@@ -468,7 +468,7 @@ candsWithDonors.forEach(cand => {
     // Platform donations (ActBlue/WinRed)
     platformDonors.forEach(d => {
         const pb = document.createElement('div');
-        pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#eef4fb;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
         pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${d.e}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
         card.appendChild(pb);
     });
@@ -477,7 +477,7 @@ candsWithDonors.forEach(cand => {
     const smallAmt = SMALL ? SMALL[cand.c] : null;
     if (smallAmt) {
         const sd = document.createElement('div');
-        sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f6f6fa;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
         sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
         card.appendChild(sd);
     }
