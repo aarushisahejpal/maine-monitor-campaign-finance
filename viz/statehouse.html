@@ -467,9 +467,12 @@ candsWithDonors.forEach(cand => {
 
     // Platform donations (ActBlue/WinRed)
     platformDonors.forEach(d => {
+        const isBlue = /actblue/i.test(d.e);
+        const borderColor = isBlue ? '#2c6fbb' : '#c0392b';
+        const label = isBlue ? 'ActBlue' : 'WinRed';
         const pb = document.createElement('div');
-        pb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-        pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${/actblue/i.test(d.e) ? "ActBlue" : "WinRed"}*</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
+        pb.style.cssText = `padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-left:3px solid ${borderColor};border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;`;
+        pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${label}</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
         card.appendChild(pb);
     });
 
