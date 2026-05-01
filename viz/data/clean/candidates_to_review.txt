@@ -1,0 +1,16 @@
+=== CANDIDATES TO REVIEW ===
+These candidates appear on our pages but were NOT found as Active on the disclosure site.
+They may have terminated/withdrawn, or it could be a name matching issue.
+
+Candidate                           Race            District Action Needed
+--------------------------------------------------------------------------------
+Dana Appleby                        Representative  1        Verify status
+Jonathan Goble                      Representative  18       Verify status
+Sean Faircloth                      Representative  24       Verify status
+Zachary Smith                       Representative  24       Verify status
+Jeffrey Harris                      Representative  58       Verify status
+Janet Beaudoin                      Representative  94       Verify status
+Luke Jensen                         Representative  96       Verify status
+Ryan Fecteau                        Representative  132      Verify status
+Richard Mason                       Senator         17       Verify status
+Eric Brakey                         Senator         20       Verify status
