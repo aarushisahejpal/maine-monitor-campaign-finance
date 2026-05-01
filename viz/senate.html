@@ -101,11 +101,12 @@
         .tip-donor-amt { font-weight: 600; white-space: nowrap; }
         .tip-header { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 4px; }
 
-        .donors-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 36px; }
-        .donor-card { min-width: 0; overflow: hidden; }
-        .donor-card-header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 2px; }
-        .donor-card-name { font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 0.95em; text-transform: capitalize; }
-        .donor-card-total { font-size: 1.05em; color: var(--text); font-weight: 700; white-space: nowrap; }
+        .donors-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .donor-card { min-width: 0; overflow: hidden; background: #fff; border: 1px solid #e8e8e8; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: box-shadow 0.15s; }
+        .donor-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .donor-card-header { padding-bottom: 10px; margin-bottom: 4px; }
+        .donor-card-name { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 1.15em; text-transform: capitalize; display: block; }
+        .donor-card-total { font-size: 1.05em; color: var(--text); font-weight: 700; white-space: nowrap; display: block; margin-top: 2px; }
         .d-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; border-radius: 3px; transition: background 0.1s; gap: 8px; }
         .d-row:hover { background: var(--bg-hover); }
         .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 400; min-width: 18px; }
@@ -184,29 +185,32 @@
                 <div class="ribbon-text">Contributions</div>
             </div>
         </div>
-        <p style="font-size:0.85em;color:#666;margin-top:-16px;margin-bottom:16px;">Total campaign finance contributions by candidate</p>
         <div class="chart-card">
+            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Total campaign finance contributions by candidate</p>
             <div id="chartContributions"></div>
             <div class="chart-total" id="contribTotal"></div>
         </div>
     </section>
 
-    <!-- TIER 2: Top Donors -->
     <section class="section">
-        <h2 class="sub-section-title">Top Donors</h2>
-        <p style="font-size:0.85em;color:#666;margin-top:-16px;margin-bottom:16px;">Top donors by candidate</p>
+        <div class="ribbon-header-wrapper">
+            <div class="ribbon-main">
+                <div class="ribbon-text">Top Donors</div>
+            </div>
+        </div>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Top donors by candidate</p>
         <div class="donors-grid" id="donors"></div>
     </section>
 
     <!-- TIER 2: By Source -->
     <section class="section">
-        <h2 class="sub-section-title">By Source</h2>
+        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">By Source</div></div></div>
         <div class="breakdown-grid" id="bySource"></div>
     </section>
 
     <!-- TIER 2: By Geography -->
     <section class="section">
-        <h2 class="sub-section-title">In State vs. Out of State</h2>
+        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">In State vs. Out of State</div></div></div>
         <div class="breakdown-grid" id="byState"></div>
     </section>
 
@@ -226,13 +230,13 @@
 
     <!-- TIER 2: Top Payees -->
     <section class="section">
-        <h2 class="sub-section-title">Top Payees</h2>
+        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">Top Payees</div></div></div>
         <div class="donors-grid" id="payees"></div>
     </section>
 
     <!-- TIER 2: Filings -->
     <section class="section">
-        <h2 class="sub-section-title">Filing Documents</h2>
+        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">Filing Documents</div></div></div>
         <div style="margin-bottom:16px;">
             <label for="filingSelect" style="font-size:0.8em;font-weight:600;color:var(--text-secondary);margin-right:8px;">Candidate:</label>
             <select id="filingSelect" style="font-family:'Inter',sans-serif;font-size:0.85em;padding:6px 12px;border:1px solid var(--border);border-radius:4px;background:#fff;color:var(--text);cursor:pointer;min-width:220px;">
@@ -403,9 +407,11 @@ function buildDonorGrid(containerId, data, totals, topN, smallData) {
         const platformDonors = cd.filter(d => /actblue|winred/i.test(d.e));
         const namedDonors = cd.filter(d => !/actblue|winred/i.test(d.e));
 
+        const tints = { 'REPUBLICAN PARTY': '#fdf0ee', 'DEMOCRATIC PARTY': '#eef4fb', 'INDEPENDENT': '#f3eef8', 'INDEPENDENT PARTY': '#f3eef8', 'UNAFFILIATED': '#f3f3f3' };
         const card = document.createElement('div');
         card.className = 'donor-card';
-        card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name">${displayName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
+        card.style.background = tints[cand.p] || '#fff';
+        card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${PARTY_COLORS[cand.p] || '#6b6b6b'}">${displayName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
 
         // Platform donations (ActBlue/WinRed)
         platformDonors.forEach(d => {
