@@ -65,8 +65,14 @@ small_dollar_federal <- fed_df_no_memo %>%
 platform_totals <- fed_df %>%
   filter(contribution_receipt_amount > 0) %>%
   filter(str_detect(toupper(contributor_name), "ACTBLUE|WINRED")) %>%
-  group_by(candidate_name, office, district, contributor_name) %>%
-  summarise(platform_total = sum(contribution_receipt_amount, na.rm = TRUE), .groups = "drop")
+  mutate(platform = case_when(
+    str_detect(toupper(contributor_name), "ACTBLUE") ~ "ActBlue",
+    str_detect(toupper(contributor_name), "WINRED") ~ "WinRed",
+    TRUE ~ contributor_name
+  )) %>%
+  group_by(candidate_name, office, district, platform) %>%
+  summarise(platform_total = sum(contribution_receipt_amount, na.rm = TRUE), .groups = "drop") %>%
+  rename(contributor_name = platform)
 
 # ── EXPENDITURES (disbursements) ──
 fed_exp <- read_csv("data/federal_2026/expenditures.csv")
