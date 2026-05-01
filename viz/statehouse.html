@@ -269,11 +269,8 @@ const params = new URLSearchParams(window.location.search);
 const DISTRICT = params.get('district') || '94';
 const RACE = params.get('race') || 'Representative';
 
-// Update page header
-document.querySelector('.page-header h1').textContent =
-    RACE === 'Senator' ? `Senate District ${DISTRICT}` : `House District ${DISTRICT}`;
-document.querySelector('.page-header .dek').textContent =
-    `Campaign finance data for all candidates running in Maine ${RACE === 'Senator' ? 'Senate' : 'House'} District ${DISTRICT}.`;
+// Update page title
+document.title = (RACE === 'Senator' ? `Senate District ${DISTRICT}` : `House District ${DISTRICT}`) + ' — Campaign Finances — The Maine Monitor';
 
 const BASE_URL = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/viz/data/clean/';
 
