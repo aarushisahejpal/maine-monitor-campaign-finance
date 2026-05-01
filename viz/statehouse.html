@@ -62,39 +62,23 @@
             margin-top: 4px; margin-bottom: 20px;
         }
 
-        /* ── CANDIDATES (side-by-side cards) ── */
-        .cand-cards {
+        /* ── CANDIDATES ── */
+        .party-columns {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 28px;
         }
-        .cand-card {
-            border-radius: 6px;
-            padding: 20px;
-            background: #fafafa;
-            border-top: 3px solid var(--gray);
-            transition: box-shadow 0.15s, transform 0.15s;
+        .party-heading {
+            font-size: 0.7em; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1.5px; padding-bottom: 8px; margin-bottom: 4px;
         }
-        .cand-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); transform: translateY(-1px); }
-        .cand-card.democratic { border-top-color: var(--blue); }
-        .cand-card.republican { border-top-color: var(--red); }
-        .cand-card .cc-party {
-            font-size: 0.65em; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1.5px; margin-bottom: 6px;
-        }
-        .cand-card.democratic .cc-party { color: var(--blue); }
-        .cand-card.republican .cc-party { color: var(--red); }
-        .cand-card .cc-name {
-            font-family: 'Lora', Georgia, serif;
-            font-size: 1.1em; font-weight: 600; text-transform: capitalize;
-            line-height: 1.25; margin-bottom: 8px;
-        }
-        .cand-card .cc-amount {
-            font-size: 1.4em; font-weight: 700; font-variant-numeric: tabular-nums;
-        }
-        .cand-card .cc-label {
-            font-size: 0.72em; color: var(--text-muted); margin-top: 2px;
-        }
+        .party-group.democratic .party-heading { color: var(--blue); border-bottom: 2px solid var(--blue); }
+        .party-group.republican .party-heading { color: var(--red); border-bottom: 2px solid var(--red); }
+        .party-group.unenrolled .party-heading { color: var(--gray); border-bottom: 2px solid var(--gray); }
+        .party-group.independent .party-heading { color: var(--purple); border-bottom: 2px solid var(--purple); }
+        .cand { padding: 8px 10px; border-radius: 4px; transition: background 0.12s; }
+        .cand:hover { background: var(--bg-hover); }
+        .cand-name { font-weight: 600; font-size: 0.88em; text-transform: capitalize; }
 
         /* ── CHART ── */
         .chart-card {
@@ -334,46 +318,31 @@ function moveTip(evt) {
 }
 function hideTip() { tip.classList.remove('on'); }
 
-// ── CANDIDATE CARDS (grouped by party) ──
-const cardsContainer = document.getElementById('candCards');
+// ── CANDIDATES (same as governor style) ──
 const byParty = {};
 const PARTY_ORDER = ['Democratic','Republican','Unenrolled','Independent'];
 TOTALS.forEach(d => { (byParty[d.p] ??= []).push(d); });
-
-const partyGroups = document.createElement('div');
-partyGroups.style.cssText = 'display:flex;flex-direction:column;gap:28px;';
+const cEl = document.getElementById('candCards');
 
 PARTY_ORDER.forEach(party => {
     if (!byParty[party]) return;
-    const group = document.createElement('div');
-
-    const heading = document.createElement('div');
-    heading.style.cssText = `font-size:0.7em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding-bottom:8px;margin-bottom:12px;color:${COLORS[party]};border-bottom:2px solid ${COLORS[party]};`;
+    const g = document.createElement('div');
+    g.className = 'party-group ' + party.toLowerCase();
     const partyLabel = party === 'Democratic' ? 'Democrat' : party;
-    heading.textContent = partyLabel;
-    group.appendChild(heading);
-
-    const grid = document.createElement('div');
-    grid.className = 'cand-cards';
+    g.innerHTML = `<div class="party-heading">${partyLabel}</div>`;
     byParty[party].forEach(d => {
-        const card = document.createElement('div');
-        const pc = d.p.toLowerCase();
-        card.className = `cand-card ${pc}`;
-        card.innerHTML = `
-            <div class="cc-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
-            <div class="cc-name">${d.d}</div>
-        `;
-        grid.appendChild(card);
+        const c = document.createElement('div');
+        c.className = 'cand';
+        c.innerHTML = `<div class="cand-name">${d.d}</div>`;
+        g.appendChild(c);
     });
-    group.appendChild(grid);
-    partyGroups.appendChild(group);
+    cEl.appendChild(g);
 });
-cardsContainer.appendChild(partyGroups);
 
 // ── BAR CHART (matches governor style) ──
 const margin = { top: 4, right: 110, bottom: 4, left: 200 };
 const barH = 30, barGap = 6;
-const width = 680;
+const width = 780;
 const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
 
 const svg = d3.select('#chartContainer')
