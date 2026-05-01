@@ -127,6 +127,19 @@ SCHEDULE_CONFIG = {
 }
 
 
+def load_existing_txn_ids(output_file):
+    """Load transaction IDs from existing CSV to prevent duplicates on resume."""
+    ids = set()
+    if os.path.exists(output_file):
+        with open(output_file, 'r') as f:
+            reader = csv.DictReader(f)
+            for r in reader:
+                tid = r.get('transaction_id', '')
+                if tid:
+                    ids.add(tid)
+    return ids
+
+
 def pull(cycle, schedule):
     cfg = SCHEDULE_CONFIG[schedule]
     candidates_file = os.path.join(SCRIPT_DIR, f'me_candidates_{cycle}.json')
@@ -153,19 +166,26 @@ def pull(cycle, schedule):
     file_exists = os.path.exists(output_file) and len(done) > 0
     session = make_session()
 
+    # Load existing transaction IDs to prevent duplicates on resume
+    seen_txn_ids = load_existing_txn_ids(output_file) if file_exists else set()
+    if seen_txn_ids:
+        print(f"  Loaded {len(seen_txn_ids):,} existing transaction IDs for dedup")
+
     with open(output_file, 'a' if file_exists else 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=cfg['fields'])
         if not file_exists:
             writer.writeheader()
 
         total_rows = 0
-        seen_txn_ids = set()
         for comm_id, cand in remaining.items():
             print(f"\n  {cand['name']} ({comm_id})...", end='', flush=True)
 
             last_index = None
             last_date = None
             cand_rows = 0
+            max_retries = 5
+            consecutive_errors = 0
+            pages_fetched = 0
 
             while True:
                 params = {
@@ -183,9 +203,14 @@ def pull(cycle, schedule):
                     resp = session.get(cfg['endpoint'], params=params, timeout=60)
                     resp.raise_for_status()
                     data = resp.json()
+                    consecutive_errors = 0
                 except Exception as e:
-                    print(f"\n    Error: {e}. Waiting 30s and retrying...")
-                    time.sleep(30)
+                    consecutive_errors += 1
+                    if consecutive_errors >= max_retries:
+                        print(f"\n    FAILED after {max_retries} retries: {e}. Moving on.")
+                        break
+                    print(f"\n    Error ({consecutive_errors}/{max_retries}): {e}. Retrying in 10s...")
+                    time.sleep(10)
                     continue
 
                 results = data.get('results', [])
@@ -205,18 +230,22 @@ def pull(cycle, schedule):
                 last_index = pagination.get('last_indexes', {}).get('last_index')
                 last_date = pagination.get('last_indexes', {}).get(cfg['date_key'])
 
+                pages_fetched += 1
+                if pages_fetched % 50 == 0:
+                    print(f" {cand_rows:,}...", end='', flush=True)
+
                 if not last_index:
                     break
                 time.sleep(0.5)
 
             csvfile.flush()
             total_rows += cand_rows
-            print(f" {cand_rows} {cfg['label']}")
+            print(f" {cand_rows:,} {cfg['label']}")
 
             checkpoint['done_committees'].append(comm_id)
             save_checkpoint(checkpoint_path, checkpoint)
 
-    print(f"\nDone! {total_rows} new {cfg['label']}. Total in {output_file}: {sum(1 for _ in open(output_file)) - 1}")
+    print(f"\nDone! {total_rows:,} new {cfg['label']}. Total in {output_file}: {sum(1 for _ in open(output_file)) - 1:,}")
     if os.path.exists(checkpoint_path):
         os.remove(checkpoint_path)
 
