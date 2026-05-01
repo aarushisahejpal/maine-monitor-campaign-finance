@@ -242,16 +242,28 @@ if (file.exists("data/display_name_overrides.csv")) {
     select(-final_display_name)
 }
 
-# Add display names to outputs
+# Load overrides for direct application
+direct_overrides <- if (file.exists("data/display_name_overrides.csv")) {
+  read_csv("data/display_name_overrides.csv") %>%
+    rename(override_name = final_display_name)
+} else {
+  tibble(candidate = character(), override_name = character())
+}
+
+# Add display names to outputs (try override first, then display_names lookup, then raw candidate)
 cand_con_total <- cand_con_total %>%
   left_join(display_names, by = c("candidate" = "clean")) %>%
-  mutate(display_name = coalesce(display, candidate)) %>%
-  select(-display)
+  left_join(direct_overrides, by = "candidate") %>%
+  mutate(display_name = coalesce(override_name, display, candidate)) %>%
+  mutate(display_name = ifelse(display_name == tolower(display_name), str_to_title(display_name), display_name)) %>%
+  select(-display, -override_name)
 
 cand_top5_contribs <- cand_top5_contribs %>%
   left_join(display_names, by = c("candidate" = "clean")) %>%
-  mutate(display_name = coalesce(display, candidate)) %>%
-  select(-display)
+  left_join(direct_overrides, by = "candidate") %>%
+  mutate(display_name = coalesce(override_name, display, candidate)) %>%
+  mutate(display_name = ifelse(display_name == tolower(display_name), str_to_title(display_name), display_name)) %>%
+  select(-display, -override_name)
 
 # ── EXPENDITURE ANALYSIS ──
 # Total expenditures per candidate
@@ -300,21 +312,27 @@ cand_top5_payees <- cand_top5_payees %>%
 # Add display names
 cand_exp_total <- cand_exp_total %>%
   left_join(display_names, by = c("candidate" = "clean")) %>%
-  mutate(display_name = coalesce(display, candidate)) %>%
-  select(-display)
+  left_join(direct_overrides, by = "candidate") %>%
+  mutate(display_name = coalesce(override_name, display, candidate)) %>%
+  mutate(display_name = ifelse(display_name == tolower(display_name), str_to_title(display_name), display_name)) %>%
+  select(-display, -override_name)
 
 cand_top5_payees <- cand_top5_payees %>%
   left_join(display_names, by = c("candidate" = "clean")) %>%
-  mutate(display_name = coalesce(display, candidate)) %>%
-  select(-display)
+  left_join(direct_overrides, by = "candidate") %>%
+  mutate(display_name = coalesce(override_name, display, candidate)) %>%
+  mutate(display_name = ifelse(display_name == tolower(display_name), str_to_title(display_name), display_name)) %>%
+  select(-display, -override_name)
 
 # Add display names + status filter to small_dollar
 small_dollar <- small_dollar %>%
   left_join(candidate_status %>% select(candidate, show_on_page), by = "candidate") %>%
   filter(is.na(show_on_page) | show_on_page != "no") %>%
   left_join(display_names, by = c("candidate" = "clean")) %>%
-  mutate(display_name = coalesce(display, candidate)) %>%
-  select(-display)
+  left_join(direct_overrides, by = "candidate") %>%
+  mutate(display_name = coalesce(override_name, display, candidate)) %>%
+  mutate(display_name = ifelse(display_name == tolower(display_name), str_to_title(display_name), display_name)) %>%
+  select(-display, -override_name)
 
 #export datasets
 # Add MCEA/TF designation to all outputs
