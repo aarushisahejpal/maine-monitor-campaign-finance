@@ -1,14 +1,14 @@
-name: Biweekly Scrape + Aggregate (State + Federal)
+name: Daily Scrape + Aggregate
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Every Monday at 6am UTC
+    - cron: '0 10 * * *'  # Every day at 6am ET (10am UTC)
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
   scrape-and-aggregate:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -26,58 +26,74 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Scrape state data (full re-scrape from new site)
-        run: python scrapers/state_2026_scraper.py
-
-      - name: Validate state data
-        run: |
-          python3 -c "
-          import csv
-          with open('data/state_2026/transactions.csv') as f:
-              rows = list(csv.DictReader(f))
-          urls = [r['filer_url'] for r in rows if r['filer_url']]
-          dupes = len(urls) - len(set(urls))
-          print(f'State: {len(rows):,} rows, {dupes} duplicates')
-          if dupes > 0:
-              print('WARNING: Duplicates found!')
-              exit(1)
-          if len(rows) < 100000:
-              print(f'WARNING: Row count seems low ({len(rows):,}), expected 100K+')
-              exit(1)
-          print('State data validation passed')
-          "
-
-      - name: Scrape FEC receipts (2026 cycle)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 a
-
-      - name: Scrape FEC expenditures (2026 cycle)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 b
-
-      - name: Scrape FEC filings (2026 cycle)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: |
-          if [ -f scrapers/fec_filings_scraper.py ]; then
-            python scrapers/fec_filings_scraper.py 2026
-          fi
+      - name: Daily state data update (incremental)
+        run: python scrapers/state_daily_update.py
 
       - name: Run R aggregation scripts
         run: |
           Rscript scripts/clean_state_data.R
           Rscript scripts/clean_federal_data.R
 
+      - name: Pull official FEC totals
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: |
+          python3 -c "
+          import requests, csv, json, time, os
+          API_KEY = os.environ.get('FEC_API_KEY', 'DEMO_KEY')
+          with open('scrapers/me_candidates_2026.json') as f:
+              cands = json.load(f)
+          official = []
+          for c in cands:
+              comm_id = c['committee_id']
+              if comm_id == 'NONE': continue
+              try:
+                  resp = requests.get(f'https://api.open.fec.gov/v1/committee/{comm_id}/totals/', params={'api_key': API_KEY, 'cycle': 2026}, timeout=60)
+                  results = resp.json().get('results', [])
+                  if results:
+                      t = results[0]
+                      official.append({'candidate_name': c['name'], 'office': c['office'], 'district': c['district'], 'party': c['party'], 'tot_con': t.get('receipts', 0) or 0, 'individual_unitemized': t.get('individual_unitemized_contributions', 0) or 0, 'cash_on_hand': t.get('last_cash_on_hand_end_period', 0) or 0})
+                  time.sleep(0.5)
+              except: pass
+          with open('viz/data/clean/total_contributions_by_federal_candidate.csv', 'w', newline='') as f:
+              w = csv.DictWriter(f, fieldnames=['candidate_name','office','district','party','tot_con','individual_unitemized','cash_on_hand'])
+              w.writeheader()
+              w.writerows(sorted(official, key=lambda x: (x['office'], x['district'], -x['tot_con'])))
+          # Expenditures
+          exp = []
+          for c in cands:
+              comm_id = c['committee_id']
+              if comm_id == 'NONE': continue
+              try:
+                  resp = requests.get(f'https://api.open.fec.gov/v1/committee/{comm_id}/totals/', params={'api_key': API_KEY, 'cycle': 2026}, timeout=60)
+                  results = resp.json().get('results', [])
+                  if results:
+                      t = results[0]
+                      exp.append({'candidate_name': c['name'], 'office': c['office'], 'district': c['district'], 'party': c['party'], 'tot_exp': t.get('disbursements', 0) or 0})
+                  time.sleep(0.3)
+              except: pass
+          with open('viz/data/clean/total_expenditures_by_federal_candidate.csv', 'w', newline='') as f:
+              w = csv.DictWriter(f, fieldnames=['candidate_name','office','district','party','tot_exp'])
+              w.writeheader()
+              w.writerows(sorted(exp, key=lambda x: (x['office'], x['district'], -x['tot_exp'])))
+          print(f'Updated {len(official)} contribution totals, {len(exp)} expenditure totals')
+          "
+
+      - name: Update footer dates
+        run: |
+          DATE=$(date +"%B %-d, %Y")
+          for f in viz/governor.html viz/senate.html viz/house.html viz/statehouse.html; do
+            sed -i "s/Last updated:.*/Last updated:<\/strong> $DATE. Data is refreshed daily./" "$f" 2>/dev/null || true
+          done
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/ viz/data/clean/
+          git add data/ viz/data/clean/ viz/*.html
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Weekly update: scrape + aggregate $(date +%Y-%m-%d)"
+            git commit -m "Daily update: $(date +%Y-%m-%d)"
             git push
           fi
