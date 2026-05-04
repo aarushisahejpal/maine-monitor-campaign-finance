@@ -29,6 +29,9 @@ jobs:
       - name: Daily state data update (incremental)
         run: python scrapers/state_daily_update.py
 
+      - name: Check for terminated candidates
+        run: python scrapers/check_terminated.py
+
       - name: Run R aggregation scripts
         run: |
           Rscript scripts/clean_state_data.R
