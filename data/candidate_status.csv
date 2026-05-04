@@ -13,7 +13,7 @@ benjamin midgley,Governor,,Republican,state,,yes
 robert j wessels,Governor,,Republican,state,,yes
 david jones,Governor,,Republican,state,,yes
 steven christopher sheppard,Governor,,Republican,state,,no
-garrett mason,Governor,,Republican,state,,yes
+garrett mason,Governor,,Republican,state,,no
 robert wessels,Governor,,Republican,state,,yes
 alexander kenneth murchison,Governor,,Unenrolled,state,,no
 kenneth forrest pinet,Governor,,Democratic,state,,no
@@ -30,12 +30,12 @@ gary gene runnells jr,Representative,16,Independent,state,,no
 nina a milliken,Representative,16,Democratic,state,,yes
 ronald russell,Representative,17,Democratic,state,,yes
 steven matthew bishop iv,Representative,17,Republican,state,,yes
-jonathan goble,Representative,18,Democratic,state,,yes
+jonathan goble,Representative,18,Democratic,state,,no
 mathew mcintyre,Representative,18,Republican,state,,yes
 laura supica,Representative,22,Democratic,state,,yes
 joschka winterling,Representative,23,Democratic,state,,yes
 carolyn fish,Representative,24,Republican,state,,no
-sean f faircloth,Representative,24,Democratic,state,,yes
+sean f faircloth,Representative,24,Democratic,state,,no
 sean faircloth,Representative,24,Democratic,state,,yes
 joseph charles perry,Representative,24,Democratic,state,,no
 laurie osher,Representative,25,Democratic,state,,yes
@@ -45,8 +45,8 @@ david giles,Representative,27,Republican,state,,yes
 devan arnold,Representative,27,Democratic,state,,yes
 gordon street,Representative,28,Democratic,state,,yes
 james lee white,Representative,30,Republican,state,,yes
-james white,Representative,30,Republican,state,,yes
-andrew r torbett,Representative,31,Republican,state,,yes
+james white,Representative,30,Republican,state,,no
+andrew r torbett,Representative,31,Republican,state,,no
 eric boothroyd,Representative,31,Democratic,state,,yes
 shawn leroy lancaster,Representative,32,Republican,state,,yes
 kenneth wade fredette,Representative,33,Republican,state,,yes
@@ -88,18 +88,18 @@ john e ducharme iii,Representative,71,Republican,state,,yes
 douglas a thomas,Representative,72,Republican,state,,yes
 cynthia somahernandez,Representative,72,Democratic,state,,yes
 michael soboleski,Representative,73,Republican,state,,yes
-randall gauvin,Representative,75,Republican,state,,yes
+randall gauvin,Representative,75,Republican,state,,no
 randall douglas gauvin,Representative,75,Republican,state,,yes
 trevor alex doiron,Representative,76,Democratic,state,,yes
 woodleigh h hughes,Representative,78,Democratic,state,,yes
 peter wood,Representative,81,Republican,state,,yes
 christopher alfred lewey,Representative,82,Democratic,state,,yes
-kimberly j pomerleau,Senator,22,Republican,state,,yes
+kimberly j pomerleau,Senator,22,Republican,state,,no
 david wayne boyer jr,Representative,87,Republican,state,,yes
 adam lee,Representative,89,Democratic,state,,yes
 laurel libby,Representative,90,Republican,state,,no
 stephen wood,Representative,92,Republican,state,,yes
-janet beaudoin special,Representative,94,Republican,state,,yes
+janet beaudoin special,Representative,94,Republican,state,,no
 kiernan innes majeruscollins,Representative,95,Democratic,state,,yes
 scott a harriman special,Representative,94,Democratic,state,,yes
 scott harriman,Representative,94,Democratic,state,,yes
@@ -110,8 +110,8 @@ william j st michel,Representative,98,Republican,state,,yes
 cheryl golek,Representative,99,Democratic,state,,yes
 daniel joseph ankeles,Representative,100,Democratic,state,,yes
 daniel ankeles,Representative,100,Democratic,state,,yes
-poppy arford,Representative,101,Democratic,state,,yes
-poppy t arford,Representative,101,Democratic,state,,yes
+poppy arford,Representative,101,Democratic,state,,no
+poppy t arford,Representative,101,Democratic,state,,no
 barbara anne bagshaw,Representative,106,Republican,state,,yes
 doris a poland,Representative,106,Democratic,state,,no
 christina mitchell,Representative,110,Democratic,state,,yes
@@ -128,7 +128,7 @@ michelle boyer,Representative,123,Democratic,state,,yes
 suzanne salisbury,Representative,128,Democratic,state,,yes
 marshall archer,Representative,129,Democratic,state,,yes
 lynn copeland,Representative,130,Democratic,state,,yes
-ryan m fecteau,Representative,132,Democratic,state,,yes
+ryan m fecteau,Representative,132,Democratic,state,,no
 marc g malon ii,Representative,133,Democratic,state,,yes
 traci gere,Representative,134,Democratic,state,,yes
 allen anthony daggett,Representative,134,Unenrolled,state,,yes
@@ -154,7 +154,7 @@ elizabeth caruso,Senator,5,Republican,state,,yes
 nicole c grohoski,Senator,7,Democratic,state,,yes
 leo christopher kenney,Senator,8,Republican,state,,yes
 leo kenney,Senator,8,Republican,state,,yes
-amy roeder,Senator,9,Democratic,state,,yes
+amy roeder,Senator,9,Democratic,state,,no
 joseph m baldacci,Senator,9,Democratic,state,,no
 ryan christopher otis,Senator,11,Republican,state,,yes
 nicole lynn kalloch,Senator,12,Unenrolled,state,,no
@@ -179,7 +179,7 @@ henry l ingwersen,Senator,32,Democratic,state,,yes
 john murphy salamone,Senator,32,Republican,state,,no
 jason g litalien,Senator,32,Unenrolled,state,,no
 matthew harrington,Senator,33,Republican,state,,yes
-matthew a harrington,Senator,33,Republican,state,,yes
+matthew a harrington,Senator,33,Republican,state,,no
 mark vigliotta,Senator,33,Democratic,state,,yes
 jonathan reed fallon,Senator,34,Republican,state,,yes
 daniel sayre,Senator,34,Democratic,state,,yes
