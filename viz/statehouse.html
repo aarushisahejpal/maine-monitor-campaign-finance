@@ -458,8 +458,8 @@ bars.on('mouseenter', function(evt, d) {
 
 // ── TOP DONORS ──
 const donorsEl = document.getElementById('donors');
-// Show all candidates: those with donors + MCEA candidates with $0
-const candsWithDonors = TOTALS.filter(t => DONORS.some(d => d.c === t.c) || t.ft === 'MCEA');
+// Show all candidates
+const candsWithDonors = TOTALS;
 
 candsWithDonors.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
