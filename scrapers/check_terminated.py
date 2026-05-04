@@ -101,7 +101,9 @@ def main():
         updated = 0
         for r in finance_rows:
             name_lower = r["name"].lower().strip()
-            if name_lower in terminated and r["status"] == "Active":
+            # Only mark terminated if NOT in active list
+            has_active = any(name_lower in a or a in name_lower for a in active)
+            if not has_active and name_lower in terminated and r["status"] == "Active":
                 r["status"] = "Terminated"
                 updated += 1
                 print(f"  NEWLY TERMINATED: {r['name']}")
@@ -120,9 +122,14 @@ def main():
 
         hidden = 0
         for r in status_rows:
-            # Try to match by name
             cand_lower = r["candidate"].lower().strip()
-            if any(cand_lower in t or t in cand_lower for t in terminated):
+            # Check if candidate matches any ACTIVE name — if so, skip
+            has_active = any(cand_lower in a or a in cand_lower for a in active)
+            if has_active:
+                continue
+            # Only hide if matches a terminated name AND has no active match
+            has_terminated = any(cand_lower in t or t in cand_lower for t in terminated)
+            if has_terminated:
                 if r.get("show_on_page") != "no":
                     r["show_on_page"] = "no"
                     hidden += 1
