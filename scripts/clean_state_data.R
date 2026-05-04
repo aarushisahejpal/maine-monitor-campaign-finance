@@ -123,21 +123,20 @@ cand_con_total <- cand_sum %>%
   mutate(district = as.numeric(district)) %>% 
   arrange(race, district, -tot_con_per_cand)
 
-# Add MCEA candidates with $0 contributions who aren't already in the data
-mcea_only <- mcea_data %>%
-  filter(finance_type == "MCEA") %>%
-  left_join(candidate_list %>% select(filer_name, race, district, party) %>% distinct(),
-            by = c("candidate_clean" = "filer_name")) %>%
+# Add ALL candidates with $0 contributions who aren't already in the data
+# (MCEA candidates + TF candidates who only have expenditures)
+missing_cands <- candidate_list %>%
+  select(filer_name, race, district, party) %>%
+  distinct() %>%
   filter(race %in% c("Governor", "Senator", "Representative")) %>%
-  filter(!candidate_clean %in% cand_con_total$candidate) %>%
+  filter(!filer_name %in% cand_con_total$candidate) %>%
   mutate(tot_con_per_cand = 0, district = as.numeric(district)) %>%
-  select(candidate = candidate_clean, race, district, party, tot_con_per_cand) %>%
-  distinct()
+  rename(candidate = filer_name)
 
-if (nrow(mcea_only) > 0) {
-  cand_con_total <- bind_rows(cand_con_total, mcea_only) %>%
+if (nrow(missing_cands) > 0) {
+  cand_con_total <- bind_rows(cand_con_total, missing_cands) %>%
     arrange(race, district, -tot_con_per_cand)
-  cat(paste0("Added ", nrow(mcea_only), " MCEA candidates with $0 contributions\n"))
+  cat(paste0("Added ", nrow(missing_cands), " candidates with $0 contributions\n"))
 }
 
 # export an excel sheet with the total contributions for each canddiates;
