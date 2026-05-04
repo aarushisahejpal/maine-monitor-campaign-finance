@@ -147,6 +147,18 @@
             font-size: 0.88em;
             text-transform: capitalize;
         }
+        .mcea-badge {
+            display: inline-block;
+            font-size: 0.6em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: #27ae60;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
         .cand-meta {
             font-size: 0.75em;
             color: var(--text-muted);
@@ -393,7 +405,7 @@ async function loadData() {
 
     const TOTALS = totalsRaw
         .filter(r => r.race === RACE_FILTER)
-        .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand)}))
+        .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown'}))
         .sort((a, b) => b.t - a.t);
 
     const DONORS = donorsRaw
@@ -469,7 +481,8 @@ PARTY_ORDER.forEach(party => {
     byParty[party].forEach(d => {
         const c = document.createElement('div');
         c.className = 'cand';
-        c.innerHTML = `<div class="cand-name">${removeMiddleName(d.c)}</div>`;
+        const badge = d.ft === 'MCEA' ? '<span class="mcea-badge">MCEA</span>' : '';
+        c.innerHTML = `<div class="cand-name">${removeMiddleName(d.c)}${badge}</div>`;
         g.appendChild(c);
     });
     cEl.appendChild(g);

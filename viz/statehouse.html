@@ -79,6 +79,18 @@
         .cand { padding: 8px 10px; border-radius: 4px; transition: background 0.12s; }
         .cand:hover { background: var(--bg-hover); }
         .cand-name { font-weight: 600; font-size: 0.88em; text-transform: capitalize; }
+        .mcea-badge {
+            display: inline-block;
+            font-size: 0.6em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: #27ae60;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
 
         /* ── CHART ── */
         .chart-card {
@@ -302,7 +314,7 @@ async function loadData() {
 
     const TOTALS = totalsRaw
         .filter(r => r.race === RACE && String(r.district) === DISTRICT)
-        .map(r => ({c: r.candidate, d: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand)}))
+        .map(r => ({c: r.candidate, d: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown'}))
         .sort((a, b) => b.t - a.t);
 
     const DONORS = donorsRaw
@@ -317,7 +329,7 @@ async function loadData() {
 
     const EXP_TOTALS = expRaw
         .filter(r => r.race === RACE && String(r.district) === DISTRICT)
-        .map(r => ({c: r.candidate, d: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_exp)}))
+        .map(r => ({c: r.candidate, d: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_exp), ft: r.finance_type || 'Unknown'}))
         .sort((a, b) => b.t - a.t);
 
     const TOP_PAYEES = payeesRaw
@@ -367,7 +379,8 @@ PARTY_ORDER.forEach(party => {
     byParty[party].forEach(d => {
         const c = document.createElement('div');
         c.className = 'cand';
-        c.innerHTML = `<div class="cand-name">${d.d}</div>`;
+        const badge = d.ft === 'MCEA' ? '<span class="mcea-badge">MCEA</span>' : '';
+        c.innerHTML = `<div class="cand-name">${d.d}${badge}</div>`;
         g.appendChild(c);
     });
     cEl.appendChild(g);
@@ -445,11 +458,11 @@ bars.on('mouseenter', function(evt, d) {
 
 // ── TOP DONORS ──
 const donorsEl = document.getElementById('donors');
-const candsWithDonors = TOTALS.filter(t => DONORS.some(d => d.c === t.c));
+// Show all candidates: those with donors + MCEA candidates with $0
+const candsWithDonors = TOTALS.filter(t => DONORS.some(d => d.c === t.c) || t.ft === 'MCEA');
 
 candsWithDonors.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
-    if (!cd.length) return;
 
     // Separate platform donations
     const platformDonors = cd.filter(d => /actblue|winred/i.test(d.e));
@@ -461,9 +474,19 @@ candsWithDonors.forEach(cand => {
     card.style.background = tints[cand.p] || '#fff';
     card.innerHTML = `
         <div class="donor-block-header">
-            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}</span>
+            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : ''}</span>
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
+
+    // MCEA public funding note
+    if (cand.ft === 'MCEA') {
+        const mceaAmounts = { Representative: '$6,625', Senator: '$26,500', Governor: '$795,175' };
+        const amt = mceaAmounts[RACE] || '';
+        const mb = document.createElement('div');
+        mb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
+        mb.innerHTML = `Publicly financed (Maine Clean Election Act). Eligible for up to <strong>${amt}</strong> in public funds for a contested general election.`;
+        card.appendChild(mb);
+    }
 
     // Platform donations (ActBlue/WinRed)
     platformDonors.forEach(d => {
