@@ -76,10 +76,22 @@ def main():
     filers = scrape_all_candidates()
     print(f"  Scraped {len(filers)} candidates from disclosure site")
 
-    # Build lookup of terminated candidates
-    terminated = {f["name"].lower().strip() for f in filers if f["status"] == "Terminated"}
-    active = {f["name"].lower().strip() for f in filers if f["status"] == "Active"}
-    print(f"  Active: {len(active)}, Terminated: {len(terminated)}")
+    # Build lookup — a candidate is only truly terminated if they have
+    # NO active committees (they may have old terminated ones + a new active one)
+    active_names = set()
+    terminated_names = set()
+    for f in filers:
+        name = f["name"].lower().strip()
+        if f["status"] == "Active":
+            active_names.add(name)
+        else:
+            terminated_names.add(name)
+
+    # Only truly terminated = terminated AND NOT active
+    truly_terminated = terminated_names - active_names
+    print(f"  Active: {len(active_names)}, Terminated only: {len(truly_terminated)}, Has both: {len(terminated_names & active_names)}")
+    terminated = truly_terminated
+    active = active_names
 
     # Update the finance type file
     if os.path.exists(FINANCE_FILE):
