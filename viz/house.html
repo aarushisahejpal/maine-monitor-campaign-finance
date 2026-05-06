@@ -387,7 +387,7 @@ document.getElementById('topSummary').innerHTML = `<div style="display:flex;gap:
 
 // ── TOP DONORS ──
 function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, platformData) {
-    listLabel = listLabel || 'Top Individual Donors';
+    listLabel = listLabel || 'Top Donors';
     const el = document.getElementById(containerId);
     totals.slice(0, topN).forEach(cand => {
         const cd = data.filter(d => d.c === cand.c);
