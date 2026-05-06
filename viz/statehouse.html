@@ -389,18 +389,18 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-// MCEA minimum amounts for green bar (primary contested amounts — will update for general)
+/* MCEA GREEN BAR — STORED FOR POST-MAY 21 REACTIVATION
 const mceaMin = {
     Representative: { contested: 3325, uncontested: 675 },
     Senator: { contested: 13250, uncontested: 2650 },
 };
 const isContested = TOTALS.length > 1;
 const mceaAmount = (mceaMin[RACE] || {})[isContested ? 'contested' : 'uncontested'] || 0;
+*/
+const mceaAmount = 0; // disabled until May 21 certification
 
-// Scale domain includes MCEA minimum so green bar fits
-const maxVal = Math.max(d3.max(TOTALS, d => d.t), mceaAmount);
 const x = d3.scaleLinear()
-    .domain([0, maxVal])
+    .domain([0, d3.max(TOTALS, d => d.t)])
     .range([margin.left, width - margin.right]);
 
 const y = d3.scaleBand()
@@ -458,7 +458,7 @@ bars.append('text')
     .attr('x', d => x(d.t) + 8)
     .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .text(d => d.ft === 'MCEA' && d.t > 0 && d.t < mceaAmount ? '' : fmt(d.t))
+    .text(d => fmt(d.t))
     .style('opacity', 0)
     .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
