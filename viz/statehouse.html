@@ -445,8 +445,7 @@ bars.append('text')
     .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
 
-const total = TOTALS.reduce((a, b) => a + b.t, 0);
-document.getElementById('chartTotal').textContent = 'Total raised across all candidates: ' + fmt(total);
+// Total omitted — MCEA public funding not reflected in contribution data
 
 bars.on('mouseenter', function(evt, d) {
     svg.classed('has-hover', true);
@@ -584,7 +583,7 @@ if (EXP_TOTALS.length) {
         hideTip();
     });
 
-    document.getElementById('expTotal').textContent = 'Total spent across all candidates: ' + fmt(EXP_TOTALS.reduce((a, b) => a + b.t, 0));
+    // Total omitted — MCEA public funding not reflected in expenditure data
 }
 
 // ─── TOP PAYEES ───
