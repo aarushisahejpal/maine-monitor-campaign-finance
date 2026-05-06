@@ -469,9 +469,20 @@ bars.append('text')
     .attr('text-anchor', 'end')
     .text(d => d.d);
 
-// MCEA label inside the green striped bar — all text inside
+// Value labels — skip MCEA candidates who get the green label instead
+bars.append('text')
+    .attr('class', 'value')
+    .attr('x', d => x(d.t) + 8)
+    .attr('y', d => y(d.d) + y.bandwidth() / 2)
+    .attr('dy', '0.35em')
+    .text(d => d.ft === 'MCEA' && d.t > 0 && d.t < mceaAmount ? '' : fmt(d.t))
+    .style('opacity', 0)
+    .transition().duration(400).delay((d, i) => i * 80 + 500)
+    .style('opacity', 1);
+
+// MCEA label — rendered last so it sits on top of both bars, positioned in green-only zone
 bars.filter(d => d.ft === 'MCEA' && d.t > 0 && d.t < mceaAmount).append('text')
-    .attr('x', d => margin.left + (x(mceaAmount) - margin.left) / 2)
+    .attr('x', d => x(d.t) + ((x(mceaAmount) - x(d.t)) / 2))
     .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
     .attr('text-anchor', 'middle')
@@ -479,17 +490,6 @@ bars.filter(d => d.ft === 'MCEA' && d.t > 0 && d.t < mceaAmount).append('text')
     .style('fill', '#2e7d32')
     .style('font-weight', '600')
     .text(d => fmt(d.t) + ' raised · at least ' + fmt(mceaAmount) + ' eligible')
-    .style('opacity', 0)
-    .transition().duration(400).delay((d, i) => i * 80 + 500)
-    .style('opacity', 1);
-
-// Value labels — skip MCEA candidates who have the inside label
-bars.append('text')
-    .attr('class', 'value')
-    .attr('x', d => x(d.t) + 8)
-    .attr('y', d => y(d.d) + y.bandwidth() / 2)
-    .attr('dy', '0.35em')
-    .text(d => d.ft === 'MCEA' && d.t > 0 && d.t < mceaAmount ? '' : fmt(d.t))
     .style('opacity', 0)
     .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
