@@ -406,8 +406,18 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
+// MCEA minimum amounts for green bar
+const mceaMin = {
+    Representative: { contested: 6625, uncontested: 2000 },
+    Senator: { contested: 26500, uncontested: 7950 },
+};
+const isContested = TOTALS.length > 1;
+const mceaAmount = (mceaMin[RACE] || {})[isContested ? 'contested' : 'uncontested'] || 0;
+
+// Scale domain includes MCEA minimum so green bar fits
+const maxVal = Math.max(d3.max(TOTALS, d => d.t), mceaAmount);
 const x = d3.scaleLinear()
-    .domain([0, d3.max(TOTALS, d => d.t)])
+    .domain([0, maxVal])
     .range([margin.left, width - margin.right]);
 
 const y = d3.scaleBand()
@@ -417,6 +427,18 @@ const y = d3.scaleBand()
 
 const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
 
+// Light green "eligible for at least" bar for MCEA candidates
+bars.filter(d => d.ft === 'MCEA').append('rect')
+    .attr('x', margin.left)
+    .attr('y', d => y(d.d))
+    .attr('width', 0)
+    .attr('height', y.bandwidth())
+    .attr('rx', 2)
+    .attr('fill', '#c8e6c9')
+    .transition().duration(700).delay((d, i) => i * 80)
+    .attr('width', x(mceaAmount) - margin.left);
+
+// Regular contribution bar (overlays on top for MCEA candidates who also raised seed money)
 bars.append('rect')
     .attr('class', 'bar')
     .attr('x', margin.left)
@@ -438,10 +460,10 @@ bars.append('text')
 
 bars.append('text')
     .attr('class', 'value')
-    .attr('x', d => x(d.t) + 8)
+    .attr('x', d => d.ft === 'MCEA' ? x(mceaAmount) + 8 : x(d.t) + 8)
     .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .text(d => fmt(d.t))
+    .text(d => d.ft === 'MCEA' ? fmt(d.t) + ' raised · at least ' + fmt(mceaAmount) + ' eligible' : fmt(d.t))
     .style('opacity', 0)
     .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
