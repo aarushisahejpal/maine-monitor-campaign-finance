@@ -262,6 +262,7 @@
             <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Here's the total raised by candidate.</p>
             <div id="chartContainer"></div>
             <div class="chart-total" id="chartTotal"></div>
+            <div id="mceaNote" style="margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);display:none;">Some candidates in this race are publicly financed through the Maine Clean Election Act (MCEA) and are on a different funding schedule. Their public funds are not reflected in the totals above. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a></div>
         </div>
     </section>
 
@@ -445,7 +446,10 @@ bars.append('text')
     .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
 
-// Total omitted — MCEA public funding not reflected in contribution data
+// Show MCEA note if any candidates in this district are MCEA
+if (TOTALS.some(d => d.ft === 'MCEA')) {
+    document.getElementById('mceaNote').style.display = 'block';
+}
 
 bars.on('mouseenter', function(evt, d) {
     svg.classed('has-hover', true);
@@ -486,11 +490,17 @@ candsWithDonors.forEach(cand => {
 
     // MCEA public funding note
     if (cand.ft === 'MCEA') {
-        const mceaAmounts = { Representative: '$6,625', Senator: '$26,500', Governor: '$795,175' };
-        const amt = mceaAmounts[RACE] || '';
+        const isContested = TOTALS.length > 1;
+        const mceaAmounts = {
+            Representative: { contested: '$6,625', uncontested: '$2,000' },
+            Senator: { contested: '$26,500', uncontested: '$7,950' },
+        };
+        const raceAmounts = mceaAmounts[RACE] || { contested: '', uncontested: '' };
+        const amt = isContested ? raceAmounts.contested : raceAmounts.uncontested;
+        const raceType = isContested ? 'contested' : 'uncontested';
         const mb = document.createElement('div');
         mb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        mb.innerHTML = `Publicly financed (Maine Clean Election Act). Eligible for up to <strong>${amt}</strong> in public funds for a contested general election.`;
+        mb.innerHTML = `Publicly financed (Maine Clean Election Act). Eligible for at least <strong>${amt}</strong> in public funds for an ${raceType} general election, in addition to what they raise through seed and qualifying contributions.`;
         card.appendChild(mb);
     }
 
