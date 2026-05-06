@@ -389,10 +389,10 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-// MCEA minimum amounts for green bar
+// MCEA minimum amounts for green bar (primary contested amounts — will update for general)
 const mceaMin = {
-    Representative: { contested: 6625, uncontested: 2000 },
-    Senator: { contested: 26500, uncontested: 7950 },
+    Representative: { contested: 3325, uncontested: 675 },
+    Senator: { contested: 13250, uncontested: 2650 },
 };
 const isContested = TOTALS.length > 1;
 const mceaAmount = (mceaMin[RACE] || {})[isContested ? 'contested' : 'uncontested'] || 0;
