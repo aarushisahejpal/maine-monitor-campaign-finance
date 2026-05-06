@@ -32,6 +32,49 @@ jobs:
       - name: Check for terminated candidates
         run: python scrapers/check_terminated.py
 
+      - name: Re-scrape FEC receipts (catches new filings)
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 a
+        continue-on-error: true
+
+      - name: Re-scrape FEC expenditures
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 b
+        continue-on-error: true
+
+      - name: Verify data completeness
+        run: |
+          python3 -c "
+          import csv
+          # State data
+          with open('data/state_2026/transactions.csv') as f:
+              state_rows = list(csv.DictReader(f))
+          urls = [r['filer_url'] for r in state_rows if r['filer_url']]
+          state_dupes = len(urls) - len(set(urls))
+          print(f'State: {len(state_rows):,} rows, {state_dupes} duplicates')
+          assert state_dupes == 0, 'State data has duplicates!'
+
+          # Federal receipts
+          with open('data/federal_2026/receipts.csv') as f:
+              fed_rows = list(csv.DictReader(f))
+          txn_ids = [r['transaction_id'] for r in fed_rows if r.get('transaction_id')]
+          fed_dupes = len(txn_ids) - len(set(txn_ids))
+          print(f'Federal receipts: {len(fed_rows):,} rows, {fed_dupes} duplicates')
+          assert fed_dupes == 0, 'Federal receipts have duplicates!'
+
+          # Federal expenditures
+          with open('data/federal_2026/expenditures.csv') as f:
+              exp_rows = list(csv.DictReader(f))
+          exp_ids = [r['transaction_id'] for r in exp_rows if r.get('transaction_id')]
+          exp_dupes = len(exp_ids) - len(set(exp_ids))
+          print(f'Federal expenditures: {len(exp_rows):,} rows, {exp_dupes} duplicates')
+          assert exp_dupes == 0, 'Federal expenditures have duplicates!'
+
+          print('All data verification passed')
+          "
+
       - name: Run R aggregation scripts
         run: |
           Rscript scripts/clean_state_data.R
