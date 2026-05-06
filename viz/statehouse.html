@@ -519,25 +519,11 @@ candsWithDonors.forEach(cand => {
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
 
-    // MCEA public funding note
+    // MCEA public funding note — same language for all MCEA candidates
     if (cand.ft === 'MCEA') {
         const mb = document.createElement('div');
         mb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        if (cand.t > 0) {
-            // Has contributions — likely qualified
-            const isContested = TOTALS.length > 1;
-            const mceaAmounts = {
-                Representative: { contested: '$6,625', uncontested: '$2,000' },
-                Senator: { contested: '$26,500', uncontested: '$7,950' },
-            };
-            const raceAmounts = mceaAmounts[RACE] || { contested: '', uncontested: '' };
-            const amt = isContested ? raceAmounts.contested : raceAmounts.uncontested;
-            const raceType = isContested ? 'contested' : 'uncontested';
-            mb.innerHTML = `Some candidates in this race are publicly financed through the Maine Clean Election Act (MCEA) and are on a different funding schedule. Their public funds are not reflected in the totals above. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a>`;
-        } else {
-            // $0 — registered as MCEA but qualification unconfirmed
-            mb.innerHTML = `Registered as a Maine Clean Election Act (MCEA) candidate. Qualification status is unconfirmed. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a>`;
-        }
+        mb.innerHTML = `Some candidates in this race are publicly financed through the Maine Clean Election Act (MCEA) and are on a different funding schedule. Their public funds are not reflected in the totals above. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a>`;
         card.appendChild(mb);
     }
 
