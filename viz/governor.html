@@ -462,27 +462,6 @@ function moveTip(evt) {
 }
 function hideTip() { tip.classList.remove('on'); }
 
-// ─── CANDIDATES SECTION ───
-const byParty = {};
-TOTALS.forEach(d => { (byParty[d.p] ??= []).push(d); });
-const cEl = document.getElementById('candidates');
-
-PARTY_ORDER.forEach(party => {
-    if (!byParty[party]) return;
-    const g = document.createElement('div');
-    g.className = 'party-group ' + party.toLowerCase();
-    const partyLabel = party === 'Democratic' ? 'Democrat' : party;
-    g.innerHTML = `<div class="party-heading">${partyLabel}</div>`;
-    byParty[party].forEach(d => {
-        const c = document.createElement('div');
-        c.className = 'cand';
-        const badge = d.ft === 'MCEA' ? '<span class="mcea-badge">MCEA</span>' : '';
-        c.innerHTML = `<div class="cand-name">${removeMiddleName(d.c)}${badge}</div>`;
-        g.appendChild(c);
-    });
-    cEl.appendChild(g);
-});
-
 // ─── BAR CHART (D3) ───
 const chartData = TOTALS;
 const margin = { top: 4, right: 110, bottom: 4, left: 175 };

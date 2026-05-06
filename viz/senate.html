@@ -343,25 +343,6 @@ function displayName(s) {
     return name;
 }
 
-// ── CANDIDATES ──
-const byParty = {};
-TOTALS.forEach(d => { (byParty[d.p] ??= []).push(d); });
-const cEl = document.getElementById('candidates');
-PARTY_ORDER.forEach(party => {
-    if (!byParty[party]) return;
-    const cls = (PARTY_LABELS[party] || 'other').toLowerCase();
-    const g = document.createElement('div');
-    g.className = 'party-group ' + cls;
-    g.innerHTML = `<div class="party-heading">${PARTY_LABELS[party] || party}</div>`;
-    byParty[party].forEach(d => {
-        const c = document.createElement('div');
-        c.className = 'cand';
-        c.innerHTML = `<div class="cand-name">${displayName(d.c)}</div>`;
-        g.appendChild(c);
-    });
-    cEl.appendChild(g);
-});
-
 // ── HELPER: build horizontal bar chart ──
 function buildChart(containerId, data, totalId) {
     const chartData = data;
