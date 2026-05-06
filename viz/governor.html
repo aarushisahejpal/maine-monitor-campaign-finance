@@ -179,7 +179,7 @@
         .chart-svg.has-hover .bar { opacity: 0.35; }
         .chart-svg.has-hover .bar.active { opacity: 1; }
         .chart-svg .label { fill: var(--text); font-size: 13px; font-weight: 500; }
-        .chart-svg .value { fill: var(--text-secondary); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .chart-svg .value { fill: var(--text); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
         .chart-total {
             text-align: right;
             font-family: 'Lora', Georgia, serif;
@@ -593,7 +593,7 @@ topCands.forEach(cand => {
     // Top donors header
     if (namedDonors.length) {
         const hdr = document.createElement('div');
-        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
         hdr.textContent = 'Top Donors';
         card.appendChild(hdr);
     }
@@ -682,7 +682,7 @@ topExpCands.forEach(cand => {
     card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} spent</span></div>`;
 
     const hdr = document.createElement('div');
-    hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:8px 8px 4px;';
+    hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
     hdr.textContent = 'Top Expenditures';
     card.appendChild(hdr);
 

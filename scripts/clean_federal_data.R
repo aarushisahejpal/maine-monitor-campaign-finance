@@ -85,6 +85,11 @@ cand_exp_sum <- fed_exp %>%
 
 cand_top5_payees <- fed_exp %>%
   filter(disbursement_amount >= 0) %>%
+  # Normalize common payee name variants
+  mutate(recipient_name = case_when(
+    str_detect(toupper(recipient_name), "^HELIX CAMPAIGN") ~ "HELIX CAMPAIGNS",
+    TRUE ~ recipient_name
+  )) %>%
   group_by(candidate_name, recipient_name, office, district) %>%
   summarize(total_paid = sum(disbursement_amount, na.rm = T), .groups = "drop") %>%
   group_by(candidate_name) %>%
