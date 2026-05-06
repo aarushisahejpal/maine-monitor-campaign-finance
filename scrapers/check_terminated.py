@@ -122,6 +122,9 @@ def main():
 
         hidden = 0
         for r in status_rows:
+            # Never override editorial decisions (candidates already set to "no")
+            if r.get("show_on_page") == "no":
+                continue
             cand_lower = r["candidate"].lower().strip()
             # Check if candidate matches any ACTIVE name — if so, skip
             has_active = any(cand_lower in a or a in cand_lower for a in active)
@@ -130,10 +133,9 @@ def main():
             # Only hide if matches a terminated name AND has no active match
             has_terminated = any(cand_lower in t or t in cand_lower for t in terminated)
             if has_terminated:
-                if r.get("show_on_page") != "no":
-                    r["show_on_page"] = "no"
-                    hidden += 1
-                    print(f"  HIDDEN: {r['candidate']} ({r['race']} dist {r['district']})")
+                r["show_on_page"] = "no"
+                hidden += 1
+                print(f"  HIDDEN: {r['candidate']} ({r['race']} dist {r['district']})")
 
         if hidden:
             with open(STATUS_FILE, "w", newline="") as f:
