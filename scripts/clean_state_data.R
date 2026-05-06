@@ -215,12 +215,21 @@ small_dollar <- state_df %>%
   select(candidate, race, district, party, small_dollar_total)
 
 # Top 5 named donors (exclude the aggregate "Contributors giving $50 or less" row)
+# Apply different thresholds by race to match footer language
 cand_top5_contribs <- all_contribs %>%
   filter(!str_detect(tolower(entity), "contributors giving")) %>%
   filter(!entity %in% c("-", "--", "", NA)) %>%
+  left_join(candidate_list %>% select(filer_name, race) %>% distinct(), by = c("candidate" = "filer_name")) %>%
+  mutate(race = coalesce(race.y, race.x)) %>%
+  select(-race.x, -race.y) %>%
+  filter(
+    (race == "Governor" & total_contributed >= 3000) |
+    (race %in% c("Senator", "Representative") & total_contributed >= 100) |
+    is.na(race)
+  ) %>%
   group_by(candidate) %>%
   arrange(desc(total_contributed), entity) %>%
-  filter(total_contributed >= 3000 | row_number() <= 5) %>%
+  ungroup() %>%
   arrange(race, district, candidate, desc(total_contributed), entity)
 
 
