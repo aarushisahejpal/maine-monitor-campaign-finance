@@ -91,6 +91,18 @@
             vertical-align: middle;
             margin-left: 6px;
         }
+        .exempt-badge {
+            display: inline-block;
+            font-size: 0.6em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: #333;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
 
         /* ── CHART ── */
         .chart-card {
@@ -369,7 +381,7 @@ PARTY_ORDER.forEach(party => {
     byParty[party].forEach(d => {
         const c = document.createElement('div');
         c.className = 'cand';
-        const badge = d.ft === 'MCEA' ? '<span class="mcea-badge">MCEA</span>' : '';
+        const badge = d.ft === 'MCEA' ? '<span class="mcea-badge">MCEA</span>' : d.ft === 'Exempt' ? '<span class="exempt-badge">EXEMPT</span>' : '';
         c.innerHTML = `<div class="cand-name">${d.d}${badge}</div>`;
         g.appendChild(c);
     });
@@ -464,7 +476,7 @@ candsWithDonors.forEach(cand => {
     card.style.background = tints[cand.p] || '#fff';
     card.innerHTML = `
         <div class="donor-block-header">
-            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : ''}</span>
+            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : cand.ft === 'Exempt' ? ' <span class="exempt-badge">EXEMPT</span>' : ''}</span>
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
 
@@ -476,6 +488,14 @@ candsWithDonors.forEach(cand => {
         mb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
         mb.innerHTML = `Publicly financed (Maine Clean Election Act). Eligible for up to <strong>${amt}</strong> in public funds for a contested general election.`;
         card.appendChild(mb);
+    }
+
+    // Exempt candidate note
+    if (cand.ft === 'Exempt') {
+        const eb = document.createElement('div');
+        eb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
+        eb.innerHTML = 'Exempt candidate — does not intend to raise or spend money for this campaign.';
+        card.appendChild(eb);
     }
 
     // Platform donations (ActBlue/WinRed)
