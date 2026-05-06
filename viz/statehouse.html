@@ -500,7 +500,7 @@ candsWithDonors.forEach(cand => {
         const raceType = isContested ? 'contested' : 'uncontested';
         const mb = document.createElement('div');
         mb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        mb.innerHTML = `Publicly financed (Maine Clean Election Act). Eligible for at least <strong>${amt}</strong> in public funds for an ${raceType} general election, in addition to what they raise through seed and qualifying contributions.`;
+        mb.innerHTML = `Some candidates in this race are publicly financed through the Maine Clean Election Act (MCEA) and are on a different funding schedule. Their public funds are not reflected in the totals above. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a>`;
         card.appendChild(mb);
     }
 
