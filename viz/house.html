@@ -110,7 +110,7 @@
         .d-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; border-radius: 3px; transition: background 0.1s; gap: 8px; }
         .d-row:hover { background: var(--bg-hover); }
         .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 400; min-width: 18px; }
-        .d-name { flex: 1; font-size: 0.85em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .d-name { flex: 1; font-size: 0.85em; word-wrap: break-word; }
         .d-amt { font-size: 0.85em; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
         /* ── BREAKDOWN CHARTS ── */
@@ -155,6 +155,11 @@
             .donors-grid { grid-template-columns: 1fr; }
             .breakdown-grid { grid-template-columns: 1fr; }
         }
+        /* Visible scrollbar */
+        .donors-grid ::-webkit-scrollbar { width: 8px; }
+        .donors-grid ::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 4px; }
+        .donors-grid ::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
+        .donors-grid ::-webkit-scrollbar-thumb:hover { background: #999; }
     </style>
 </head>
 <body>
@@ -164,11 +169,11 @@
         <div class="ribbon-header-wrapper">
             <div class="ribbon-main">
                 <div class="ribbon-icon-area"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                <div class="ribbon-text">Follow the Money</div>
+                <div class="ribbon-text">Who's Giving?</div>
             </div>
         </div>
         <div class="chart-card">
-            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Total campaign finance contributions by candidate</p>
+            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Here's the total raised by candidate.</p>
             <div id="chartContributions"></div>
             <div class="chart-total" id="contribTotal"></div>
         </div>
@@ -180,19 +185,21 @@
                 <div class="ribbon-text">Who's Giving?</div>
             </div>
         </div>
-        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Top donors by candidate</p>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Here are the top donors for each candidate.</p>
         <div class="donors-grid" id="donors"></div>
     </section>
 
     <!-- TIER 2: By Source -->
     <section class="section">
         <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">By Source</div></div></div>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Contributions to candidates can come from a variety of sources: individuals, political action committees, political party committees, the candidates themselves and leftover funds from previous campaigns. Here's a breakdown by source.</p>
         <div class="breakdown-grid" id="bySource"></div>
     </section>
 
     <!-- TIER 2: By Geography -->
     <section class="section">
-        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">In State vs. Out of State</div></div></div>
+        <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">Where's the Money Coming From?</div></div></div>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Here's a breakdown of in-state vs. out-of-state contributions.</p>
         <div class="breakdown-grid" id="byState"></div>
     </section>
 
@@ -201,10 +208,11 @@
         <div class="ribbon-header-wrapper">
             <div class="ribbon-main">
                 <div class="ribbon-icon-area"><i class="fa-solid fa-money-bill-transfer"></i></div>
-                <div class="ribbon-text">Expenditures</div>
+                <div class="ribbon-text">Where's the Money Going?</div>
             </div>
         </div>
         <div class="chart-card">
+            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Here's the total spent by candidate.</p>
             <div id="chartExpenditures"></div>
             <div class="chart-total" id="expTotal"></div>
         </div>
@@ -213,6 +221,7 @@
     <!-- TIER 2: Top Payees -->
     <section class="section">
         <div class="ribbon-header-wrapper"><div class="ribbon-main"><div class="ribbon-text">Where's It Going?</div></div></div>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Here are the entities candidates paid the most during their campaigns.</p>
         <div class="donors-grid" id="payees"></div>
     </section>
 
@@ -229,12 +238,9 @@
     </section>
 
     <footer class="page-footer">
-        <strong>Source:</strong> Federal Election Commission (FEC). Processed data for the 2026 election cycle.<br>
-        <strong>Data range:</strong> 2025–2026 election cycle.<br>
-        <strong>Last updated:</strong> April 28, 2026. Federal data is refreshed quarterly.<br><br>
-        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates. WinRed serves the same function for Republican candidates. Contributions listed under these platforms are from individual donors who used them to make their donations — they are not contributions from the platforms themselves.</span><br><br>
-        <span style="font-size:0.95em;">**Unitemized contributions are donations under $200 that the FEC does not require to be individually reported. They are included in the candidate's total but cannot be attributed to specific donors.</span><br><br>
-        <span style="font-size:0.95em;">Total raised and total spent figures are from official FEC filings. Donor and payee breakdowns are based on itemized transaction records and may not sum to the total.</span>
+<strong>Source:</strong> Federal Election Commission (FEC).<br>
+<strong>Last updated:</strong> May 5, 2026. Data is refreshed daily.<br><br>
+<span style="font-size:0.95em;">Top donor lists include only those who have given $3,000 or more. Donors are subject to contribution limits that vary depending on the type of donor and type of recipient. Individuals can give up to $3,500 to a candidate committee per election. ActBlue is an online fundraising platform used by Democratic candidates; WinRed serves the same function for Republican candidates. Contributions listed under these groups are from individual donors who used the platforms to make donations. Candidates do not have to itemize donations of less than $200 in campaign finance filings.</span>
     </footer>
 </div>
 
@@ -252,8 +258,8 @@ const PARTY_LABELS = {
     'UNAFFILIATED':'Unenrolled', '':'Other'
 };
 const PARTY_ORDER = ['DEMOCRATIC PARTY','REPUBLICAN PARTY','INDEPENDENT','INDEPENDENT PARTY','UNAFFILIATED'];
-const SOURCE_COLORS = { Individual:'#2c6fbb', 'PAC/Committee':'#e67e22', 'Party Committee':'#27ae60', 'Transfers (Own Committees)':'#2ecc71', 'Candidate/Self':'#8e44ad', Other:'#999' };
-const GEO_COLORS = { 'In State':'#2c6fbb', 'Out of State':'#c0392b', Unknown:'#999' };
+const SOURCE_COLORS = { Individual:'#19345B', 'PAC/Committee':'#e67e22', 'Party Committee':'#27ae60', 'Transfers (Own Committees)':'#2ecc71', 'Candidate/Self':'#8e44ad', Other:'#999' };
+const GEO_COLORS = { 'In State':'#19345B', 'Out of State':'#e67e22', Unknown:'#999' };
 
 const BASE = 'https://raw.githubusercontent.com/aarushisahejpal/maine-monitor-campaign-finance/main/viz/data/clean/';
 const OFFICE = 'House';

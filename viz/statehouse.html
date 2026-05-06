@@ -203,7 +203,7 @@
         }
         .d-row:hover { background: var(--bg-hover); }
         .d-rank { color: var(--text-muted); font-size: 0.78em; font-weight: 400; min-width: 18px; }
-        .d-name { flex: 1; font-size: 0.85em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .d-name { flex: 1; font-size: 0.85em; word-wrap: break-word; }
         .d-amt { font-size: 0.85em; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
         /* ── FOOTER ── */
@@ -218,6 +218,11 @@
             .cand-cards { grid-template-columns: 1fr; }
             .donors-grid { grid-template-columns: 1fr; }
         }
+        /* Visible scrollbar */
+        .donors-grid ::-webkit-scrollbar { width: 8px; }
+        .donors-grid ::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 4px; }
+        .donors-grid ::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
+        .donors-grid ::-webkit-scrollbar-thumb:hover { background: #999; }
     </style>
 </head>
 <body>
@@ -227,11 +232,11 @@
         <div class="ribbon-header-wrapper">
             <div class="ribbon-main">
                 <div class="ribbon-icon-area"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                <div class="ribbon-text">Follow the Money</div>
+                <div class="ribbon-text">Who's Giving?</div>
             </div>
         </div>
         <div class="chart-card">
-            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Total campaign finance contributions by candidate</p>
+            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Here's the total raised by candidate.</p>
             <div id="chartContainer"></div>
             <div class="chart-total" id="chartTotal"></div>
         </div>
@@ -244,18 +249,18 @@
                 <div class="ribbon-text">Who's Giving?</div>
             </div>
         </div>
-        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Top donors by candidate</p>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Here are the top donors for each candidate.</p>
         <div class="donors-grid" id="donors"></div>
     </section>
 
     <section class="section">
         <div class="ribbon-header-wrapper">
             <div class="ribbon-main">
-                <div class="ribbon-text">Expenditures</div>
+                <div class="ribbon-text">Where's the Money Going?</div>
             </div>
         </div>
         <div class="chart-card">
-            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Total campaign expenditures by candidate</p>
+            <p style="font-size:0.85em;color:#666;margin-bottom:16px;">Here's the total spent by candidate.</p>
             <div id="chartExpenditures"></div>
             <div class="chart-total" id="expTotal"></div>
         </div>
@@ -267,15 +272,14 @@
                 <div class="ribbon-text">Where's It Going?</div>
             </div>
         </div>
-        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Top payees by candidate</p>
+        <p style="font-size:0.85em;color:#666;margin-top:-4px;margin-bottom:16px;">Here are the entities candidates paid the most during their campaigns.</p>
         <div class="donors-grid" id="payees"></div>
     </section>
 
     <footer class="page-footer">
-        <strong>Source:</strong> Maine Campaign Finance Disclosure System. Includes direct contributions and contributions routed through committees and PACs.<br>
-        <strong>Data range:</strong> January 1, 2025 – April 27, 2026.<br>
-        <strong>Last updated:</strong> April 28, 2026. Data is refreshed biweekly.<br><br>
-        <span style="font-size:0.95em;">*ActBlue is an online fundraising platform used by Democrat candidates. WinRed serves the same function for Republican candidates. Contributions listed under these platforms are from individual donors who used them to make their donations — they are not contributions from the platforms themselves.</span>
+<strong>Source:</strong> Maine Campaign Finance Disclosure System.<br>
+<strong>Last updated:</strong> May 5, 2026. Data is refreshed daily.<br><br>
+<span style="font-size:0.95em;">Top donor lists only those who have given $100 or more. ActBlue is an online fundraising platform used by Democratic candidates; WinRed serves the same function for Republican candidates. Contributions listed under these groups are from individual donors who used the platforms to make donations. Candidates do not have to itemize donations of less than $50 in campaign finance filings. Individuals, political action committees and party committees may give up to $500 for each the primary and general election, for a total of $1,000, to traditionally financed candidates. Contributions made to a particular candidate that are earmarked or directed through an intermediary such as a PAC or a party committee are considered contributions to the candidate, and are subject to the contribution limits. Some legislative candidates are financed through the Maine Clean Election Act, a voluntary public funding system for candidates. Candidates receiving funding through the Maine Clean Election Act (MCEA) may accept limited private contributions (seed money) at the beginning of the campaign. Individual donations cannot be more than $100, and the candidate must not raise more than $1,000 if running for a House seat or no more than $3,000 if running for a Senate seat. Candidates must collect a minimum number of valid qualifying contributions of at least $5 to be eligible for the MCEA program (60 qualifying contributions for House candidates; 175 qualifying contributions for Senate candidates) and can receive additional funding depending on a variety of factors.</span>
     </footer>
 </div>
 
