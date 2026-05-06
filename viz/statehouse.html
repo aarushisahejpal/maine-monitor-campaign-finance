@@ -427,8 +427,8 @@ const y = d3.scaleBand()
 
 const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
 
-// Light green "eligible for at least" bar for MCEA candidates
-bars.filter(d => d.ft === 'MCEA').append('rect')
+// Light green "eligible for at least" bar — only for MCEA candidates who have contributions (likely qualified)
+bars.filter(d => d.ft === 'MCEA' && d.t > 0).append('rect')
     .attr('x', margin.left)
     .attr('y', d => y(d.d))
     .attr('width', 0)
@@ -460,10 +460,10 @@ bars.append('text')
 
 bars.append('text')
     .attr('class', 'value')
-    .attr('x', d => d.ft === 'MCEA' ? x(mceaAmount) + 8 : x(d.t) + 8)
+    .attr('x', d => d.ft === 'MCEA' && d.t > 0 ? x(mceaAmount) + 8 : x(d.t) + 8)
     .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .text(d => d.ft === 'MCEA' ? fmt(d.t) + ' raised · at least ' + fmt(mceaAmount) + ' eligible' : fmt(d.t))
+    .text(d => d.ft === 'MCEA' && d.t > 0 ? fmt(d.t) + ' raised · at least ' + fmt(mceaAmount) + ' eligible' : fmt(d.t))
     .style('opacity', 0)
     .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
@@ -512,17 +512,23 @@ candsWithDonors.forEach(cand => {
 
     // MCEA public funding note
     if (cand.ft === 'MCEA') {
-        const isContested = TOTALS.length > 1;
-        const mceaAmounts = {
-            Representative: { contested: '$6,625', uncontested: '$2,000' },
-            Senator: { contested: '$26,500', uncontested: '$7,950' },
-        };
-        const raceAmounts = mceaAmounts[RACE] || { contested: '', uncontested: '' };
-        const amt = isContested ? raceAmounts.contested : raceAmounts.uncontested;
-        const raceType = isContested ? 'contested' : 'uncontested';
         const mb = document.createElement('div');
         mb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        mb.innerHTML = `Some candidates in this race are publicly financed through the Maine Clean Election Act (MCEA) and are on a different funding schedule. Their public funds are not reflected in the totals above. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a>`;
+        if (cand.t > 0) {
+            // Has contributions — likely qualified
+            const isContested = TOTALS.length > 1;
+            const mceaAmounts = {
+                Representative: { contested: '$6,625', uncontested: '$2,000' },
+                Senator: { contested: '$26,500', uncontested: '$7,950' },
+            };
+            const raceAmounts = mceaAmounts[RACE] || { contested: '', uncontested: '' };
+            const amt = isContested ? raceAmounts.contested : raceAmounts.uncontested;
+            const raceType = isContested ? 'contested' : 'uncontested';
+            mb.innerHTML = `Some candidates in this race are publicly financed through the Maine Clean Election Act (MCEA) and are on a different funding schedule. Their public funds are not reflected in the totals above. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a>`;
+        } else {
+            // $0 — registered as MCEA but qualification unconfirmed
+            mb.innerHTML = `Registered as a Maine Clean Election Act (MCEA) candidate. Qualification status is unconfirmed. <a href="https://www.maine.gov/ethics/candidates/maine-clean-election-act/payment-tables" target="_blank" style="color:#27ae60;">See MCEA payment tables.</a>`;
+        }
         card.appendChild(mb);
     }
 
