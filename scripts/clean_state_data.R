@@ -25,6 +25,7 @@ mcea_data <- read_csv("data/mcea_designations.csv") %>%
 # so we can show proper names like "Majerus-Collins" on charts
 state_df <- state_df %>%
   mutate(
+    is_special = str_detect(filer_name, regex("\\(special\\)", ignore_case = TRUE)),
     filer_name_clean = filer_name %>%
       str_to_lower() %>%
       str_remove_all("\\s*\\(special\\)\\s*") %>%  # remove (special)
@@ -36,6 +37,9 @@ state_df <- state_df %>%
       str_remove_all("\\s*\\(Special\\)\\s*") %>%
       str_squish()
   )
+
+# Exclude special election transactions from main analysis
+state_df <- state_df %>% filter(!is_special)
 
 # Clean candidate list: remove "special" suffix, deduplicate
 candidate_list <- candidate_list %>%
