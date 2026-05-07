@@ -288,6 +288,7 @@
 <strong>Last updated:</strong> May 5, 2026. Data is refreshed daily.<br><br>
 <span style="font-size:0.95em;">Top donor lists only those who have given $100 or more. ActBlue is an online fundraising platform used by Democratic candidates; WinRed serves the same function for Republican candidates. Contributions listed under these groups are from individual donors who used the platforms to make donations. Candidates do not have to itemize donations of less than $50 in campaign finance filings. Individuals, political action committees and party committees may give up to $500 for each the primary and general election, for a total of $1,000, to traditionally financed candidates. Contributions made to a particular candidate that are earmarked or directed through an intermediary such as a PAC or a party committee are considered contributions to the candidate, and are subject to the contribution limits. Some legislative candidates are financed through the Maine Clean Election Act, a voluntary public funding system for candidates. Candidates receiving funding through the Maine Clean Election Act (MCEA) may accept limited private contributions (seed money) at the beginning of the campaign. Individual donations cannot be more than $100, and the candidate must not raise more than $1,000 if running for a House seat or no more than $3,000 if running for a Senate seat. Candidates must collect a minimum number of valid qualifying contributions of at least $5 to be eligible for the MCEA program (60 qualifying contributions for House candidates; 175 qualifying contributions for Senate candidates) and can receive additional funding depending on a variety of factors.</span>
     </footer>
+    <div style="font-size:0.8em;color:#999;margin-top:16px;padding-bottom:8px;">Developed in partnership with Aarushi Sahejpal and Hannah Benson at the Investigative Reporting Workshop, American University</div>
 </div>
 
 <div class="tip" id="tip"></div>
@@ -443,6 +444,32 @@ bars.append('rect')
     .attr('fill', d => COLORS[d.p] || '#999')
     .transition().duration(700).delay((d, i) => i * 80)
     .attr('width', d => x(d.t) - margin.left);
+
+// MCEA badge before the candidate name — aligned to longest name in chart
+const maxNameWidth = Math.max(...TOTALS.map(d => {
+    const tmp = svg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
+    const w = tmp.node().getComputedTextLength();
+    tmp.remove();
+    return w;
+}));
+const badgeX = margin.left - 10 - maxNameWidth - 44;
+
+bars.filter(d => d.ft === 'MCEA').append('foreignObject')
+    .attr('x', badgeX)
+    .attr('y', d => y(d.d) + y.bandwidth() / 2 - 10)
+    .attr('width', 42)
+    .attr('height', 24)
+    .append('xhtml:span')
+    .style('display','inline-block')
+    .style('font-size','9px')
+    .style('font-weight','700')
+    .style('letter-spacing','0.5px')
+    .style('background','#27ae60')
+    .style('color','#fff')
+    .style('padding','1px 4px')
+    .style('border-radius','3px')
+    .style('line-height','14px')
+    .text('MCEA');
 
 bars.append('text')
     .attr('class', 'label')
