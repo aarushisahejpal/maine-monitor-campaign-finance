@@ -302,13 +302,10 @@ const params = new URLSearchParams(window.location.search);
 const DISTRICT = params.get('district') || '94';
 const RACE = params.get('race') || 'Representative';
 
-// Dark mode: follow URL param or OS preference
-if (params.get('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+// Dark mode: only when explicitly requested via ?theme=dark
+if (params.get('theme') === 'dark') {
     document.documentElement.setAttribute('data-scheme', 'dark');
 }
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    document.documentElement.setAttribute('data-scheme', e.matches ? 'dark' : 'light');
-});
 
 // Update page title
 document.title = (RACE === 'Senator' ? `Senate District ${DISTRICT}` : `House District ${DISTRICT}`) + ' — Campaign Finances — The Maine Monitor';

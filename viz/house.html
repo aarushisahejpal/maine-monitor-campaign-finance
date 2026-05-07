@@ -281,13 +281,10 @@ const OFFICE = 'House';
 const urlParams = new URLSearchParams(window.location.search);
 const DISTRICT = urlParams.get('district') || '01';
 
-// Dark mode: follow URL param or OS preference
-if (urlParams.get('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+// Dark mode: only when explicitly requested via ?theme=dark
+if (urlParams.get('theme') === 'dark') {
     document.documentElement.setAttribute('data-scheme', 'dark');
 }
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    document.documentElement.setAttribute('data-scheme', e.matches ? 'dark' : 'light');
-});
 document.title = `U.S. House District ${DISTRICT} — Campaign Finances — The Maine Monitor`;
 
 function loadCSV(f) {
