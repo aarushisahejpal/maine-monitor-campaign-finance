@@ -357,7 +357,67 @@ async function loadData() {
 }
 
 loadData().then(({ TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES }) => {
-    render(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES);
+    // District 29 special: split into regular + special election sections
+    const isSpecial = (c) => c.c.includes('special');
+    if (DISTRICT === '29' && TOTALS.some(isSpecial)) {
+        const regTotals = TOTALS.filter(d => !isSpecial(d));
+        const regDonors = DONORS.filter(d => !d.c.includes('special'));
+        const regSmall = Object.fromEntries(Object.entries(SMALL).filter(([k]) => !k.includes('special')));
+        const regExp = EXP_TOTALS.filter(d => !isSpecial(d));
+        const regPayees = TOP_PAYEES.filter(d => !d.c.includes('special'));
+
+        const specTotals = TOTALS.filter(isSpecial);
+        const specDonors = DONORS.filter(d => d.c.includes('special'));
+        const specSmall = Object.fromEntries(Object.entries(SMALL).filter(([k]) => k.includes('special')));
+        const specExp = EXP_TOTALS.filter(isSpecial);
+        const specPayees = TOP_PAYEES.filter(d => d.c.includes('special'));
+
+        // Add a header for the regular race
+        const container = document.querySelector('.container');
+        const marker = document.querySelector('.section');
+        const regHeader = document.createElement('div');
+        regHeader.style.cssText = 'margin:20px 0 0;padding:12px 16px;background:#19345B;color:#fff;font-family:Lora,serif;font-size:1.1em;font-weight:700;border-radius:4px;';
+        regHeader.textContent = 'Primary Election';
+        marker.parentNode.insertBefore(regHeader, marker);
+
+        render(regTotals, regDonors, regSmall, regExp, regPayees);
+
+        // Clone sections for special election
+        const specHeader = document.createElement('div');
+        specHeader.style.cssText = 'margin:40px 0 0;padding:12px 16px;background:#F15A29;color:#fff;font-family:Lora,serif;font-size:1.1em;font-weight:700;border-radius:4px;';
+        specHeader.textContent = 'Special Election — June 9, 2026';
+
+        const specSection = document.createElement('section');
+        specSection.className = 'section';
+        specSection.innerHTML = `
+            <div class="chart-card">
+                <p style="font-size:0.85em;color:#1a1a1a;margin-bottom:16px;"><strong>Here's the total raised by candidate.</strong></p>
+                <div id="chartContainerSpec"></div>
+            </div>
+            <p style="font-size:0.85em;color:#1a1a1a;margin-top:20px;margin-bottom:16px;"><strong>Here are the top donors for each candidate.</strong></p>
+            <div class="donors-grid" id="donorsSpec"></div>
+        `;
+
+        const specSection2 = document.createElement('section');
+        specSection2.className = 'section';
+        specSection2.innerHTML = `
+            <div class="chart-card">
+                <p style="font-size:0.85em;color:#1a1a1a;margin-bottom:16px;"><strong>Here's the total spent by candidate.</strong></p>
+                <div id="chartExpendituresSpec"></div>
+            </div>
+            <p style="font-size:0.85em;color:#1a1a1a;margin-top:20px;margin-bottom:16px;"><strong>Here are the entities candidates paid the most during their campaigns.</strong></p>
+            <div class="donors-grid" id="payeesSpec"></div>
+        `;
+
+        const footer = document.querySelector('.page-footer');
+        footer.parentNode.insertBefore(specHeader, footer);
+        footer.parentNode.insertBefore(specSection, footer);
+        footer.parentNode.insertBefore(specSection2, footer);
+
+        renderSpecial(specTotals, specDonors, specSmall, specExp, specPayees);
+    } else {
+        render(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES);
+    }
 }).catch(err => {
     console.error('Failed to load data:', err);
     document.querySelector('.container').innerHTML += '<p style="color:red;text-align:center;margin-top:40px;">Error loading data.</p>';
@@ -694,6 +754,117 @@ EXP_TOTALS.forEach(cand => {
 });
 
 } // end render()
+
+function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
+    const fmt = n => '$' + Math.round(n).toLocaleString();
+    const COLORS = { Democratic: '#19345B', Republican: '#C0392B', Unenrolled: '#7D3C98', Independent: '#7D3C98', Green: '#27ae60', Libertarian: '#F39C12' };
+
+    // ─── CONTRIBUTIONS CHART ───
+    const margin = { top: 4, right: 110, bottom: 4, left: 200 };
+    const barH = 30, barGap = 6;
+    const width = 780;
+    const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
+    const maxVal = d3.max(TOTALS, d => d.t) || 1;
+    const x = d3.scaleLinear().domain([0, maxVal]).range([margin.left, width - margin.right]);
+    const y = d3.scaleBand().domain(TOTALS.map(d => d.d)).range([margin.top, height - margin.bottom]).padding(0.15);
+
+    const svg = d3.select('#chartContainerSpec').append('svg').attr('class', 'chart-svg')
+        .attr('viewBox', `0 0 ${width} ${height}`).attr('preserveAspectRatio', 'xMidYMid meet');
+
+    const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
+
+    bars.filter(d => d.t > 0).append('rect').attr('class', 'bar')
+        .attr('x', margin.left).attr('y', d => y(d.d)).attr('width', 0)
+        .attr('height', y.bandwidth()).attr('rx', 2).attr('fill', d => COLORS[d.p] || '#999')
+        .transition().duration(700).delay((d, i) => i * 80).attr('width', d => x(d.t) - margin.left);
+
+    bars.filter(d => d.t === 0).append('rect').attr('class', 'bar')
+        .attr('x', margin.left).attr('y', d => y(d.d)).attr('width', 0).attr('height', y.bandwidth()).attr('fill', 'transparent');
+
+    bars.append('text').attr('class', 'label')
+        .attr('x', margin.left - 10).attr('y', d => y(d.d) + y.bandwidth() / 2)
+        .attr('dy', '0.35em').attr('text-anchor', 'end').text(d => d.d);
+
+    bars.append('text').attr('class', 'value')
+        .attr('x', d => d.t === 0 ? margin.left + 4 : x(d.t) + 8)
+        .attr('y', d => y(d.d) + y.bandwidth() / 2)
+        .attr('dy', '0.35em').text(d => d.t === 0 ? '$0' : fmt(d.t))
+        .style('opacity', 0).transition().duration(400).delay((d, i) => i * 80 + 500).style('opacity', 1);
+
+    // ─── DONORS ───
+    const donorsEl = document.getElementById('donorsSpec');
+    TOTALS.forEach(cand => {
+        const cd = DONORS.filter(d => d.c === cand.c);
+        const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3' };
+        const card = document.createElement('div');
+        card.className = 'donor-block';
+        card.style.background = tints[cand.p] || '#fff';
+        card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}</span><span class="donor-block-total">${fmt(cand.t)} total</span></div>`;
+        if (cd.length) {
+            const hdr = document.createElement('div');
+            hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
+            hdr.textContent = 'Top Donors';
+            card.appendChild(hdr);
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'max-height:220px;overflow-y:auto;';
+            cd.forEach(d => { const row = document.createElement('div'); row.className = 'd-row'; row.innerHTML = `<span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`; wrap.appendChild(row); });
+            card.appendChild(wrap);
+        }
+        donorsEl.appendChild(card);
+    });
+
+    // ─── EXPENDITURES CHART ───
+    if (EXP_TOTALS.length) {
+        const eHeight = EXP_TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
+        const eMax = d3.max(EXP_TOTALS, d => d.t) || 1;
+        const eX = d3.scaleLinear().domain([0, eMax]).range([margin.left, width - margin.right]);
+        const eY = d3.scaleBand().domain(EXP_TOTALS.map(d => d.d)).range([margin.top, eHeight - margin.bottom]).padding(0.15);
+
+        const eSvg = d3.select('#chartExpendituresSpec').append('svg').attr('class', 'chart-svg')
+            .attr('viewBox', `0 0 ${width} ${eHeight}`).attr('preserveAspectRatio', 'xMidYMid meet');
+        const eBars = eSvg.selectAll('.bar-g').data(EXP_TOTALS).join('g').attr('class', 'bar-g');
+
+        eBars.filter(d => d.t > 0).append('rect').attr('class', 'bar')
+            .attr('x', margin.left).attr('y', d => eY(d.d)).attr('width', 0)
+            .attr('height', eY.bandwidth()).attr('rx', 2).attr('fill', d => COLORS[d.p] || '#999')
+            .transition().duration(700).delay((d, i) => i * 80).attr('width', d => eX(d.t) - margin.left);
+
+        eBars.filter(d => d.t === 0).append('rect').attr('class', 'bar')
+            .attr('x', margin.left).attr('y', d => eY(d.d)).attr('width', 0).attr('height', eY.bandwidth()).attr('fill', 'transparent');
+
+        eBars.append('text').attr('class', 'label')
+            .attr('x', margin.left - 10).attr('y', d => eY(d.d) + eY.bandwidth() / 2)
+            .attr('dy', '0.35em').attr('text-anchor', 'end').text(d => d.d);
+
+        eBars.append('text').attr('class', 'value')
+            .attr('x', d => d.t === 0 ? margin.left + 4 : eX(d.t) + 8)
+            .attr('y', d => eY(d.d) + eY.bandwidth() / 2)
+            .attr('dy', '0.35em').text(d => d.t === 0 ? '$0' : fmt(d.t))
+            .style('opacity', 0).transition().duration(400).delay((d, i) => i * 80 + 500).style('opacity', 1);
+    }
+
+    // ─── PAYEES ───
+    const payeesEl = document.getElementById('payeesSpec');
+    EXP_TOTALS.forEach(cand => {
+        const cd = TOP_PAYEES.filter(d => d.c === cand.c);
+        const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3' };
+        const card = document.createElement('div');
+        card.className = 'donor-block';
+        card.style.background = tints[cand.p] || '#fff';
+        card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}</span><span class="donor-block-total">${fmt(cand.t)} spent</span></div>`;
+        if (cd.length) {
+            const hdr = document.createElement('div');
+            hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
+            hdr.textContent = 'Top Expenditures';
+            card.appendChild(hdr);
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'max-height:220px;overflow-y:auto;';
+            cd.forEach(d => { const row = document.createElement('div'); row.className = 'd-row'; row.innerHTML = `<span class="d-name">${d.e}</span><span class="d-amt">${fmt(d.a)}</span>`; wrap.appendChild(row); });
+            card.appendChild(wrap);
+        }
+        payeesEl.appendChild(card);
+    });
+} // end renderSpecial()
 </script>
 </body>
 </html>
