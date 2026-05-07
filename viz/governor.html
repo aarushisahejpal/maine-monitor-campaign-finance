@@ -546,7 +546,9 @@ bars.on('mouseenter', function(evt, d) {
 const total = TOTALS.reduce((a, b) => a + b.t, 0);
 const totalExp = EXP_TOTALS.reduce((a, b) => a + b.t, 0);
 document.getElementById('chartTotal').textContent = 'Total raised across all candidates: ' + fmt(total);
+/* STASHED — total raised/spent summary hidden, data still in bar chart
 document.getElementById('topSummary').innerHTML = `<div style="display:flex;gap:32px;flex-wrap:wrap;"><div><span style="font-family:'Lora',serif;font-size:2em;font-weight:700;color:#19345B;">${fmt(total)}</span><div style="font-size:0.85em;color:#666;">total raised</div></div><div><span style="font-family:'Lora',serif;font-size:2em;font-weight:700;color:#19345B;">${fmt(totalExp)}</span><div style="font-size:0.85em;color:#666;">total spent</div></div></div>`;
+*/
 
 // ─── TOP DONORS (scrollable tables) ───
 const donorsEl = document.getElementById('donors');
