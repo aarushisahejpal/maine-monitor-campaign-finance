@@ -341,9 +341,12 @@ async function loadData() {
         SMALL[r.candidate] = parseFloat(r.small_dollar_total);
     });
 
-    const EXP_TOTALS = expRaw
-        .filter(r => r.race === RACE && String(r.district) === DISTRICT)
-        .map(r => ({c: r.candidate, d: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_exp), ft: r.finance_type || 'Unknown'}))
+    // Build expenditure totals from ALL candidates (fill $0 for those with no expenditure data)
+    const expMap = {};
+    expRaw.filter(r => r.race === RACE && String(r.district) === DISTRICT).forEach(r => {
+        expMap[r.candidate] = parseFloat(r.tot_exp);
+    });
+    const EXP_TOTALS = TOTALS.map(d => ({c: d.c, d: d.d, p: d.p, t: expMap[d.c] || 0, ft: d.ft}))
         .sort((a, b) => b.t - a.t);
 
     const TOP_PAYEES = payeesRaw
@@ -400,8 +403,9 @@ const mceaAmount = (mceaMin[RACE] || {})[isContested ? 'contested' : 'unconteste
 */
 const mceaAmount = 0; // disabled until May 21 certification
 
+const maxVal = d3.max(TOTALS, d => d.t) || 1; // avoid 0 domain
 const x = d3.scaleLinear()
-    .domain([0, d3.max(TOTALS, d => d.t)])
+    .domain([0, maxVal])
     .range([margin.left, width - margin.right]);
 
 const y = d3.scaleBand()
@@ -433,8 +437,8 @@ bars.filter(d => d.ft === 'MCEA' && d.t > 0 && d.t < mceaAmount).append('rect')
     .transition().duration(700).delay((d, i) => i * 80)
     .attr('width', x(mceaAmount) - margin.left);
 
-// Regular contribution bar (overlays on top for MCEA candidates who also raised seed money)
-bars.append('rect')
+// Regular contribution bar — skip if $0
+bars.filter(d => d.t > 0).append('rect')
     .attr('class', 'bar')
     .attr('x', margin.left)
     .attr('y', d => y(d.d))
@@ -444,6 +448,15 @@ bars.append('rect')
     .attr('fill', d => COLORS[d.p] || '#999')
     .transition().duration(700).delay((d, i) => i * 80)
     .attr('width', d => x(d.t) - margin.left);
+
+// $0 candidates get no bar, just an invisible rect for hover
+bars.filter(d => d.t === 0).append('rect')
+    .attr('class', 'bar')
+    .attr('x', margin.left)
+    .attr('y', d => y(d.d))
+    .attr('width', 0)
+    .attr('height', y.bandwidth())
+    .attr('fill', 'transparent');
 
 // MCEA badge before the candidate name — aligned to longest name in chart
 const maxNameWidth = Math.max(...TOTALS.map(d => {
@@ -456,9 +469,13 @@ const badgeX = margin.left - 10 - maxNameWidth - 44;
 
 bars.filter(d => d.ft === 'MCEA').append('foreignObject')
     .attr('x', badgeX)
-    .attr('y', d => y(d.d) + y.bandwidth() / 2 - 10)
-    .attr('width', 42)
-    .attr('height', 24)
+    .attr('y', d => y(d.d))
+    .attr('width', 46)
+    .attr('height', y.bandwidth())
+    .append('xhtml:div')
+    .style('display','flex')
+    .style('align-items','center')
+    .style('height','100%')
     .append('xhtml:span')
     .style('display','inline-block')
     .style('font-size','9px')
@@ -466,9 +483,9 @@ bars.filter(d => d.ft === 'MCEA').append('foreignObject')
     .style('letter-spacing','0.5px')
     .style('background','#27ae60')
     .style('color','#fff')
-    .style('padding','1px 4px')
+    .style('padding','2px 5px')
     .style('border-radius','3px')
-    .style('line-height','14px')
+    .style('white-space','nowrap')
     .text('MCEA');
 
 bars.append('text')
@@ -479,13 +496,13 @@ bars.append('text')
     .attr('text-anchor', 'end')
     .text(d => d.d);
 
-// Value labels — skip MCEA candidates who get the green label instead
+// Value labels
 bars.append('text')
     .attr('class', 'value')
-    .attr('x', d => x(d.t) + 8)
+    .attr('x', d => d.t === 0 ? margin.left + 4 : x(d.t) + 8)
     .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .text(d => fmt(d.t))
+    .text(d => d.t === 0 ? '$0' : fmt(d.t))
     .style('opacity', 0)
     .transition().duration(400).delay((d, i) => i * 80 + 500)
     .style('opacity', 1);
@@ -614,23 +631,31 @@ if (EXP_TOTALS.length) {
         .attr('viewBox', `0 0 ${expWidth} ${expHeight}`)
         .attr('preserveAspectRatio', 'xMidYMid meet');
 
-    const expX = d3.scaleLinear().domain([0, d3.max(EXP_TOTALS, d => d.t)]).range([expMargin.left, expWidth - expMargin.right]);
+    const expMaxVal = d3.max(EXP_TOTALS, d => d.t) || 1;
+    const expX = d3.scaleLinear().domain([0, expMaxVal]).range([expMargin.left, expWidth - expMargin.right]);
     const expY = d3.scaleBand().domain(EXP_TOTALS.map(d => d.d)).range([expMargin.top, expHeight - expMargin.bottom]).padding(0.15);
 
     const expBars = expSvg.selectAll('.bar-g').data(EXP_TOTALS).join('g').attr('class', 'bar-g');
 
-    expBars.append('rect').attr('class', 'bar')
+    // Bars for candidates with expenditures
+    expBars.filter(d => d.t > 0).append('rect').attr('class', 'bar')
         .attr('x', expMargin.left).attr('y', d => expY(d.d)).attr('width', 0)
         .attr('height', expY.bandwidth()).attr('rx', 2).attr('fill', d => COLORS[d.p] || '#999')
         .transition().duration(700).delay((d, i) => i * 80).attr('width', d => expX(d.t) - expMargin.left);
+
+    // $0 candidates — invisible rect for hover
+    expBars.filter(d => d.t === 0).append('rect').attr('class', 'bar')
+        .attr('x', expMargin.left).attr('y', d => expY(d.d))
+        .attr('width', 0).attr('height', expY.bandwidth()).attr('fill', 'transparent');
 
     expBars.append('text').attr('class', 'label')
         .attr('x', expMargin.left - 10).attr('y', d => expY(d.d) + expY.bandwidth() / 2)
         .attr('dy', '0.35em').attr('text-anchor', 'end').text(d => d.d);
 
     expBars.append('text').attr('class', 'value')
-        .attr('x', d => expX(d.t) + 8).attr('y', d => expY(d.d) + expY.bandwidth() / 2)
-        .attr('dy', '0.35em').text(d => fmt(d.t))
+        .attr('x', d => d.t === 0 ? expMargin.left + 4 : expX(d.t) + 8)
+        .attr('y', d => expY(d.d) + expY.bandwidth() / 2)
+        .attr('dy', '0.35em').text(d => d.t === 0 ? '$0' : fmt(d.t))
         .style('opacity', 0).transition().duration(400).delay((d, i) => i * 80 + 500).style('opacity', 1);
 
     expBars.on('mouseenter', function(evt, d) {
@@ -650,7 +675,6 @@ if (EXP_TOTALS.length) {
 const payeesEl = document.getElementById('payees');
 EXP_TOTALS.forEach(cand => {
     const cd = TOP_PAYEES.filter(d => d.c === cand.c);
-    if (!cd.length) return;
 
     const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3', Independent: '#f3eef8' };
     const card = document.createElement('div');
