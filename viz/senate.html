@@ -260,6 +260,15 @@
 <div class="tip" id="tip"></div>
 
 <script>
+// Dark mode: follow URL param or OS preference
+const _p = new URLSearchParams(window.location.search);
+if (_p.get('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-scheme', 'dark');
+}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    document.documentElement.setAttribute('data-scheme', e.matches ? 'dark' : 'light');
+});
+
 const PARTY_COLORS = {
     'REPUBLICAN PARTY':'#c0392b', 'DEMOCRATIC PARTY':'#2c6fbb',
     'INDEPENDENT':'#8e44ad', 'INDEPENDENT PARTY':'#8e44ad',
