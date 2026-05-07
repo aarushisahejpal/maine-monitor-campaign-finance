@@ -1,138 +1,109 @@
 #!/usr/bin/env python3
 """
 Check for newly terminated candidates on the disclosure site.
-Updates candidate_status.csv to hide them.
+Downloads the filers CSV from the disclosure site (no scraping needed),
+then updates candidate_status.csv and all_candidates_finance_type.csv.
 """
 
 import csv
+import io
 import os
-import time
+import re
 import requests
-from bs4 import BeautifulSoup
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATUS_FILE = os.path.join(SCRIPT_DIR, "..", "data", "candidate_status.csv")
 FINANCE_FILE = os.path.join(SCRIPT_DIR, "..", "data", "all_candidates_finance_type.csv")
-BASE_URL = "https://www.mainecampaignfinancedisclosure.com/public/filers"
 
-HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
+FILERS_CSV_URL = (
+    "https://www.mainecampaignfinancedisclosure.com/public/filers.csv"
+    "?q%5Bsearch_i_cont%5D="
+    "&q%5Bfiler_type_key_cont_any%5D%5B%5D=candidate"
+    "&commit=Create+Search"
+)
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+}
 
 
-def scrape_all_candidates():
-    """Scrape the filer list for all candidate statuses."""
-    session = requests.Session()
-    session.headers.update(HEADERS)
+def clean_name(name):
+    """Lowercase, remove all punctuation, squish spaces (matches R pipeline)."""
+    n = name.strip().lower()
+    n = re.sub(r"[^\w\s]", "", n)
+    n = re.sub(r"\s+", " ", n).strip()
+    return n
 
-    params = {"q[filer_type_key_cont_any][]": "candidate", "limit": "50"}
-    all_filers = []
-    page = 1
 
-    while True:
-        try:
-            resp = session.get(BASE_URL, params={**params, "page": str(page)}, timeout=30)
-            soup = BeautifulSoup(resp.text, "html.parser")
-        except Exception as e:
-            print(f"  Error on page {page}: {e}")
-            break
+def download_filers_csv():
+    """Download the candidate filers CSV from the disclosure site."""
+    print("  Downloading filers CSV from disclosure site...")
+    resp = requests.get(FILERS_CSV_URL, headers=HEADERS, timeout=30)
+    resp.raise_for_status()
 
-        table = soup.find("table")
-        if not table:
-            break
-
-        rows = table.find_all("tr")[1:]
-        if not rows:
-            break
-
-        for tr in rows:
-            tds = tr.find_all("td")
-            a = tr.find("a")
-            if a and len(tds) >= 3:
-                all_filers.append({
-                    "name": tds[0].get_text(strip=True),
-                    "status": tds[2].get_text(strip=True),
-                    "url": a["href"],
-                })
-
-        # Check if there are more pages
-        disp = soup.find(string=lambda t: t and "Displaying" in str(t))
-        if disp:
-            parts = disp.strip().split()
-            total = int(parts[parts.index("of") + 1].replace(",", ""))
-            if page * 50 >= total:
-                break
-        else:
-            break
-
-        page += 1
-        time.sleep(0.5)
-
-    return all_filers
+    reader = csv.DictReader(io.StringIO(resp.text))
+    filers = list(reader)
+    print(f"  Downloaded {len(filers)} filer records")
+    return filers
 
 
 def main():
     print("Checking for terminated candidates...")
 
-    # Scrape current statuses
-    filers = scrape_all_candidates()
-    print(f"  Scraped {len(filers)} candidates from disclosure site")
+    filers = download_filers_csv()
 
-    # Build lookup — a candidate is only truly terminated if they have
-    # NO active committees (they may have old terminated ones + a new active one)
+    # Build active/terminated lookups
+    # A candidate is only truly terminated if ALL their filings are terminated
     active_names = set()
     terminated_names = set()
     for f in filers:
-        name = f["name"].lower().strip()
+        name = clean_name(f["name"])
         if f["status"] == "Active":
             active_names.add(name)
         else:
             terminated_names.add(name)
 
-    # Only truly terminated = terminated AND NOT active
     truly_terminated = terminated_names - active_names
-    print(f"  Active: {len(active_names)}, Terminated only: {len(truly_terminated)}, Has both: {len(terminated_names & active_names)}")
-    terminated = truly_terminated
-    active = active_names
+    print(
+        f"  Active: {len(active_names)}, "
+        f"Terminated only: {len(truly_terminated)}, "
+        f"Has both: {len(terminated_names & active_names)}"
+    )
 
-    # Update the finance type file
+    # Update all_candidates_finance_type.csv
+    updated_finance = 0
     if os.path.exists(FINANCE_FILE):
         with open(FINANCE_FILE) as f:
             finance_rows = list(csv.DictReader(f))
 
-        updated = 0
         for r in finance_rows:
-            name_lower = r["name"].lower().strip()
-            # Only mark terminated if NOT in active list
-            has_active = any(name_lower in a or a in name_lower for a in active)
-            if not has_active and name_lower in terminated and r["status"] == "Active":
+            name = clean_name(r["name"])
+            has_active = name in active_names
+            if not has_active and name in truly_terminated and r["status"] == "Active":
                 r["status"] = "Terminated"
-                updated += 1
+                updated_finance += 1
                 print(f"  NEWLY TERMINATED: {r['name']}")
 
-        if updated:
+        if updated_finance:
             with open(FINANCE_FILE, "w", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=finance_rows[0].keys())
                 writer.writeheader()
                 writer.writerows(finance_rows)
-            print(f"  Updated {updated} candidates to Terminated")
+            print(f"  Updated {updated_finance} candidates to Terminated in finance file")
 
     # Update candidate_status.csv
+    hidden = 0
     if os.path.exists(STATUS_FILE):
         with open(STATUS_FILE) as f:
             status_rows = list(csv.DictReader(f))
 
-        hidden = 0
         for r in status_rows:
-            # Never override editorial decisions (candidates already set to "no")
             if r.get("show_on_page") == "no":
                 continue
-            cand_lower = r["candidate"].lower().strip()
-            # Check if candidate matches any ACTIVE name — if so, skip
-            has_active = any(cand_lower in a or a in cand_lower for a in active)
-            if has_active:
+            name = clean_name(r["candidate"])
+            if name in active_names:
                 continue
-            # Only hide if matches a terminated name AND has no active match
-            has_terminated = any(cand_lower in t or t in cand_lower for t in terminated)
-            if has_terminated:
+            if name in truly_terminated:
                 r["show_on_page"] = "no"
                 hidden += 1
                 print(f"  HIDDEN: {r['candidate']} ({r['race']} dist {r['district']})")
@@ -144,8 +115,18 @@ def main():
                 writer.writerows(status_rows)
             print(f"  Hidden {hidden} candidates from pages")
 
-    if not updated and not hidden:
+    if not updated_finance and not hidden:
         print("  No changes — all candidates still active")
+
+    # Report any new active filers not in our data
+    if os.path.exists(FINANCE_FILE):
+        our_names = set(clean_name(r["name"]) for r in finance_rows)
+        new_active = active_names - our_names
+        if new_active:
+            print(f"\n  NEW active filers not in our data ({len(new_active)}):")
+            for name in sorted(new_active):
+                print(f"    {name}")
+            print("  (These may need finance type checked manually)")
 
     print("Done!")
 
