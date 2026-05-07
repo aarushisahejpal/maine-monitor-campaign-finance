@@ -393,7 +393,9 @@ buildChart('chartContributions', TOTALS, 'contribTotal');
 // ── TOP SUMMARY ──
 const totalRaised = TOTALS.reduce((a,b) => a + b.t, 0);
 const totalSpent = EXP_TOTALS.reduce((a,b) => a + b.t, 0);
+/* STASHED — total raised/spent summary hidden
 document.getElementById('topSummary').innerHTML = `<div style="display:flex;gap:32px;flex-wrap:wrap;"><div><span style="font-family:'Lora',serif;font-size:2em;font-weight:700;color:#19345B;">${fmt(totalRaised)}</span><div style="font-size:0.85em;color:#666;">total raised</div></div><div><span style="font-family:'Lora',serif;font-size:2em;font-weight:700;color:#19345B;">${fmt(totalSpent)}</span><div style="font-size:0.85em;color:#666;">total spent</div></div></div>`;
+*/
 
 // ── TOP DONORS ──
 function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, platformData) {
