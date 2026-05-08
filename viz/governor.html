@@ -404,11 +404,14 @@
 <div class="tip" id="tip"></div>
 
 <script>
-// Dark mode: only when explicitly requested via ?theme=dark
+// Dark mode: follow URL param or OS preference
 const _p = new URLSearchParams(window.location.search);
-if (_p.get('theme') === 'dark') {
+if (_p.get('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.documentElement.setAttribute('data-scheme', 'dark');
 }
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    document.documentElement.setAttribute('data-scheme', e.matches ? 'dark' : 'light');
+});
 
 // ─── CONFIG ───
 const COLORS = { Democratic:'#2c6fbb', Republican:'#c0392b', Unenrolled:'#6b6b6b', Independent:'#8e44ad' };
