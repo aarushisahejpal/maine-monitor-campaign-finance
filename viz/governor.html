@@ -460,12 +460,14 @@ window.addEventListener('message', function(e) {
     if (e.data === 'dark' || e.data === 'light') setDarkMode(e.data === 'dark');
 });
 try {
-    const parentScheme = window.parent.document.documentElement.getAttribute('data-scheme');
-    if (parentScheme) setDarkMode(parentScheme === 'dark');
-    new MutationObserver(() => {
-        const s = window.parent.document.documentElement.getAttribute('data-scheme');
-        if (s) setDarkMode(s === 'dark');
-    }).observe(window.parent.document.documentElement, { attributes: true, attributeFilter: ['data-scheme'] });
+    if (window.parent !== window) {
+        const parentScheme = window.parent.document.documentElement.getAttribute('data-scheme');
+        if (parentScheme) setDarkMode(parentScheme === 'dark');
+        new MutationObserver(() => {
+            const s = window.parent.document.documentElement.getAttribute('data-scheme');
+            if (s) setDarkMode(s === 'dark');
+        }).observe(window.parent.document.documentElement, { attributes: true, attributeFilter: ['data-scheme'] });
+    }
 } catch(e) { /* cross-origin, ignore */ }
 
 // ─── CONFIG ───
