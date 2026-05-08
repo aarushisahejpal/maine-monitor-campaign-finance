@@ -553,13 +553,22 @@ bars.filter(d => d.ft === 'MCEA').append('foreignObject')
     .style('white-space','nowrap')
     .text('MCEA');
 
+// Dropped out color: darker red for Republican, Monitor Blue for others
+const dropColor = d => d.p === 'Republican' ? '#8B0000' : '#19345B';
+
 bars.append('text')
     .attr('class', 'label')
     .attr('x', margin.left - 10)
     .attr('y', d => y(d.d) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
     .attr('text-anchor', 'end')
-    .text(d => d.d);
+    .html(d => {
+        if (d.d.includes('(Dropped Out)') || d.d.includes('(dropped out)')) {
+            const clean = d.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '');
+            return `${clean} <tspan style="fill:${dropColor(d)};font-size:0.8em;font-style:italic;">(dropped out)</tspan>`;
+        }
+        return d.d;
+    });
 
 // Value labels
 bars.append('text')
@@ -624,7 +633,7 @@ candsWithDonors.forEach(cand => {
     card.style.background = tints[cand.p] || '#fff';
     card.innerHTML = `
         <div class="donor-block-header">
-            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : cand.ft === 'Exempt' ? ' <span class="exempt-badge">EXEMPT</span>' : ''}</span>
+            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '') }${/dropped out/i.test(cand.d) ? ` <span style="color:${cand.p === 'Republican' ? '#8B0000' : '#19345B'};font-size:0.8em;font-style:italic;">(dropped out)</span>` : ''}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : cand.ft === 'Exempt' ? ' <span class="exempt-badge">EXEMPT</span>' : ''}</span>
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
 

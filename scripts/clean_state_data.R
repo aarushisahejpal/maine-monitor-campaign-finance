@@ -226,13 +226,14 @@ cand_top5_contribs <- all_contribs %>%
   left_join(candidate_list %>% select(filer_name, race) %>% distinct(), by = c("candidate" = "filer_name")) %>%
   mutate(race = coalesce(race.y, race.x)) %>%
   select(-race.x, -race.y) %>%
+  group_by(candidate) %>%
+  arrange(desc(total_contributed), entity) %>%
   filter(
     (race == "Governor" & total_contributed >= 3000) |
     (race %in% c("Senator", "Representative") & total_contributed >= 100) |
+    row_number() <= 5 |
     is.na(race)
   ) %>%
-  group_by(candidate) %>%
-  arrange(desc(total_contributed), entity) %>%
   ungroup() %>%
   arrange(race, district, candidate, desc(total_contributed), entity)
 
