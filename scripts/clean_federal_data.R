@@ -19,7 +19,13 @@ cand_top5_contribs <- fed_df_no_memo %>%
   summarize(contribution_amount = sum(contribution_receipt_amount, na.rm = T), .groups = "drop") %>%
   group_by(candidate_name) %>%
   arrange(desc(contribution_amount), contributor_name) %>%
-  filter(contribution_amount >= 3000) %>%
+  mutate(rn = row_number()) %>%
+  filter(
+    contribution_amount >= 3000 |
+    rn <= 5 |
+    contribution_amount == contribution_amount[min(5, n())]
+  ) %>%
+  select(-rn) %>%
   arrange(candidate_name, desc(contribution_amount), contributor_name) %>%
   ungroup()
 
