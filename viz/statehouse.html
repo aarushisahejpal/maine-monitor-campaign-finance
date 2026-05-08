@@ -478,7 +478,7 @@ const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
 const svg = d3.select('#chartContainer')
     .append('svg')
     .attr('class', 'chart-svg')
-    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
 /* MCEA GREEN BAR — STORED FOR POST-MAY 21 REACTIVATION
@@ -828,7 +828,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
     const y = d3.scaleBand().domain(TOTALS.map(d => d.d)).range([margin.top, height - margin.bottom]).padding(0.15);
 
     const svg = d3.select('#chartContainerSpec').append('svg').attr('class', 'chart-svg')
-        .attr('viewBox', `0 0 ${width} ${height}`).attr('preserveAspectRatio', 'xMidYMid meet');
+        .attr('viewBox', `${-(typeof vbPad !== 'undefined' ? vbPad : 0)} 0 ${width + (typeof vbPad !== 'undefined' ? vbPad : 0)} ${height}`).attr('preserveAspectRatio', 'xMidYMid meet');
 
     const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
 

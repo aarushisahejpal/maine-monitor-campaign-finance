@@ -522,13 +522,14 @@ const chartData = TOTALS;
 const isMobile = window.innerWidth <= 768;
 const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 175 };
 const barH = 30, barGap = 6;
-const width = isMobile ? 500 : 780;
+const width = isMobile ? 520 : 780;
+const vbPad = isMobile ? 40 : 0;
 const height = chartData.length * (barH + barGap) + margin.top + margin.bottom;
 
 const svg = d3.select('#chartContainer')
     .append('svg')
     .attr('class', 'chart-svg')
-    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
 const x = d3.scaleLinear()
@@ -667,13 +668,13 @@ const expData = EXP_TOTALS;
 if (expData.length) {
     const expMargin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 175 };
     const expBarH = 30, expBarGap = 6;
-    const expWidth = isMobile ? 500 : 780;
+    const expWidth = isMobile ? 520 : 780;
     const expHeight = expData.length * (expBarH + expBarGap) + expMargin.top + expMargin.bottom;
 
     const expSvg = d3.select('#chartExpenditures')
         .append('svg')
         .attr('class', 'chart-svg')
-        .attr('viewBox', `0 0 ${expWidth} ${expHeight}`)
+        .attr('viewBox', `${-vbPad} 0 ${expWidth + vbPad} ${expHeight}`)
         .attr('preserveAspectRatio', 'xMidYMid meet');
 
     const expX = d3.scaleLinear()

@@ -400,10 +400,11 @@ function buildChart(containerId, data, totalId) {
     const isMobile = window.innerWidth <= 768;
     const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 200 };
     const barH = 30, barGap = 6;
-    const width = isMobile ? 500 : 780;
+    const width = isMobile ? 520 : 780;
+    const vbPad = isMobile ? 40 : 0;
     const height = chartData.length * (barH + barGap) + margin.top + margin.bottom;
     const svg = d3.select('#' + containerId).append('svg').attr('class','chart-svg')
-        .attr('viewBox', `0 0 ${width} ${height}`).attr('preserveAspectRatio','xMidYMid meet');
+        .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`).attr('preserveAspectRatio','xMidYMid meet');
     const x = d3.scaleLinear().domain([0, d3.max(chartData, d=>d.t)]).range([margin.left, width-margin.right]);
     const y = d3.scaleBand().domain(chartData.map(d=>d.c)).range([margin.top, height-margin.bottom]).padding(0.15);
     const bars = svg.selectAll('.bar-g').data(chartData).join('g').attr('class','bar-g');
