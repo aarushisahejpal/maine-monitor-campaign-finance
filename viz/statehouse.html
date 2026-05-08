@@ -811,6 +811,14 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
         .attr('dy', '0.35em').text(d => d.t === 0 ? '$0' : fmt(d.t))
         .style('opacity', 0).transition().duration(400).delay((d, i) => i * 80 + 500).style('opacity', 1);
 
+    // Show MCEA note if any special election candidates are MCEA
+    if (TOTALS.some(d => d.ft === 'MCEA')) {
+        const specNote = document.createElement('div');
+        specNote.style.cssText = 'margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
+        specNote.textContent = 'Fundraising totals for clean elections candidates will be updated pending new data from the Maine Ethics Commission.';
+        document.getElementById('chartContainerSpec').parentNode.appendChild(specNote);
+    }
+
     // ─── DONORS ───
     const donorsEl = document.getElementById('donorsSpec');
     TOTALS.forEach(cand => {
@@ -819,7 +827,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
         const card = document.createElement('div');
         card.className = 'donor-block';
         card.style.background = tints[cand.p] || '#fff';
-        card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}</span><span class="donor-block-total">${fmt(cand.t)} total</span></div>`;
+        card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : ''}</span><span class="donor-block-total">${fmt(cand.t)} total</span></div>`;
         if (cd.length) {
             const hdr = document.createElement('div');
             hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
@@ -871,7 +879,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
         const card = document.createElement('div');
         card.className = 'donor-block';
         card.style.background = tints[cand.p] || '#fff';
-        card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}</span><span class="donor-block-total">${fmt(cand.t)} spent</span></div>`;
+        card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : ''}</span><span class="donor-block-total">${fmt(cand.t)} spent</span></div>`;
         if (cd.length) {
             const hdr = document.createElement('div');
             hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
