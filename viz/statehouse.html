@@ -526,7 +526,7 @@ function hideTip() { tip.classList.remove('on'); }
 
 // ── BAR CHART (matches governor style) ──
 const isMobile = window.innerWidth <= 768;
-const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 200 };
+const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 270 };
 const barH = 30, barGap = 6;
 const width = isMobile ? 520 : 780;
 const vbPad = isMobile ? 40 : 0;
@@ -785,7 +785,7 @@ candsWithDonors.forEach(cand => {
 });
 // ─── EXPENDITURES BAR CHART ───
 if (EXP_TOTALS.length) {
-    const expMargin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 200 };
+    const expMargin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 270 };
     const expBarH = 30, expBarGap = 6;
     const expWidth = 780;
     const expHeight = EXP_TOTALS.length * (expBarH + expBarGap) + expMargin.top + expMargin.bottom;
@@ -878,7 +878,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
 
     // ─── CONTRIBUTIONS CHART ───
     const isMob = window.innerWidth <= 768;
-    const margin = { top: 4, right: isMob ? 70 : 110, bottom: 4, left: isMob ? 160 : 200 };
+    const margin = { top: 4, right: isMob ? 70 : 110, bottom: 4, left: isMob ? 160 : 270 };
     const barH = 30, barGap = 6;
     const width = isMob ? 500 : 780;
     const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;

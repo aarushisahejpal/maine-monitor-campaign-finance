@@ -459,7 +459,7 @@ function buildChart(containerId, data, totalId) {
     const chartData = data;
     if (!chartData.length) return;
     const isMobile = window.innerWidth <= 768;
-    const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 200 };
+    const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 250 };
     const barH = 30, barGap = 6;
     const width = isMobile ? 520 : 780;
     const vbPad = isMobile ? 40 : 0; // extra left padding for name overflow
