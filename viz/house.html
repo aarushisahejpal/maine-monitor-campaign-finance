@@ -358,7 +358,15 @@ function removeMiddleName(name) {
     return parts[0] + ' ' + parts[parts.length - 1];
 }
 // Wrap titleCase + removeMiddleName for display
-function displayName(s) { return removeMiddleName(titleCase(s)); }
+function displayName(s, html) {
+    let name = removeMiddleName(titleCase(s));
+    const dropped = s.toUpperCase().includes('GOLDEN');
+    if (dropped && html) {
+        return name + ' <span style="color:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</span>';
+    }
+    if (dropped) return name + ' (dropped out)';
+    return name;
+}
 
 // ── HELPER: build horizontal bar chart ──
 function buildChart(containerId, data, totalId) {
@@ -377,7 +385,7 @@ function buildChart(containerId, data, totalId) {
         .attr('height',y.bandwidth()).attr('rx',2).attr('fill',d=>PARTY_COLORS[d.p]||'#999')
         .transition().duration(700).delay((d,i)=>i*40).attr('width',d=>x(d.t)-margin.left);
     bars.append('text').attr('class','label').attr('x',margin.left-10).attr('y',d=>y(d.c)+y.bandwidth()/2)
-        .attr('dy','0.35em').attr('text-anchor','end').text(d=>displayName(d.c));
+        .attr('dy','0.35em').attr('text-anchor','end').html(d=>displayName(d.c, true));
     bars.append('text').attr('class','value').attr('x',d=>x(d.t)+8).attr('y',d=>y(d.c)+y.bandwidth()/2)
         .attr('dy','0.35em').text(d=>fmt(d.t)).style('opacity',0)
         .transition().duration(400).delay((d,i)=>i*40+500).style('opacity',1);
@@ -415,7 +423,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, p
         const card = document.createElement('div');
         card.className = 'donor-card';
         card.style.background = tints[cand.p] || '#fff';
-        card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${PARTY_COLORS[cand.p] || '#6b6b6b'}">${displayName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
+        card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${PARTY_COLORS[cand.p] || '#6b6b6b'}">${displayName(cand.c, true)}</span><span class="donor-card-total">${fmt(cand.t)} total</span></div>`;
 
         // Platform donations (ActBlue/WinRed) from separate dataset
         const platforms = platformData ? (platformData[cand.c] || []) : [];
