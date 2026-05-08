@@ -330,7 +330,7 @@
             <p style="font-size:0.85em;color:#1a1a1a;margin-bottom:16px;"><strong>Here's the total raised by candidate.</strong></p>
             <div id="chartContainer"></div>
             <div class="chart-total" id="chartTotal"></div>
-            <div id="mceaNote" style="margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);display:none;">Fundraising totals for Maine Clean Elections Act (MCEA) candidates will be updated pending new data from the Maine Ethics Commission.<a href="#mcea-footer" style="color:#27ae60;text-decoration:none;font-weight:700;">*</a></div>
+            <div id="mceaNote" style="margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);display:none;">Fundraising totals for Maine Clean Elections Act (MCEA) candidates will be updated pending new data from the Maine Ethics Commission.<a href="#mcea-footer" onclick="document.getElementById('mcea-footer').scrollIntoView({behavior:'smooth'});return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a></div>
         </div>
         <p style="font-size:0.85em;color:#1a1a1a;margin-top:20px;margin-bottom:16px;"><strong>Here are the top donors for each candidate.</strong></p>
         <div class="donors-grid" id="donors"></div>
@@ -934,7 +934,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
     if (TOTALS.some(d => d.ft === 'MCEA')) {
         const specNote = document.createElement('div');
         specNote.style.cssText = 'margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        specNote.innerHTML = 'Fundraising totals for Maine Clean Elections Act (MCEA) candidates will be updated pending new data from the Maine Ethics Commission.<a href="#mcea-footer" style="color:#27ae60;text-decoration:none;font-weight:700;">*</a>';
+        specNote.innerHTML = 'Fundraising totals for Maine Clean Elections Act (MCEA) candidates will be updated pending new data from the Maine Ethics Commission.<a href="#mcea-footer" onclick="document.getElementById('mcea-footer').scrollIntoView({behavior:'smooth'});return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>';
         document.getElementById('chartContainerSpec').parentNode.appendChild(specNote);
     }
 
