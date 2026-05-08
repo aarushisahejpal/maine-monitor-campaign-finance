@@ -578,7 +578,7 @@ TOTALS.forEach(d => {
 });
 
 bars.filter(d => d.ft === 'MCEA').append('foreignObject')
-    .attr('x', d => margin.left - 10 - nameWidths[d.d] - 48)
+    .attr('x', d => margin.left - 10 - nameWidths[d.d] - 52)
     .attr('y', d => y(d.d))
     .attr('width', 44)
     .attr('height', y.bandwidth())
