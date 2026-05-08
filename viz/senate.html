@@ -602,5 +602,11 @@ loadFilings().then(filings => {
 
 } // end render
 </script>
+<script>
+function sendHeight() { window.parent.postMessage({ type: 'irw-resize', height: document.documentElement.scrollHeight }, '*'); }
+window.addEventListener('load', () => setTimeout(sendHeight, 1000));
+window.addEventListener('resize', sendHeight);
+new MutationObserver(sendHeight).observe(document.body, { childList: true, subtree: true });
+</script>
 </body>
 </html>

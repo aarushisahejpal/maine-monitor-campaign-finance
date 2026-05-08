@@ -933,5 +933,16 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
     });
 } // end renderSpecial()
 </script>
+<script>
+// Auto-resize: tell parent iframe our height
+function sendHeight() {
+    const h = document.documentElement.scrollHeight;
+    window.parent.postMessage({ type: 'irw-resize', height: h }, '*');
+}
+// Send after load, after render, and on resize
+window.addEventListener('load', () => setTimeout(sendHeight, 1000));
+window.addEventListener('resize', sendHeight);
+new MutationObserver(sendHeight).observe(document.body, { childList: true, subtree: true });
+</script>
 </body>
 </html>
