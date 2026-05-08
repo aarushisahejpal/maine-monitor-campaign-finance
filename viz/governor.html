@@ -602,9 +602,7 @@ document.getElementById('topSummary').innerHTML = `<div style="display:flex;gap:
 
 // ─── TOP DONORS (scrollable tables) ───
 const donorsEl = document.getElementById('donors');
-const topCands = TOTALS.slice(0, 8);
-
-topCands.forEach(cand => {
+TOTALS.forEach(cand => {
     const cd = DONORS.filter(d => d.c === cand.c);
     if (!cd.length) return;
 
@@ -722,10 +720,8 @@ if (expData.length) {
 
 // ─── TOP PAYEES ───
 const payeesEl = document.getElementById('payees');
-const topExpCands = EXP_TOTALS.slice(0, 8);
-topExpCands.forEach(cand => {
+EXP_TOTALS.forEach(cand => {
     const cd = TOP_PAYEES.filter(d => d.c === cand.c);
-    if (!cd.length) return;
 
     const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3', Independent: '#f3eef8' };
     const card = document.createElement('div');

@@ -442,7 +442,7 @@ document.getElementById('topSummary').innerHTML = `<div style="display:flex;gap:
 function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, platformData) {
     listLabel = listLabel || 'Top Donors';
     const el = document.getElementById(containerId);
-    totals.slice(0, topN).forEach(cand => {
+    totals.forEach(cand => {
         const cd = data.filter(d => d.c === cand.c);
         const namedDonors = cd.filter(d => !/actblue|winred/i.test(d.e));
 
@@ -498,7 +498,7 @@ buildDonorGrid('donors', DONORS, TOTALS, 6, SMALL, null, PLATFORMS);
 // ── BREAKDOWN HELPER ──
 function buildBreakdown(containerId, data, totals, colorMap, topN) {
     const el = document.getElementById(containerId);
-    totals.slice(0, topN).forEach(cand => {
+    totals.forEach(cand => {
         const cd = data.filter(d => d.c === cand.c).sort((a,b) => b.t - a.t);
         if (!cd.length) return;
         const maxVal = d3.max(cd, d => d.t);
