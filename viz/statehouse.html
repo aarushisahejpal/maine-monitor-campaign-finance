@@ -306,6 +306,10 @@
         [data-scheme="dark"] div[style*="border:1px solid #e8e8e8"] { border-color: #555 !important; }
         [data-scheme="dark"] span[style*="color:var(--text-secondary)"] { color: #ccc !important; }
         [data-scheme="dark"] .mcea-badge { background: #27ae60 !important; color: #fff !important; }
+        [data-scheme="dark"] .section-label { color: #e0e0e0 !important; }
+        [data-scheme="dark"] .small-dollar-row { background: #444 !important; border-color: #555 !important; }
+        [data-scheme="dark"] .small-dollar-label { color: #ccc !important; }
+        [data-scheme="dark"] .small-dollar-amt { color: #fff !important; }
         [data-scheme="dark"] #mceaNote a { color: #4caf50 !important; }
         [data-scheme="dark"] .chart-svg .value { fill: #fff; }
         [data-scheme="dark"] .donor-block-total { color: #fff !important; }
@@ -745,14 +749,16 @@ candsWithDonors.forEach(cand => {
     const smallAmt = SMALL ? SMALL[cand.c] : null;
     if (smallAmt) {
         const sd = document.createElement('div');
+        sd.className = 'small-dollar-row';
         sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-        sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
+        sd.innerHTML = `<span class="small-dollar-label" style="font-size:0.8em;">Contributions of $50 or less</span><span class="small-dollar-amt" style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
         card.appendChild(sd);
     }
 
     // Top donors header
     if (namedDonors.length) {
         const hdr = document.createElement('div');
+        hdr.className = 'section-label';
         hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
         hdr.textContent = 'Top Donors';
         card.appendChild(hdr);
@@ -840,7 +846,8 @@ EXP_TOTALS.forEach(cand => {
     card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}</span><span class="donor-block-total">${fmt(cand.t)} spent</span></div>`;
 
     const hdr = document.createElement('div');
-    hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
+    hdr.className = 'section-label';
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
     hdr.textContent = 'Top Expenditures';
     card.appendChild(hdr);
 
@@ -914,7 +921,8 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
         card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : ''}</span><span class="donor-block-total">${fmt(cand.t)} total</span></div>`;
         if (cd.length) {
             const hdr = document.createElement('div');
-            hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
+            hdr.className = 'section-label';
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
             hdr.textContent = 'Top Donors';
             card.appendChild(hdr);
             const wrap = document.createElement('div');
@@ -966,7 +974,8 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
         card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : ''}</span><span class="donor-block-total">${fmt(cand.t)} spent</span></div>`;
         if (cd.length) {
             const hdr = document.createElement('div');
-            hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
+            hdr.className = 'section-label';
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
             hdr.textContent = 'Top Expenditures';
             card.appendChild(hdr);
             const wrap = document.createElement('div');

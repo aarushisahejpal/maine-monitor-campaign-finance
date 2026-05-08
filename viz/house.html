@@ -246,6 +246,10 @@
         [data-scheme="dark"] div[style*="background:#edf7ed"] { background: #1a2e1a !important; }
         [data-scheme="dark"] div[style*="border:1px solid #e8e8e8"] { border-color: #555 !important; }
         [data-scheme="dark"] span[style*="color:var(--text-secondary)"] { color: #ccc !important; }
+        [data-scheme="dark"] .section-label { color: #e0e0e0 !important; }
+        [data-scheme="dark"] .small-dollar-row { background: #444 !important; border-color: #555 !important; }
+        [data-scheme="dark"] .small-dollar-label { color: #ccc !important; }
+        [data-scheme="dark"] .small-dollar-amt { color: #fff !important; }
     </style>
 </head>
 <body>
@@ -512,6 +516,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, p
         if (cand.unitemized > 0) {
             const ui = document.createElement('div');
             ui.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        sd.className = 'small-dollar-row';;
             ui.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Unitemized contributions (&lt;$200)</span><span style="font-size:0.95em;font-weight:400;">${fmt(cand.unitemized)}</span>`;
             card.appendChild(ui);
         }
@@ -520,7 +525,8 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, p
         // Top donors header
         if (namedDonors.length) {
             const hdr = document.createElement('div');
-            hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
+            hdr.className = 'section-label';
+        hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
             hdr.textContent = listLabel;
             card.appendChild(hdr);
         }
