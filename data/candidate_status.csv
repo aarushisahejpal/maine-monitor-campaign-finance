@@ -7,7 +7,7 @@ david john jones,Governor,,Republican,state,,yes
 derek allen levasseur,Governor,,Unenrolled,state,,yes
 garrett paul mason,Governor,,Republican,state,,yes
 hannah pingree,Governor,,Democrat,state,,yes
-james libby,Governor,,Republican,state,,no
+james libby,Governor,,Republican,state,,yes
 jason cherry,Representative,38,Democrat,state,,yes
 john michael glowa sr,Governor,,Unenrolled,state,,yes
 jonathan bush,Governor,,Republican,state,,yes
@@ -567,9 +567,9 @@ lee a trahan,,,,state,,no
 leon c brillant,,,,state,,no
 leslie e jr smith,,,,state,,no
 linda kay miller,,,,state,,no
-lisa nelthropp,,,,state,,no
+lisa nelthropp,,,,state,,yes
 lori kathryn gramlich,,,,state,,no
-louis larios,,,,state,,no
+louis larios,,,,state,,yes
 lucas john lanigan,,,,state,,no
 lydia v crafts,,,,state,,no
 lynne anita williams,,,,state,,no
@@ -597,7 +597,7 @@ natalie dipentino,,,,state,,no
 nathan white,,,,state,,no
 nathaniel john white,,,,state,,no
 nichole sekera,,,,state,,no
-nicole bambrick,,,,state,,no
+nicole bambrick,,,,state,,yes
 nicole collins,,,,state,,no
 nina azella milliken,,,,state,,no
 norman edward bamford,,,,state,,no
@@ -700,3 +700,6 @@ zachary t wyles,,,,state,,no
 "RODRIGUEZ, DAIRA",Senate,,,federal,,yes
 jack mccarthy,Representative,3,Republican,state,,yes
 nancy theriaultspecial,Representative,29,Republican,state,,yes
+lawrence e bessey jr,Representative,58,Republican,state,,yes
+bret michael martel,Representative,95,Republican,state,,yes
+lauren chelsea jones,Representative,112,Republican,state,,yes
