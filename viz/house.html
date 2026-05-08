@@ -518,8 +518,8 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, p
         // Unitemized contributions
         if (cand.unitemized > 0) {
             const ui = document.createElement('div');
+            ui.className = 'small-dollar-row';
             ui.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-        sd.className = 'small-dollar-row';;
             ui.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Unitemized contributions (&lt;$200)</span><span style="font-size:0.95em;font-weight:400;">${fmt(cand.unitemized)}</span>`;
             card.appendChild(ui);
         }

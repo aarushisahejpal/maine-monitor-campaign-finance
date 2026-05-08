@@ -685,8 +685,8 @@ TOTALS.forEach(cand => {
     // Small-dollar highlight
     if (smallAmt) {
         const sd = document.createElement('div');
+        sd.className = 'small-dollar-row';
         sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-        sd.className = 'small-dollar-row';;
         sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
         card.appendChild(sd);
     }
