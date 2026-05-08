@@ -228,12 +228,16 @@ cand_top5_contribs <- all_contribs %>%
   select(-race.x, -race.y) %>%
   group_by(candidate) %>%
   arrange(desc(total_contributed), entity) %>%
+  mutate(rn = row_number()) %>%
+  # Keep if: above threshold, OR in top 5, OR tied with the 5th entry
   filter(
     (race == "Governor" & total_contributed >= 3000) |
     (race %in% c("Senator", "Representative") & total_contributed >= 100) |
-    row_number() <= 5 |
+    rn <= 5 |
+    total_contributed == total_contributed[min(5, n())] |
     is.na(race)
   ) %>%
+  select(-rn) %>%
   ungroup() %>%
   arrange(race, district, candidate, desc(total_contributed), entity)
 
