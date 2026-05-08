@@ -472,7 +472,8 @@ function hideTip() { tip.classList.remove('on'); }
 const isMobile = window.innerWidth <= 768;
 const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 160 : 200 };
 const barH = 30, barGap = 6;
-const width = isMobile ? 500 : 780;
+const width = isMobile ? 520 : 780;
+const vbPad = isMobile ? 40 : 0;
 const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
 
 const svg = d3.select('#chartContainer')
