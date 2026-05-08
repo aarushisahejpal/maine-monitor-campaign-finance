@@ -121,7 +121,9 @@ cand_exp_by_purpose <- fed_exp %>%
 # ── EXPORT ──
 # Note: total_contributions and total_expenditures CSVs come from official FEC API (Python script)
 write.csv(cand_top5_contribs, file = "viz/data/clean/top_5contributors_by_federal_candidate.csv", row.names = FALSE)
-write.csv(cand_by_source, file = "viz/data/clean/contributions_by_source_federal.csv", row.names = FALSE)
+# NOTE: contributions_by_source_federal.csv is now sourced from official FEC committee totals API
+# (built by Python, not R). Do NOT overwrite it here.
+# write.csv(cand_by_source, file = "viz/data/clean/contributions_by_source_federal.csv", row.names = FALSE)
 write.csv(cand_by_state, file = "viz/data/clean/contributions_by_state_federal.csv", row.names = FALSE)
 write.csv(cand_top5_payees, file = "viz/data/clean/top_5payees_by_federal_candidate.csv", row.names = FALSE)
 write.csv(cand_exp_by_purpose, file = "viz/data/clean/expenditures_by_purpose_federal.csv", row.names = FALSE)

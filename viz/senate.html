@@ -437,7 +437,7 @@ function displayName(s, context) {
     const dropped = s.toUpperCase().includes('MILLS, JANET') || s.toUpperCase().includes('KLEBAN') ||
         s.toUpperCase().includes('RODRIGUEZ') || s.toUpperCase().includes('FAVREAU') || s.toUpperCase().includes('RENCH');
     const writein = s.toUpperCase().includes('LAFLAMME');
-    const notOnBallot = s.toUpperCase().includes('SMERIGLIO');
+    const notOnBallot = s.toUpperCase().includes('SMERIGLIO') || s.toUpperCase().includes('CALABRESE') || s.toUpperCase().includes('ALCALA');
     if (dropped && context === 'svg') {
         return name + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
     }
