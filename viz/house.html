@@ -435,7 +435,8 @@ function removeMiddleName(name) {
 // Wrap titleCase + removeMiddleName for display
 function displayName(s, context) {
     let name = removeMiddleName(titleCase(s));
-    const dropped = s.toUpperCase().includes('GOLDEN');
+    const dropped = s.toUpperCase().includes('GOLDEN') || s.toUpperCase().includes('ROBERTS, TIFFANY') || s.toUpperCase().includes('SMALL, ERIC');
+    const notOnBallot = s.toUpperCase().includes('PIANTIDOSI') || s.toUpperCase().includes('DUPREY');
     if (dropped && context === 'svg') {
         return name + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
     }
@@ -443,6 +444,13 @@ function displayName(s, context) {
         return name + ' <span style="color:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</span>';
     }
     if (dropped) return name + ' (dropped out)';
+    if (notOnBallot && context === 'svg') {
+        return name + ' <tspan style="fill:#666;font-size:0.8em;font-style:italic;">(Not on ballot)</tspan>';
+    }
+    if (notOnBallot && context === 'html') {
+        return name + ' <span style="color:#666;font-size:0.8em;font-style:italic;">(Not on ballot)</span>';
+    }
+    if (notOnBallot) return name + ' (Not on ballot)';
     return name;
 }
 

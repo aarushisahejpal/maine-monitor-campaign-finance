@@ -433,8 +433,10 @@ function displayName(s, context) {
     // Merge Calabrese name variants
     if (s.toUpperCase().includes('CALABRESE, CARMEM')) s = 'CALABRESE, CARMEN VINCENT MR.';
     let name = removeMiddleName(titleCase(s));
-    const dropped = s.toUpperCase().includes('MILLS, JANET') || s.toUpperCase().includes('KLEBAN');
+    const dropped = s.toUpperCase().includes('MILLS, JANET') || s.toUpperCase().includes('KLEBAN') ||
+        s.toUpperCase().includes('RODRIGUEZ') || s.toUpperCase().includes('FAVREAU') || s.toUpperCase().includes('RENCH');
     const writein = s.toUpperCase().includes('LAFLAMME');
+    const notOnBallot = s.toUpperCase().includes('SMERIGLIO');
     if (dropped && context === 'svg') {
         return name + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
     }
@@ -449,6 +451,13 @@ function displayName(s, context) {
         return name + ' <span style="color:#666;font-size:0.8em;font-style:italic;">(Write-in)</span>';
     }
     if (writein) return name + ' (Write-in)';
+    if (notOnBallot && context === 'svg') {
+        return name + ' <tspan style="fill:#666;font-size:0.8em;font-style:italic;">(Not on ballot)</tspan>';
+    }
+    if (notOnBallot && context === 'html') {
+        return name + ' <span style="color:#666;font-size:0.8em;font-style:italic;">(Not on ballot)</span>';
+    }
+    if (notOnBallot) return name + ' (Not on ballot)';
     return name;
 }
 
