@@ -173,11 +173,13 @@
         }
         @media (max-width: 768px) {
             .ribbon-main { flex-wrap: wrap; }
-            .ribbon-text { flex-shrink: 0; }
+            .ribbon-text { flex-shrink: 0; font-size: 1.3em; }
             .ribbon-main::after { flex: 1 1 100px; min-width: 60px; }
+            .ribbon-header-wrapper { margin-bottom: 16px; }
             .chart-card { padding: 8px 0 !important; border: none !important; box-shadow: none !important; background: transparent !important; border-radius: 0 !important; }
             .chart-total { font-size: 0.8em !important; }
-            .section { margin-bottom: 24px; }
+            .section { margin-bottom: 24px; margin-top: 0; padding-top: 0; }
+            .section:first-child { margin-top: 0; }
             .container { padding: 16px 12px; }
             .donor-card div[style*="overflow-y"], .donor-block div[style*="overflow-y"] {
                 -webkit-overflow-scrolling: touch;
