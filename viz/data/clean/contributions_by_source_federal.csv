@@ -1,72 +1,54 @@
-candidate_name,office,district,source_type,total
-"LOUD, PAIGE",House,02,Individual,9843.26
-"LOUD, PAIGE",House,02,PAC/Committee,500.0
-"LOUD, PAIGE",House,02,Candidate/Self,9003.24
-"SMALL, ERIC",House,01,Individual,12514.0
-"CLARK, JAMES L.",House,02,Individual,600.0
-"PIETROWICZ, JOSHUA JAMES",House,01,Individual,3501.0
-"PIETROWICZ, JOSHUA JAMES",House,01,Candidate/Self,1106.5
-"CALABRESE, CARMEN VINCENT MR.",Senate,00,Individual,17759.71
-"FAVREAU, TUCKER",Senate,00,Individual,4928.77
-"FAVREAU, TUCKER",Senate,00,Candidate/Self,8670.25
-"EVANS, DAVID ALAN",Senate,00,Individual,6436.72
-"COLLINS, SUSAN M.",Senate,00,Individual,5959045.69
-"COLLINS, SUSAN M.",Senate,00,PAC/Committee,905050.0
-"COLLINS, SUSAN M.",Senate,00,Party Committee,62000.0
-"COLLINS, SUSAN M.",Senate,00,Transfers (Own Committees),3444756.78
-"COLLINS, SUSAN M.",Senate,00,Other,92451.18
-"RENCH, PHILLIP",Senate,00,Individual,4632.33
-"RENCH, PHILLIP",Senate,00,Candidate/Self,5.43
-"RENCH, PHILLIP",Senate,00,Loans,50000.0
-"RENCH, PHILLIP",Senate,00,Other,862.04
-"COSTELLO, DAVID",Senate,00,Individual,28678.25
-"COSTELLO, DAVID",Senate,00,Candidate/Self,4795.98
-"COSTELLO, DAVID",Senate,00,Loans,110000.0
-"COSTELLO, DAVID",Senate,00,Other,6.43
-"RODRIGUEZ, DAIRA",Senate,00,Individual,29582.33
-"RODRIGUEZ, DAIRA",Senate,00,Candidate/Self,53000.0
-"RODRIGUEZ, DAIRA",Senate,00,Loans,160000.0
-"BALDACCI, JOSEPH",House,02,Individual,273968
-"BALDACCI, JOSEPH",House,02,PAC/Committee,1050
-"BALDACCI, JOSEPH",House,02,Candidate/Self,6400
-"BALDACCI, JOSEPH",House,02,Loans,35500
-"BALDACCI, JOSEPH",House,02,Other,142
-"GOLDEN, JARED",House,02,Individual,1977626
-"GOLDEN, JARED",House,02,PAC/Committee,319000
-"GOLDEN, JARED",House,02,Party Committee,548
-"GOLDEN, JARED",House,02,Transfers (Own Committees),243810
-"GOLDEN, JARED",House,02,Other,41591
-"LAFLAMME, ANDREA",Senate,00,Individual,5989
-"LAFLAMME, ANDREA",Senate,00,Loans,1750
-"LEPAGE, PAUL",House,02,Individual,1285222
-"LEPAGE, PAUL",House,02,PAC/Committee,209480
-"LEPAGE, PAUL",House,02,Party Committee,5000
-"LEPAGE, PAUL",House,02,Transfers (Own Committees),367791
-"LEPAGE, PAUL",House,02,Other,100
-"DUNLAP, MATT",House,02,Individual,609357
-"DUNLAP, MATT",House,02,PAC/Committee,8000
-"DUNLAP, MATT",House,02,Loans,10000
-"DUNLAP, MATT",House,02,Other,857
-"MILLS, JANET TRAFTON",Senate,00,Individual,5019502
-"MILLS, JANET TRAFTON",Senate,00,PAC/Committee,140728
-"MILLS, JANET TRAFTON",Senate,00,Transfers (Own Committees),115852
-"MILLS, JANET TRAFTON",Senate,00,Other,83741
-"ROBERTS, TIFFANY DANIELLE",House,01,Individual,18924
-"ROBERTS, TIFFANY DANIELLE",House,01,Loans,1128
-"WOOD, JORDAN",House,02,Individual,4835948
-"WOOD, JORDAN",House,02,PAC/Committee,35100
-"WOOD, JORDAN",House,02,Candidate/Self,11324
-"WOOD, JORDAN",House,02,Loans,250000
-"WOOD, JORDAN",House,02,Other,1916
-"PINGREE, CHELLIE M",House,01,Individual,150194.13
-"PINGREE, CHELLIE M",House,01,PAC/Committee,185050.0
-"PINGREE, CHELLIE M",House,01,Other,1448.09
-"PLATNER, GRAHAM",Senate,00,Individual,11851220.77
-"PLATNER, GRAHAM",Senate,00,PAC/Committee,77550.0
-"PLATNER, GRAHAM",Senate,00,Other,27758.5
-"RUSSELL, RONALD CHARLES MR.",House,01,Individual,59917.91
-"RUSSELL, RONALD CHARLES MR.",House,01,PAC/Committee,819.14
-"RUSSELL, RONALD CHARLES MR.",House,01,Other,381.89
-"KLEBAN, DAN",Senate,00,Individual,244074.58
-"KLEBAN, DAN",Senate,00,Candidate/Self,214666.84
-"KLEBAN, DAN",Senate,00,Other,45.0
+"candidate_name","office","district","source_type","total"
+"CALABRESE, CARMEN VINCENT MR.","Senate","00","Individual",17711.95
+"CLARK, JAMES L.","House","02","Individual",500
+"COLLINS, SUSAN M.","Senate","00","Transfers (Own Committees)",5855935.02
+"COLLINS, SUSAN M.","Senate","00","Individual",3406884.97
+"COLLINS, SUSAN M.","Senate","00","PAC/Committee",635550
+"COLLINS, SUSAN M.","Senate","00","Party Committee",62000
+"COLLINS, SUSAN M.","Senate","00","Other",54921.82
+"COSTELLO, DAVID","Senate","00","Candidate/Self",82930.68
+"COSTELLO, DAVID","Senate","00","Individual",9459.7
+"DUNLAP, MATT","House","02","Individual",254785.12
+"DUNLAP, MATT","House","02","Candidate/Self",10000
+"DUNLAP, MATT","House","02","PAC/Committee",8000
+"DUNLAP, MATT","House","02","Other",856.63
+"EVANS, DAVID ALAN","Senate","00","Individual",5831.72
+"FAVREAU, TUCKER","Senate","00","Candidate/Self",8332.25
+"FAVREAU, TUCKER","Senate","00","Individual",7392.77
+"GOLDEN, JARED","House","02","Individual",578656.85
+"GOLDEN, JARED","House","02","Transfers (Own Committees)",446560.15
+"GOLDEN, JARED","House","02","PAC/Committee",310500
+"GOLDEN, JARED","House","02","Other",24488.17
+"GOLDEN, JARED","House","02","Party Committee",547.83
+"KLEBAN, DAN","Senate","00","Candidate/Self",214666.84
+"LAFLAMME, ANDREA","Senate","00","Individual",5795.36
+"LAFLAMME, ANDREA","Senate","00","Candidate/Self",1750
+"LEPAGE, PAUL","House","02","Individual",1408562.37
+"LEPAGE, PAUL","House","02","Transfers (Own Committees)",69708.34
+"LEPAGE, PAUL","House","02","PAC/Committee",66428.25
+"LOUD, PAIGE","House","02","Candidate/Self",156.02
+"MILLS, JANET TRAFTON","Senate","00","Individual",774006.49
+"MILLS, JANET TRAFTON","Senate","00","Transfers (Own Committees)",254664.28
+"MILLS, JANET TRAFTON","Senate","00","PAC/Committee",140728.38
+"MILLS, JANET TRAFTON","Senate","00","Other",83738.36
+"PIETROWICZ, JOSHUA JAMES","House","01","Individual",1500
+"PIETROWICZ, JOSHUA JAMES","House","01","Candidate/Self",1106.5
+"PINGREE, CHELLIE M","House","01","PAC/Committee",185050
+"PINGREE, CHELLIE M","House","01","Individual",39375
+"PINGREE, CHELLIE M","House","01","Other",1440.36
+"PLATNER, GRAHAM","Senate","00","Individual",635780.78
+"PLATNER, GRAHAM","Senate","00","PAC/Committee",77550
+"PLATNER, GRAHAM","Senate","00","Other",27642.05
+"RENCH, PHILLIP","Senate","00","Candidate/Self",50005.43
+"RENCH, PHILLIP","Senate","00","Individual",3568.4
+"RENCH, PHILLIP","Senate","00","Other",862.04
+"ROBERTS, TIFFANY DANIELLE","House","01","Individual",6347.75
+"ROBERTS, TIFFANY DANIELLE","House","01","Candidate/Self",1127.68
+"RODRIGUEZ, DAIRA","Senate","00","Candidate/Self",213000
+"RODRIGUEZ, DAIRA","Senate","00","Individual",1500
+"RUSSELL, RONALD CHARLES MR.","House","01","Individual",7785.41
+"SMALL, ERIC","House","01","Individual",14828
+"WOOD, JORDAN","House","02","Candidate/Self",250823.68
+"WOOD, JORDAN","House","02","Individual",184051.96
+"WOOD, JORDAN","House","02","PAC/Committee",34100
+"WOOD, JORDAN","House","02","Other",1470
