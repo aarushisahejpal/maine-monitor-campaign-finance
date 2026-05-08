@@ -456,8 +456,10 @@ else if (_p.get('theme') === 'light') setDarkMode(false);
 else if (window.matchMedia('(prefers-color-scheme: dark)').matches) setDarkMode(true);
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => setDarkMode(e.matches));
 window.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'theme-change') setDarkMode(e.data.scheme === 'dark');
-    if (e.data === 'dark' || e.data === 'light') setDarkMode(e.data === 'dark');
+    try {
+        if (typeof e.data === 'object' && e.data && e.data.type === 'theme-change') setDarkMode(e.data.scheme === 'dark');
+        if (typeof e.data === 'string' && (e.data === 'dark' || e.data === 'light')) setDarkMode(e.data === 'dark');
+    } catch(err) {}
 });
 try {
     if (window.parent !== window) {
