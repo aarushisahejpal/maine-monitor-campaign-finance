@@ -355,8 +355,11 @@ function removeMiddleName(name) {
 }
 // Wrap titleCase + removeMiddleName for display
 function displayName(s) {
+    // Merge Calabrese name variants
+    if (s.toUpperCase().includes('CALABRESE, CARMEM')) s = 'CALABRESE, CARMEN VINCENT MR.';
     let name = removeMiddleName(titleCase(s));
     if (s.toUpperCase().includes('MILLS, JANET')) name += ' (dropped out)';
+    if (s.toUpperCase().includes('KLEBAN')) name += ' (dropped out)';
     return name;
 }
 
