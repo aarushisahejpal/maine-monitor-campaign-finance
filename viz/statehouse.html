@@ -469,9 +469,10 @@ function moveTip(evt) {
 function hideTip() { tip.classList.remove('on'); }
 
 // ── BAR CHART (matches governor style) ──
-const margin = { top: 4, right: 110, bottom: 4, left: 200 };
+const isMobile = window.innerWidth <= 768;
+const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 120 : 200 };
 const barH = 30, barGap = 6;
-const width = 780;
+const width = isMobile ? 500 : 780;
 const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
 
 const svg = d3.select('#chartContainer')
@@ -726,7 +727,7 @@ candsWithDonors.forEach(cand => {
 });
 // ─── EXPENDITURES BAR CHART ───
 if (EXP_TOTALS.length) {
-    const expMargin = { top: 4, right: 110, bottom: 4, left: 200 };
+    const expMargin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 120 : 200 };
     const expBarH = 30, expBarGap = 6;
     const expWidth = 780;
     const expHeight = EXP_TOTALS.length * (expBarH + expBarGap) + expMargin.top + expMargin.bottom;
@@ -817,9 +818,10 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
     const COLORS = { Democratic: '#19345B', Republican: '#C0392B', Unenrolled: '#7D3C98', Independent: '#7D3C98', Green: '#27ae60', Libertarian: '#F39C12' };
 
     // ─── CONTRIBUTIONS CHART ───
-    const margin = { top: 4, right: 110, bottom: 4, left: 200 };
+    const isMob = window.innerWidth <= 768;
+    const margin = { top: 4, right: isMob ? 70 : 110, bottom: 4, left: isMob ? 120 : 200 };
     const barH = 30, barGap = 6;
-    const width = 780;
+    const width = isMob ? 500 : 780;
     const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
     const maxVal = d3.max(TOTALS, d => d.t) || 1;
     const x = d3.scaleLinear().domain([0, maxVal]).range([margin.left, width - margin.right]);

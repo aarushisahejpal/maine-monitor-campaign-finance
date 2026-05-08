@@ -397,9 +397,10 @@ function displayName(s, context) {
 function buildChart(containerId, data, totalId) {
     const chartData = data;
     if (!chartData.length) return;
-    const margin = { top: 4, right: 110, bottom: 4, left: 200 };
+    const isMobile = window.innerWidth <= 768;
+    const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 120 : 200 };
     const barH = 30, barGap = 6;
-    const width = 780;
+    const width = isMobile ? 500 : 780;
     const height = chartData.length * (barH + barGap) + margin.top + margin.bottom;
     const svg = d3.select('#' + containerId).append('svg').attr('class','chart-svg')
         .attr('viewBox', `0 0 ${width} ${height}`).attr('preserveAspectRatio','xMidYMid meet');

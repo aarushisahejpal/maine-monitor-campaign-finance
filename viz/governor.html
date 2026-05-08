@@ -519,9 +519,10 @@ function hideTip() { tip.classList.remove('on'); }
 
 // ─── BAR CHART (D3) ───
 const chartData = TOTALS;
-const margin = { top: 4, right: 110, bottom: 4, left: 175 };
+const isMobile = window.innerWidth <= 768;
+const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 120 : 175 };
 const barH = 30, barGap = 6;
-const width = 780;
+const width = isMobile ? 500 : 780;
 const height = chartData.length * (barH + barGap) + margin.top + margin.bottom;
 
 const svg = d3.select('#chartContainer')
@@ -664,9 +665,9 @@ topCands.forEach(cand => {
 // ─── EXPENDITURES BAR CHART ───
 const expData = EXP_TOTALS;
 if (expData.length) {
-    const expMargin = { top: 4, right: 110, bottom: 4, left: 175 };
+    const expMargin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ? 120 : 175 };
     const expBarH = 30, expBarGap = 6;
-    const expWidth = 780;
+    const expWidth = isMobile ? 500 : 780;
     const expHeight = expData.length * (expBarH + expBarGap) + expMargin.top + expMargin.bottom;
 
     const expSvg = d3.select('#chartExpenditures')
