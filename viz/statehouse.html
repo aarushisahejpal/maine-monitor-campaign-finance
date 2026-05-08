@@ -384,27 +384,6 @@ else if (window.matchMedia('(prefers-color-scheme: dark)').matches) setDarkMode(
 // Listen for OS changes
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => setDarkMode(e.matches));
 
-// 3. Listen for WordPress parent toggle via postMessage
-window.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'theme-change') {
-        setDarkMode(e.data.scheme === 'dark');
-    }
-    // Also support generic scheme messages
-    if (e.data === 'dark' || e.data === 'light') {
-        setDarkMode(e.data === 'dark');
-    }
-});
-
-// 4. Try to read parent's data-scheme (same-origin only, fails silently cross-origin)
-try {
-    const parentScheme = window.parent.document.documentElement.getAttribute('data-scheme');
-    if (parentScheme) setDarkMode(parentScheme === 'dark');
-    // Watch for parent changes
-    new MutationObserver(() => {
-        const s = window.parent.document.documentElement.getAttribute('data-scheme');
-        if (s) setDarkMode(s === 'dark');
-    }).observe(window.parent.document.documentElement, { attributes: true, attributeFilter: ['data-scheme'] });
-} catch(e) { /* cross-origin, ignore */ }
 
 // Update page title
 document.title = (RACE === 'Senator' ? `Senate District ${DISTRICT}` : `House District ${DISTRICT}`) + ' — Campaign Finances — The Maine Monitor';
