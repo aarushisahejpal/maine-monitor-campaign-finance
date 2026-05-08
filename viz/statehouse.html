@@ -913,7 +913,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
     if (TOTALS.some(d => d.ft === 'MCEA')) {
         const specNote = document.createElement('div');
         specNote.style.cssText = 'margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        specNote.innerHTML = 'Fundraising totals for Maine Clean Elections Act (MCEA) candidates will be updated pending new data from the Maine Ethics Commission.<a href="#mcea-footer" onclick="var el=document.getElementById('mcea-footer');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:'smooth'});}catch(e){el.scrollIntoView({behavior:'smooth'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>';
+        specNote.innerHTML = `Fundraising totals for Maine Clean Elections Act (MCEA) candidates will be updated pending new data from the Maine Ethics Commission.<a href="#mcea-footer" onclick="var el=document.getElementById('mcea-footer');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:'smooth'});}catch(e){el.scrollIntoView({behavior:'smooth'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>`;
         document.getElementById('chartContainerSpec').parentNode.appendChild(specNote);
     }
 
