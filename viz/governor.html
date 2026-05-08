@@ -446,14 +446,27 @@
 <div class="tip" id="tip"></div>
 
 <script>
-// Dark mode: follow URL param or OS preference
 const _p = new URLSearchParams(window.location.search);
-if (_p.get('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.setAttribute('data-scheme', 'dark');
+// Dark mode: URL param, OS preference, or WordPress parent toggle
+function setDarkMode(dark) {
+    document.documentElement.setAttribute('data-scheme', dark ? 'dark' : 'light');
 }
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    document.documentElement.setAttribute('data-scheme', e.matches ? 'dark' : 'light');
+if (_p.get('theme') === 'dark') setDarkMode(true);
+else if (_p.get('theme') === 'light') setDarkMode(false);
+else if (window.matchMedia('(prefers-color-scheme: dark)').matches) setDarkMode(true);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => setDarkMode(e.matches));
+window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'theme-change') setDarkMode(e.data.scheme === 'dark');
+    if (e.data === 'dark' || e.data === 'light') setDarkMode(e.data === 'dark');
 });
+try {
+    const parentScheme = window.parent.document.documentElement.getAttribute('data-scheme');
+    if (parentScheme) setDarkMode(parentScheme === 'dark');
+    new MutationObserver(() => {
+        const s = window.parent.document.documentElement.getAttribute('data-scheme');
+        if (s) setDarkMode(s === 'dark');
+    }).observe(window.parent.document.documentElement, { attributes: true, attributeFilter: ['data-scheme'] });
+} catch(e) { /* cross-origin, ignore */ }
 
 // ─── CONFIG ───
 const COLORS = { Democratic:'#2c6fbb', Republican:'#c0392b', Unenrolled:'#6b6b6b', Independent:'#8e44ad' };
