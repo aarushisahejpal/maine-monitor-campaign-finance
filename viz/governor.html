@@ -450,13 +450,29 @@ function render(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
 
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
-function removeMiddleName(name) {
+function removeMiddleName(name, html) {
+    // Extract and preserve "(Dropped Out)" / "(dropped out)" before processing
+    const dropMatch = name.match(/\s*\((?:D|d)ropped (?:O|o)ut\)/);
+    const cleanName = dropMatch ? name.replace(dropMatch[0], '') : name;
+
     const suffixes = /^(Jr\.?|Sr\.?|II|III|IV|V)$/i;
-    const parts = name.trim().split(/\s+/);
-    if (parts.length <= 2) return name;
-    const suffix = suffixes.test(parts[parts.length - 1]) ? ' ' + parts[parts.length - 1] : '';
-    const lastName = suffix ? parts[parts.length - 2] : parts[parts.length - 1];
-    return parts[0] + ' ' + lastName + suffix;
+    const parts = cleanName.trim().split(/\s+/);
+    let result;
+    if (parts.length <= 2) {
+        result = cleanName;
+    } else {
+        const suffix = suffixes.test(parts[parts.length - 1]) ? ' ' + parts[parts.length - 1] : '';
+        const lastName = suffix ? parts[parts.length - 2] : parts[parts.length - 1];
+        result = parts[0] + ' ' + lastName + suffix;
+    }
+
+    if (dropMatch) {
+        if (html) {
+            return result + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
+        }
+        return result + ' (dropped out)';
+    }
+    return result;
 }
 const tip = document.getElementById('tip');
 
@@ -520,7 +536,7 @@ bars.append('text')
     .attr('y', d => y(d.c) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
     .attr('text-anchor', 'end')
-    .text(d => removeMiddleName(d.c));
+    .html(d => removeMiddleName(d.c, true));
 
 bars.append('text')
     .attr('class', 'value')
@@ -576,7 +592,7 @@ topCands.forEach(cand => {
     card.style.background = tints[cand.p] || '#fff';
     card.innerHTML = `
         <div class="donor-card-header">
-            <span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c)}</span>
+            <span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c, true)}</span>
             <span class="donor-card-total">${fmt(cand.t)} total</span>
         </div>`;
 
@@ -656,7 +672,7 @@ if (expData.length) {
     expBars.append('text').attr('class', 'label')
         .attr('x', expMargin.left - 10).attr('y', d => expY(d.c) + expY.bandwidth() / 2)
         .attr('dy', '0.35em').attr('text-anchor', 'end')
-        .text(d => removeMiddleName(d.c));
+        .html(d => removeMiddleName(d.c, true));
 
     expBars.append('text').attr('class', 'value')
         .attr('x', d => expX(d.t) + 8).attr('y', d => expY(d.c) + expY.bandwidth() / 2)
@@ -688,7 +704,7 @@ topExpCands.forEach(cand => {
     const card = document.createElement('div');
     card.className = 'donor-card';
     card.style.background = tints[cand.p] || '#fff';
-    card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c)}</span><span class="donor-card-total">${fmt(cand.t)} spent</span></div>`;
+    card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c, true)}</span><span class="donor-card-total">${fmt(cand.t)} spent</span></div>`;
 
     const hdr = document.createElement('div');
     hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';

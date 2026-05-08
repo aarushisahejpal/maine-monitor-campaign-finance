@@ -477,7 +477,7 @@ function buildBreakdown(containerId, data, totals, colorMap, topN) {
         const maxVal = d3.max(cd, d => d.t);
         const card = document.createElement('div');
         card.className = 'breakdown-card';
-        card.innerHTML = `<h4>${displayName(cand.c)}</h4>`;
+        card.innerHTML = `<h4>${displayName(cand.c, true)}</h4>`;
         cd.forEach(d => {
             const pct = maxVal > 0 ? (d.t / maxVal * 100) : 0;
             const label = d.s || d.g;

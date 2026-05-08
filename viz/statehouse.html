@@ -603,7 +603,7 @@ if (TOTALS.some(d => d.ft === 'MCEA')) {
 bars.on('mouseenter', function(evt, d) {
     svg.classed('has-hover', true);
     d3.select(this).select('.bar').classed('active', true);
-    let html = `<div class="tip-name">${d.d}</div>
+    let html = `<div class="tip-name">${d.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '')}${/dropped out/i.test(d.d) ? ' <span style="font-style:italic;font-size:0.85em;">(dropped out)</span>' : ''}</div>
         <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>`;
     showTip(evt, html);
@@ -718,7 +718,13 @@ if (EXP_TOTALS.length) {
 
     expBars.append('text').attr('class', 'label')
         .attr('x', expMargin.left - 10).attr('y', d => expY(d.d) + expY.bandwidth() / 2)
-        .attr('dy', '0.35em').attr('text-anchor', 'end').text(d => d.d);
+        .attr('dy', '0.35em').attr('text-anchor', 'end').html(d => {
+            if (/dropped out/i.test(d.d)) {
+                const clean = d.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '');
+                return `${clean} <tspan style="fill:${d.p === 'Republican' ? '#8B0000' : '#19345B'};font-size:0.8em;font-style:italic;">(dropped out)</tspan>`;
+            }
+            return d.d;
+        });
 
     expBars.append('text').attr('class', 'value')
         .attr('x', d => d.t === 0 ? expMargin.left + 4 : expX(d.t) + 8)
