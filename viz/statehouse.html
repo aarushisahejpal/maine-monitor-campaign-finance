@@ -552,19 +552,18 @@ bars.filter(d => d.t === 0).append('rect')
     .attr('height', y.bandwidth())
     .attr('fill', 'transparent');
 
-// MCEA badge before the candidate name — aligned to longest name in chart
-const maxNameWidth = Math.max(...TOTALS.map(d => {
+// MCEA badge before each candidate's name — positioned relative to their name width
+const nameWidths = {};
+TOTALS.forEach(d => {
     const tmp = svg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
-    const w = tmp.node().getComputedTextLength();
+    nameWidths[d.d] = tmp.node().getComputedTextLength();
     tmp.remove();
-    return w;
-}));
-const badgeX = margin.left - 10 - maxNameWidth - 44;
+});
 
 bars.filter(d => d.ft === 'MCEA').append('foreignObject')
-    .attr('x', badgeX)
+    .attr('x', d => margin.left - 10 - nameWidths[d.d] - 48)
     .attr('y', d => y(d.d))
-    .attr('width', 46)
+    .attr('width', 44)
     .attr('height', y.bandwidth())
     .append('xhtml:div')
     .style('display','flex')
