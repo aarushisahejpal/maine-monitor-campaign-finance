@@ -421,7 +421,8 @@ function titleCase(s) {
     }
     return s.replace(/\b\w+/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase())
             .replace(/\bIii\b/g, 'III').replace(/\bIi\b/g, 'II').replace(/\bIv\b/g, 'IV')
-            .replace(/\bJr\b/g, 'Jr.').replace(/\bSr\b/g, 'Sr.');
+            .replace(/\bJr\b/g, 'Jr.').replace(/\bSr\b/g, 'Sr.')
+            .replace(/\bLaflamme\b/g, 'LaFlamme');
 }
 function removeMiddleName(name) {
     const parts = name.trim().split(/\s+/);
