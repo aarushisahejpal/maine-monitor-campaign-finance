@@ -523,9 +523,10 @@ function render(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
 function removeMiddleName(name, context) {
-    // Extract and preserve "(Dropped Out)" / "(dropped out)" before processing
-    const dropMatch = name.match(/\s*\((?:D|d)ropped (?:O|o)ut\)/);
-    const cleanName = dropMatch ? name.replace(dropMatch[0], '') : name;
+    // Extract and preserve any parenthetical label before processing
+    const labelMatch = name.match(/\s*(\([^)]+\))\s*$/);
+    const label = labelMatch ? labelMatch[1] : '';
+    const cleanName = labelMatch ? name.replace(labelMatch[0], '') : name;
 
     const suffixes = /^(Jr\.?|Sr\.?|II|III|IV|V)$/i;
     const parts = cleanName.trim().split(/\s+/);
@@ -538,14 +539,23 @@ function removeMiddleName(name, context) {
         result = parts[0] + ' ' + lastName + suffix;
     }
 
-    if (dropMatch) {
+    if (label && /dropped out/i.test(label)) {
         if (context === 'svg') {
-            return result + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
+            return result + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(Dropped Out)</tspan>';
         }
         if (context === 'html') {
             return result + ' <span style="color:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</span>';
         }
-        return result + ' (dropped out)';
+        return result + ' (Dropped Out)';
+    }
+    if (label) {
+        if (context === 'svg') {
+            return result + ' <tspan style="fill:#666;font-size:0.8em;font-style:italic;">' + label + '</tspan>';
+        }
+        if (context === 'html') {
+            return result + ' <span style="color:#666;font-size:0.8em;font-style:italic;">' + label + '</span>';
+        }
+        return result + ' ' + label;
     }
     return result;
 }
