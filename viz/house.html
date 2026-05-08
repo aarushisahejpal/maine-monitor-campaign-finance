@@ -56,6 +56,19 @@
             .ribbon-text { flex-shrink: 0; }
             .ribbon-main::after { flex: 1 1 100px; min-width: 60px; }
             .chart-card { padding: 8px 0; border: none; box-shadow: none; background: transparent; border-radius: 0; }
+            .donor-card div[style*="overflow-y"], .donor-block div[style*="overflow-y"] {
+                -webkit-overflow-scrolling: touch;
+                overflow-y: scroll !important;
+            }
+        }
+        .donor-card div[style*="overflow-y"]::-webkit-scrollbar,
+        .donor-block div[style*="overflow-y"]::-webkit-scrollbar {
+            width: 6px;
+        }
+        .donor-card div[style*="overflow-y"]::-webkit-scrollbar-thumb,
+        .donor-block div[style*="overflow-y"]::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
         }
 
         /* ── TIER 2: SUB-SECTION TITLES (granular sections) ── */
