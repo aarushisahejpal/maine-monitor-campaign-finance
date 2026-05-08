@@ -450,7 +450,7 @@ function render(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
 
 // ─── HELPERS ───
 const fmt = n => '$' + Math.round(n).toLocaleString();
-function removeMiddleName(name, html) {
+function removeMiddleName(name, context) {
     // Extract and preserve "(Dropped Out)" / "(dropped out)" before processing
     const dropMatch = name.match(/\s*\((?:D|d)ropped (?:O|o)ut\)/);
     const cleanName = dropMatch ? name.replace(dropMatch[0], '') : name;
@@ -467,8 +467,11 @@ function removeMiddleName(name, html) {
     }
 
     if (dropMatch) {
-        if (html) {
+        if (context === 'svg') {
             return result + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
+        }
+        if (context === 'html') {
+            return result + ' <span style="color:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</span>';
         }
         return result + ' (dropped out)';
     }
@@ -536,7 +539,7 @@ bars.append('text')
     .attr('y', d => y(d.c) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
     .attr('text-anchor', 'end')
-    .html(d => removeMiddleName(d.c, true));
+    .html(d => removeMiddleName(d.c, 'svg'));
 
 bars.append('text')
     .attr('class', 'value')
@@ -592,7 +595,7 @@ topCands.forEach(cand => {
     card.style.background = tints[cand.p] || '#fff';
     card.innerHTML = `
         <div class="donor-card-header">
-            <span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c, true)}</span>
+            <span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c, 'html')}</span>
             <span class="donor-card-total">${fmt(cand.t)} total</span>
         </div>`;
 
@@ -672,7 +675,7 @@ if (expData.length) {
     expBars.append('text').attr('class', 'label')
         .attr('x', expMargin.left - 10).attr('y', d => expY(d.c) + expY.bandwidth() / 2)
         .attr('dy', '0.35em').attr('text-anchor', 'end')
-        .html(d => removeMiddleName(d.c, true));
+        .html(d => removeMiddleName(d.c, 'svg'));
 
     expBars.append('text').attr('class', 'value')
         .attr('x', d => expX(d.t) + 8).attr('y', d => expY(d.c) + expY.bandwidth() / 2)
@@ -704,7 +707,7 @@ topExpCands.forEach(cand => {
     const card = document.createElement('div');
     card.className = 'donor-card';
     card.style.background = tints[cand.p] || '#fff';
-    card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c, true)}</span><span class="donor-card-total">${fmt(cand.t)} spent</span></div>`;
+    card.innerHTML = `<div class="donor-card-header"><span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c, 'html')}</span><span class="donor-card-total">${fmt(cand.t)} spent</span></div>`;
 
     const hdr = document.createElement('div');
     hdr.style.cssText = 'font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#19345B;padding:8px 8px 4px;';
