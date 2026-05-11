@@ -123,8 +123,11 @@ jobs:
       - name: Update footer dates
         run: |
           DATE=$(date +"%B %-d, %Y")
-          for f in viz/governor.html viz/senate.html viz/house.html viz/statehouse.html; do
-            sed -i "s/Last updated:.*/Last updated:<\/strong> $DATE. Data is refreshed daily./" "$f" 2>/dev/null || true
+          for f in viz/governor.html viz/statehouse.html; do
+            sed -i "s/<strong>Last updated:<\/strong>[^<]*<br>/<strong>Last updated:<\/strong> $DATE. Data is refreshed daily.<br>/" "$f" 2>/dev/null || true
+          done
+          for f in viz/senate.html viz/house.html; do
+            sed -i "s/<strong>Last updated:<\/strong>[^<]*<br>/<strong>Last updated:<\/strong> $DATE. Candidate totals and contribution breakdowns by source are updated daily. Individual donor and expenditure details from FEC Schedule A and B filings are updated weekly.<br>/" "$f" 2>/dev/null || true
           done
 
       - name: Commit and push
