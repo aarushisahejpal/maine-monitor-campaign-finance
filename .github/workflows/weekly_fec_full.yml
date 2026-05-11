@@ -1,0 +1,72 @@
+name: Weekly FEC Full Scan
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'  # Every Monday at 8am ET (12pm UTC)
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  fec-full-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install R packages
+        run: |
+          Rscript -e 'install.packages(c("readr", "tidyverse", "purrr", "writexl", "stringr"), repos="https://cloud.r-project.org")'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # ── FEC FULL SCAN (catches all historical records) ──
+      - name: Full scan FEC receipts
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 a
+        continue-on-error: true
+
+      - name: Full scan FEC expenditures
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 b
+        continue-on-error: true
+
+      # ── VERIFY ──
+      - name: Verify no duplicates
+        run: |
+          python3 -c "
+          import csv
+          for fname, id_field in [('data/federal_2026/receipts.csv', 'transaction_id'), ('data/federal_2026/expenditures.csv', 'transaction_id')]:
+              with open(fname) as f:
+                  ids = [r[id_field] for r in csv.DictReader(f) if r.get(id_field)]
+              dupes = len(ids) - len(set(ids))
+              print(f'{fname}: {len(ids):,} records, {dupes} duplicates')
+              assert dupes == 0, f'{fname} has duplicates!'
+          print('All clean')
+          "
+
+      # ── AGGREGATE ──
+      - name: Run R aggregation
+        run: |
+          Rscript scripts/clean_federal_data.R
+
+      # ── PUSH ──
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/federal_2026/ viz/data/clean/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Weekly FEC full scan: $(date +%Y-%m-%d)"
+            git push
+          fi

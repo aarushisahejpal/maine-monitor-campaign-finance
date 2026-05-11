@@ -199,9 +199,13 @@ def pull(cycle, schedule):
             except:
                 record_count = 0
 
-            # Use date windows for large committees (>5000 records)
-            use_windows = record_count > 5000
-            if use_windows:
+            # If FEC_MIN_DATE is set (recent mode), use a single window from that date
+            min_date_override = os.environ.get('FEC_MIN_DATE')
+            if min_date_override:
+                windows = [(min_date_override, None)]
+                print(f" (recent only, from {min_date_override})", end='', flush=True)
+            elif record_count > 5000:
+                # Use date windows for large committees (>5000 records)
                 print(f" ({record_count:,} records, using quarterly windows)", end='', flush=True)
                 windows = quarters
             else:
@@ -226,7 +230,8 @@ def pull(cycle, schedule):
                     if w_start:
                         date_field = 'contribution_receipt_date' if schedule == 'a' else 'disbursement_date'
                         params[f'min_{date_field}'] = w_start
-                        params[f'max_{date_field}'] = w_end
+                        if w_end:
+                            params[f'max_{date_field}'] = w_end
                     if last_index:
                         params['last_index'] = last_index
                         params[cfg['date_key']] = last_date
@@ -285,4 +290,27 @@ def pull(cycle, schedule):
 if __name__ == '__main__':
     cycle = int(sys.argv[1]) if len(sys.argv) > 1 else 2026
     schedule = sys.argv[2] if len(sys.argv) > 2 else 'a'
-    pull(cycle, schedule)
+
+    # Optional: --recent-days N limits scraping to last N days only
+    recent_days = None
+    for i, arg in enumerate(sys.argv):
+        if arg == '--recent-days' and i + 1 < len(sys.argv):
+            recent_days = int(sys.argv[i + 1])
+
+    if recent_days:
+        from datetime import datetime, timedelta
+        min_date = (datetime.now() - timedelta(days=recent_days)).strftime('%Y-%m-%d')
+        print(f"Recent mode: only fetching records from {min_date} onward")
+        # Override the pull function to use date filter
+        original_pull = pull
+        def pull_recent(cycle, schedule):
+            cfg = SCHEDULE_CONFIG[schedule]
+            # Temporarily override quarters to just the recent window
+            import types
+            original_fn = pull.__code__
+            # Simpler: just set environment var and check in the loop
+            os.environ['FEC_MIN_DATE'] = min_date
+            original_pull(cycle, schedule)
+        pull_recent(cycle, schedule)
+    else:
+        pull(cycle, schedule)
