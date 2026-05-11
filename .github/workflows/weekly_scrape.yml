@@ -93,18 +93,8 @@ jobs:
           print(f'Updated {len(official)} totals, {len(exp)} expenditures, {len(by_source)} by-source rows')
           "
 
-      # ── FEC SCHEDULE A/B (daily — recent 30 days only) ──
-      - name: Scrape recent FEC receipts (last 30 days)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 a --recent-days 30
-        continue-on-error: true
-
-      - name: Scrape recent FEC expenditures (last 30 days)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 b --recent-days 30
-        continue-on-error: true
+      # FEC Schedule A/B (donor/payee line items) handled by weekly full scan
+      # Daily only updates official totals + by-source above
 
       # ── VERIFY ──
       - name: Verify data completeness
