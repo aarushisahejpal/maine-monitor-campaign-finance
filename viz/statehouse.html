@@ -700,7 +700,7 @@ bars.on('mouseenter', function(evt, d) {
     svg.classed('has-hover', true);
     d3.select(this).select('.bar').classed('active', true);
     let html = `<div class="tip-name">${d.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '')}${/dropped out/i.test(d.d) ? ' <span style="font-style:italic;font-size:0.85em;">(dropped out)</span>' : ''}</div>
-        <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
+        <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p === 'Unenrolled' ? 'independent' : d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>`;
     showTip(evt, html);
 })
@@ -834,7 +834,7 @@ if (EXP_TOTALS.length) {
     expBars.on('mouseenter', function(evt, d) {
         expSvg.classed('has-hover', true);
         d3.select(this).select('.bar').classed('active', true);
-        showTip(evt, `<div class="tip-name">${d.d}</div><div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div><div class="tip-total">${fmt(d.t)} spent</div>`);
+        showTip(evt, `<div class="tip-name">${d.d}</div><div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p === 'Unenrolled' ? 'independent' : d.p}</div><div class="tip-total">${fmt(d.t)} spent</div>`);
     }).on('mousemove', moveTip).on('mouseleave', function() {
         expSvg.classed('has-hover', false);
         d3.select(this).select('.bar').classed('active', false);

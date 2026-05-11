@@ -645,7 +645,7 @@ bars.on('mouseenter', function(evt, d) {
     d3.select(this).select('.bar').classed('active', true);
     const rank = chartData.indexOf(d) + 1;
     let html = `<div class="tip-name">${removeMiddleName(d.c)}</div>
-        <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div>
+        <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p === 'Unenrolled' ? 'independent' : d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
     showTip(evt, html);
@@ -774,7 +774,7 @@ if (expData.length) {
     expBars.on('mouseenter', function(evt, d) {
         expSvg.classed('has-hover', true);
         d3.select(this).select('.bar').classed('active', true);
-        showTip(evt, `<div class="tip-name">${removeMiddleName(d.c)}</div><div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p}</div><div class="tip-total">${fmt(d.t)} spent</div>`);
+        showTip(evt, `<div class="tip-name">${removeMiddleName(d.c)}</div><div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p === 'Unenrolled' ? 'independent' : d.p}</div><div class="tip-total">${fmt(d.t)} spent</div>`);
     }).on('mousemove', moveTip).on('mouseleave', function() {
         expSvg.classed('has-hover', false);
         d3.select(this).select('.bar').classed('active', false);
