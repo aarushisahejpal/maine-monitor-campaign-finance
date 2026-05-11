@@ -608,11 +608,10 @@ bars.filter(d => d.t === 0).append('rect')
     .attr('height', y.bandwidth())
     .attr('fill', 'transparent');
 
-// MCEA badge before each candidate's name — positioned relative to clean name (no label)
+// MCEA badge before each candidate's name — positioned relative to full display name
 const nameWidths = {};
 TOTALS.forEach(d => {
-    const cleanName = d.d.replace(/\s*\([^)]+\)\s*$/, '');
-    const tmp = svg.append('text').attr('class','label').text(cleanName).style('visibility','hidden');
+    const tmp = svg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
     nameWidths[d.d] = tmp.node().getComputedTextLength();
     tmp.remove();
 });
@@ -821,8 +820,7 @@ if (EXP_TOTALS.length) {
     // MCEA badge for expenditure bar chart
     const expNameWidths = {};
     EXP_TOTALS.forEach(d => {
-        const cleanName = d.d.replace(/\s*\([^)]+\)\s*$/, '');
-        const tmp = expSvg.append('text').attr('class','label').text(cleanName).style('visibility','hidden');
+        const tmp = expSvg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
         expNameWidths[d.d] = tmp.node().getComputedTextLength();
         tmp.remove();
     });
@@ -930,8 +928,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
     // MCEA badge for special election bar chart
     const specNameWidths = {};
     TOTALS.forEach(d => {
-        const cleanName = d.d.replace(/\s*\([^)]+\)\s*$/, '');
-        const tmp = svg.append('text').attr('class','label').text(cleanName).style('visibility','hidden');
+        const tmp = svg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
         specNameWidths[d.d] = tmp.node().getComputedTextLength();
         tmp.remove();
     });
