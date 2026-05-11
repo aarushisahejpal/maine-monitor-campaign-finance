@@ -438,31 +438,17 @@ function displayName(s, context) {
     // Merge Calabrese name variants
     if (s.toUpperCase().includes('CALABRESE, CARMEM')) s = 'CALABRESE, CARMEN VINCENT MR.';
     let name = removeMiddleName(titleCase(s));
-    const dropped = s.toUpperCase().includes('MILLS, JANET') || s.toUpperCase().includes('KLEBAN') ||
-        s.toUpperCase().includes('RODRIGUEZ') || s.toUpperCase().includes('FAVREAU') || s.toUpperCase().includes('RENCH');
-    const writein = s.toUpperCase().includes('LAFLAMME');
-    const notOnBallot = s.toUpperCase().includes('SMERIGLIO') || s.toUpperCase().includes('CALABRESE') || s.toUpperCase().includes('ALCALA');
-    if (dropped && context === 'svg') {
-        return name + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
+    const u = s.toUpperCase();
+    let label = '';
+    if (u.includes('MILLS, JANET') || u.includes('KLEBAN') || u.includes('RODRIGUEZ') || u.includes('FAVREAU') || u.includes('RENCH') || u.includes('ROBERTS, TIFFANY') || u.includes('SMALL, ERIC')) label = '(dropped out)';
+    else if (u.includes('LAFLAMME')) label = '(write-in)';
+    else if (u.includes('SMERIGLIO') || u.includes('CALABRESE') || u.includes('ALCALA')) label = '(not on ballot)';
+    else if (u.includes('EVANS') || u.includes('ALCORN') || u.includes('RICH, TIMOTHY')) label = '(independent)';
+    if (label) {
+        if (context === 'svg') return name + ` <tspan style="fill:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</tspan>`;
+        if (context === 'html') return name + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</span>`;
+        return name + ' ' + label;
     }
-    if (dropped && context === 'html') {
-        return name + ' <span style="color:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</span>';
-    }
-    if (dropped) return name + ' (dropped out)';
-    if (writein && context === 'svg') {
-        return name + ' <tspan style="fill:#666;font-size:0.8em;font-style:italic;">(write-in)</tspan>';
-    }
-    if (writein && context === 'html') {
-        return name + ' <span style="color:#666;font-size:0.8em;font-style:italic;">(write-in)</span>';
-    }
-    if (writein) return name + ' (write-in)';
-    if (notOnBallot && context === 'svg') {
-        return name + ' <tspan style="fill:#666;font-size:0.8em;font-style:italic;">(not on ballot)</tspan>';
-    }
-    if (notOnBallot && context === 'html') {
-        return name + ' <span style="color:#666;font-size:0.8em;font-style:italic;">(not on ballot)</span>';
-    }
-    if (notOnBallot) return name + ' (not on ballot)';
     return name;
 }
 

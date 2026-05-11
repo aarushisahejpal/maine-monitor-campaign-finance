@@ -607,7 +607,7 @@ bars.filter(d => d.t === 0).append('rect')
     .attr('height', y.bandwidth())
     .attr('fill', 'transparent');
 
-// MCEA badge before each candidate's name — positioned relative to their name width
+// MCEA badge before each candidate's name — positioned relative to full rendered width
 const nameWidths = {};
 TOTALS.forEach(d => {
     const tmp = svg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
@@ -636,9 +636,6 @@ bars.filter(d => d.ft === 'MCEA').append('foreignObject')
     .style('white-space','nowrap')
     .text('MCEA');
 
-// Dropped out color: darker red for Republican, Monitor Blue for others
-const dropColor = d => d.p === 'Republican' ? '#8B0000' : '#19345B';
-
 bars.append('text')
     .attr('class', 'label')
     .attr('x', margin.left - 10)
@@ -646,9 +643,11 @@ bars.append('text')
     .attr('dy', '0.35em')
     .attr('text-anchor', 'end')
     .html(d => {
-        if (d.d.includes('(dropped out)') || d.d.includes('(dropped out)')) {
-            const clean = d.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '');
-            return `${clean} <tspan style="fill:${dropColor(d)};font-size:0.8em;font-style:italic;">(dropped out)</tspan>`;
+        const labelMatch = d.d.match(/\s*(\([^)]+\))\s*$/);
+        if (labelMatch) {
+            const clean = d.d.replace(labelMatch[0], '');
+            const label = labelMatch[1];
+            return `${clean} <tspan style="fill:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</tspan>`;
         }
         return d.d;
     });
@@ -699,7 +698,9 @@ if (TOTALS.some(d => d.ft === 'MCEA')) {
 bars.on('mouseenter', function(evt, d) {
     svg.classed('has-hover', true);
     d3.select(this).select('.bar').classed('active', true);
-    let html = `<div class="tip-name">${d.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '')}${/dropped out/i.test(d.d) ? ' <span style="font-style:italic;font-size:0.85em;">(dropped out)</span>' : ''}</div>
+    const tipLabel = d.d.match(/\s*(\([^)]+\))\s*$/);
+    const tipName = tipLabel ? d.d.replace(tipLabel[0], '') : d.d;
+    let html = `<div class="tip-name">${tipName}${tipLabel ? ' <span style="font-style:italic;font-size:0.85em;">' + tipLabel[1] + '</span>' : ''}</div>
         <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p === 'Unenrolled' ? 'independent' : d.p}</div>
         <div class="tip-total">${fmt(d.t)}</div>`;
     showTip(evt, html);
@@ -729,7 +730,7 @@ candsWithDonors.forEach(cand => {
     card.style.background = tints[cand.p] || '#fff';
     card.innerHTML = `
         <div class="donor-block-header">
-            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '') }${/dropped out/i.test(cand.d) ? ` <span style="color:${cand.p === 'Republican' ? '#8B0000' : '#19345B'};font-size:0.8em;font-style:italic;">(dropped out)</span>` : ''}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : cand.ft === 'Exempt' ? ' <span class="exempt-badge">EXEMPT</span>' : ''}</span>
+            <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${(() => { const m = cand.d.match(/\s*(\([^)]+\))\s*$/); if (m) { return cand.d.replace(m[0],'') + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${m[1]}</span>`; } return cand.d; })()}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : cand.ft === 'Exempt' ? ' <span class="exempt-badge">EXEMPT</span>' : ''}</span>
             <span class="donor-block-total">${fmt(cand.t)} total</span>
         </div>`;
 
@@ -815,12 +816,33 @@ if (EXP_TOTALS.length) {
         .attr('x', expMargin.left).attr('y', d => expY(d.d))
         .attr('width', 0).attr('height', expY.bandwidth()).attr('fill', 'transparent');
 
+    // MCEA badge for expenditure bar chart
+    const expNameWidths = {};
+    EXP_TOTALS.forEach(d => {
+        const tmp = expSvg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
+        expNameWidths[d.d] = tmp.node().getComputedTextLength();
+        tmp.remove();
+    });
+    expBars.filter(d => d.ft === 'MCEA').append('foreignObject')
+        .attr('x', d => expMargin.left - 10 - expNameWidths[d.d] - 52)
+        .attr('y', d => expY(d.d))
+        .attr('width', 44)
+        .attr('height', expY.bandwidth())
+        .append('xhtml:div')
+        .style('display','flex').style('align-items','center').style('height','100%')
+        .append('xhtml:span')
+        .style('display','inline-block').style('font-size','9px').style('font-weight','700')
+        .style('letter-spacing','0.5px').style('background','#27ae60').style('color','#fff')
+        .style('padding','2px 5px').style('border-radius','3px').style('white-space','nowrap')
+        .text('MCEA');
+
     expBars.append('text').attr('class', 'label')
         .attr('x', expMargin.left - 10).attr('y', d => expY(d.d) + expY.bandwidth() / 2)
         .attr('dy', '0.35em').attr('text-anchor', 'end').html(d => {
-            if (/dropped out/i.test(d.d)) {
-                const clean = d.d.replace(/\s*\((?:D|d)ropped (?:O|o)ut\)/, '');
-                return `${clean} <tspan style="fill:${d.p === 'Republican' ? '#8B0000' : '#19345B'};font-size:0.8em;font-style:italic;">(dropped out)</tspan>`;
+            const lm = d.d.match(/\s*(\([^)]+\))\s*$/);
+            if (lm) {
+                const clean = d.d.replace(lm[0], '');
+                return `${clean} <tspan style="fill:#666;font-size:0.8em;font-style:italic;text-transform:none;">${lm[1]}</tspan>`;
             }
             return d.d;
         });
@@ -853,7 +875,7 @@ EXP_TOTALS.forEach(cand => {
     const card = document.createElement('div');
     card.className = 'donor-block';
     card.style.background = tints[cand.p] || '#fff';
-    card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${cand.d}</span><span class="donor-block-total">${fmt(cand.t)} spent</span></div>`;
+    card.innerHTML = `<div class="donor-block-header"><span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${(() => { const m = cand.d.match(/\s*(\([^)]+\))\s*$/); if (m) { return cand.d.replace(m[0],'') + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${m[1]}</span>`; } return cand.d; })()}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : ''}</span><span class="donor-block-total">${fmt(cand.t)} spent</span></div>`;
 
     const hdr = document.createElement('div');
     hdr.className = 'section-label';

@@ -439,22 +439,15 @@ function removeMiddleName(name) {
 // Wrap titleCase + removeMiddleName for display
 function displayName(s, context) {
     let name = removeMiddleName(titleCase(s));
-    const dropped = s.toUpperCase().includes('GOLDEN') || s.toUpperCase().includes('ROBERTS, TIFFANY') || s.toUpperCase().includes('SMALL, ERIC');
-    const notOnBallot = s.toUpperCase().includes('PIANTIDOSI') || s.toUpperCase().includes('DUPREY') || s.toUpperCase().includes('SIGEL') || s.toUpperCase().includes('CLARK, JAMES');
-    if (dropped && context === 'svg') {
-        return name + ' <tspan style="fill:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</tspan>';
+    const u = s.toUpperCase();
+    let label = '';
+    if (u.includes('GOLDEN') || u.includes('ROBERTS, TIFFANY') || u.includes('SMALL, ERIC')) label = '(dropped out)';
+    else if (u.includes('PIANTIDOSI') || u.includes('DUPREY') || u.includes('SIGEL') || u.includes('CLARK, JAMES')) label = '(not on ballot)';
+    if (label) {
+        if (context === 'svg') return name + ` <tspan style="fill:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</tspan>`;
+        if (context === 'html') return name + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</span>`;
+        return name + ' ' + label;
     }
-    if (dropped && context === 'html') {
-        return name + ' <span style="color:#19345B;font-size:0.8em;font-style:italic;">(dropped out)</span>';
-    }
-    if (dropped) return name + ' (dropped out)';
-    if (notOnBallot && context === 'svg') {
-        return name + ' <tspan style="fill:#666;font-size:0.8em;font-style:italic;">(not on ballot)</tspan>';
-    }
-    if (notOnBallot && context === 'html') {
-        return name + ' <span style="color:#666;font-size:0.8em;font-style:italic;">(not on ballot)</span>';
-    }
-    if (notOnBallot) return name + ' (not on ballot)';
     return name;
 }
 
