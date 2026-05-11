@@ -251,6 +251,9 @@
         [data-scheme="dark"] .small-dollar-row { background: #444 !important; border-color: #555 !important; }
         [data-scheme="dark"] .small-dollar-label { color: #ccc !important; }
         [data-scheme="dark"] .small-dollar-amt { color: #fff !important; }
+        [data-scheme="dark"] .platform-row { background: #444 !important; border-color: #555 !important; }
+        [data-scheme="dark"] .platform-label { color: #ccc !important; }
+        [data-scheme="dark"] .platform-amt { color: #fff !important; }
     </style>
 </head>
 <body>
@@ -527,8 +530,9 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, p
             const isBlue = /actblue/i.test(d.e);
             const borderColor = isBlue ? '#2c6fbb' : '#c0392b';
             const pb = document.createElement('div');
+            pb.className = 'platform-row';
             pb.style.cssText = `padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-left:3px solid ${borderColor};border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;`;
-            pb.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Via ${d.e}</span><span style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
+            pb.innerHTML = `<span class="platform-label" style="font-size:0.8em;">Via ${d.e}</span><span class="platform-amt" style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
             card.appendChild(pb);
         });
 
