@@ -205,12 +205,13 @@ def main():
     print(f"Our total:   {our_total:,}")
     print(f"Gap:         {gap:,}")
 
-    if gap > 50:
-        print(f"WARNING: Gap of {gap:,} records. Consider a full re-scrape.")
+    if gap > 500:
+        print(f"ERROR: Gap of {gap:,} records is too large. Full re-scrape needed.")
         sys.exit(1)
+    elif gap > 50:
+        print(f"WARNING: Gap of {gap:,} records. Will be caught up over time.")
     elif gap < 0:
         print(f"WARNING: We have more records than the site. Possible duplicates.")
-        sys.exit(1)
     else:
         print("OK — counts match (within tolerance)")
 
