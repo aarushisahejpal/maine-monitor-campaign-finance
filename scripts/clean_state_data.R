@@ -177,7 +177,8 @@ cand_contributors <- state_df %>%
   left_join(candidate_list, by = "filer_name") %>%
   filter(race %in% c("Governor", "Senator", "Representative")) %>%
   rename(candidate = filer_name,
-         entity = source_payee)
+         entity = source_payee) %>%
+  mutate(entity = str_replace_all(entity, " \\. ", " ") %>% str_squish())
 
 cand_comm_contribs <- state_df %>%
   filter(transaction_type == "Monetary Contribution") %>%
@@ -328,6 +329,7 @@ cand_top5_payees <- state_df %>%
   left_join(candidate_list, by = "filer_name") %>%
   filter(race %in% c("Governor", "Senator", "Representative")) %>%
   rename(candidate = filer_name, entity = source_payee) %>%
+  mutate(entity = str_replace_all(entity, " \\. ", " ") %>% str_squish()) %>%
   group_by(candidate) %>%
   arrange(desc(total_paid), entity) %>%
   filter(total_paid >= 3000 | row_number() <= 5) %>%
