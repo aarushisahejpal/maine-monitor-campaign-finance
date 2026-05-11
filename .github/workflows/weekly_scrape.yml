@@ -21,7 +21,7 @@ jobs:
 
       - name: Install R packages
         run: |
-          Rscript -e 'install.packages(c("readr", "tidyverse", "purrr", "writexl", "stringr"), repos="https://cloud.r-project.org")'
+          Rscript -e 'install.packages(c("tidyverse", "readr", "purrr", "writexl", "stringr"), repos="https://cloud.r-project.org", dependencies=TRUE)'
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
