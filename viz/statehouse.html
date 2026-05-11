@@ -679,15 +679,12 @@ if (TOTALS.some(d => d.ft === 'MCEA')) {
     document.getElementById('mceaNote').style.display = 'block';
     document.getElementById('mcea-footer-block').style.display = 'inline';
 
-    // Set context-specific MCEA amounts in footer
-    const isContested = TOTALS.length > 1;
+    // Set MCEA amounts in footer based on race type only
     const amountEl = document.getElementById('mceaAmountNote');
     const seedEl = document.getElementById('mceaSeedNote');
     if (amountEl) {
-        if (RACE === 'Representative' && isContested) amountEl.textContent = '$3,325 for a contested House primary';
-        else if (RACE === 'Representative' && !isContested) amountEl.textContent = '$675 for an uncontested House primary';
-        else if (RACE === 'Senator' && isContested) amountEl.textContent = '$13,250 for a contested Senate primary';
-        else if (RACE === 'Senator' && !isContested) amountEl.textContent = '$2,650 for an uncontested Senate primary';
+        if (RACE === 'Representative') amountEl.textContent = '$675 for an uncontested primary, $3,325 for a contested primary, $1,350 for an uncontested general election and $6,650 for a contested general election';
+        else if (RACE === 'Senator') amountEl.textContent = '$2,650 for an uncontested primary, $13,250 for a contested primary, $5,300 for an uncontested general election and $26,500 for a contested general election';
     }
     if (seedEl) {
         if (RACE === 'Representative') seedEl.textContent = '$1,000 for Maine House candidates';
