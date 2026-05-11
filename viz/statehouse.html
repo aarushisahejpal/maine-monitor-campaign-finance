@@ -75,7 +75,7 @@
         .party-group.democratic .party-heading { color: var(--blue); border-bottom: 2px solid var(--blue); }
         .party-group.republican .party-heading { color: var(--red); border-bottom: 2px solid var(--red); }
         .party-group.unenrolled .party-heading { color: var(--gray); border-bottom: 2px solid var(--gray); }
-        .party-group.independent .party-heading { color: var(--purple); border-bottom: 2px solid var(--purple); }
+        .party-group.independent .party-heading { color: #6b6b6b; border-bottom: 2px solid #6b6b6b; }
         .cand { padding: 8px 10px; border-radius: 4px; transition: background 0.12s; }
         .cand:hover { background: var(--bg-hover); }
         .cand-name { font-weight: 600; font-size: 0.88em; text-transform: capitalize; }
@@ -366,7 +366,7 @@
 <div class="tip" id="tip"></div>
 
 <script>
-const COLORS = { Democratic:'#2c6fbb', Republican:'#c0392b', Unenrolled:'#6b6b6b', Independent:'#8e44ad' };
+const COLORS = { Democratic:'#2c6fbb', Republican:'#c0392b', Unenrolled:'#6b6b6b', Independent:'#6b6b6b' };
 const PARTY_ORDER = ['Democratic','Republican','Unenrolled','Independent'];
 
 // Get district from URL param, default to 94
@@ -723,7 +723,7 @@ candsWithDonors.forEach(cand => {
     const platformDonors = cd.filter(d => /actblue|winred/i.test(d.e));
     const namedDonors = cd.filter(d => !/actblue|winred/i.test(d.e));
 
-    const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3', Independent: '#f3eef8' };
+    const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3', Independent: '#f3f3f3', Green: '#e8f5e9' };
     const card = document.createElement('div');
     card.className = 'donor-block';
     card.style.background = tints[cand.p] || '#fff';
@@ -849,7 +849,7 @@ const payeesEl = document.getElementById('payees');
 EXP_TOTALS.forEach(cand => {
     const cd = TOP_PAYEES.filter(d => d.c === cand.c);
 
-    const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3', Independent: '#f3eef8' };
+    const tints = { Democratic: '#eef4fb', Republican: '#fdf0ee', Unenrolled: '#f3f3f3', Independent: '#f3f3f3', Green: '#e8f5e9' };
     const card = document.createElement('div');
     card.className = 'donor-block';
     card.style.background = tints[cand.p] || '#fff';
@@ -877,7 +877,7 @@ EXP_TOTALS.forEach(cand => {
 
 function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES) {
     const fmt = n => '$' + Math.round(n).toLocaleString();
-    const COLORS = { Democratic: '#19345B', Republican: '#C0392B', Unenrolled: '#7D3C98', Independent: '#7D3C98', Green: '#27ae60', Libertarian: '#F39C12' };
+    const COLORS = { Democratic: '#19345B', Republican: '#C0392B', Unenrolled: '#6b6b6b', Independent: '#6b6b6b', Green: '#2ecc71', Libertarian: '#F39C12' };
 
     // ─── CONTRIBUTIONS CHART ───
     const isMob = window.innerWidth <= 768;
