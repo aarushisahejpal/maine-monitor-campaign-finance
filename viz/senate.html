@@ -343,7 +343,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 
 const PARTY_COLORS = {
     'REPUBLICAN PARTY':'#c0392b', 'DEMOCRATIC PARTY':'#2c6fbb',
-    'INDEPENDENT':'#8e44ad', 'INDEPENDENT PARTY':'#8e44ad',
+    'INDEPENDENT':'#6b6b6b', 'INDEPENDENT PARTY':'#6b6b6b',
     'UNAFFILIATED':'#6b6b6b', '':'#6b6b6b'
 };
 const PARTY_LABELS = {
@@ -515,7 +515,7 @@ function buildDonorGrid(containerId, data, totals, topN, smallData, listLabel, p
         const cd = data.filter(d => d.c === cand.c);
         const namedDonors = cd.filter(d => !/actblue|winred/i.test(d.e));
 
-        const tints = { 'REPUBLICAN PARTY': '#fdf0ee', 'DEMOCRATIC PARTY': '#eef4fb', 'INDEPENDENT': '#f3eef8', 'INDEPENDENT PARTY': '#f3eef8', 'UNAFFILIATED': '#f3f3f3' };
+        const tints = { 'REPUBLICAN PARTY': '#fdf0ee', 'DEMOCRATIC PARTY': '#eef4fb', 'INDEPENDENT': '#f3f3f3', 'INDEPENDENT PARTY': '#f3f3f3', 'UNAFFILIATED': '#f3f3f3' };
         const card = document.createElement('div');
         card.className = 'donor-card';
         card.style.background = tints[cand.p] || '#fff';
