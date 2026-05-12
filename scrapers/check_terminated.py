@@ -2,7 +2,10 @@
 """
 Check for newly terminated candidates on the disclosure site.
 Downloads the filers CSV from the disclosure site (no scraping needed),
-then updates candidate_status.csv and all_candidates_finance_type.csv.
+then updates the status in all_candidates_finance_type.csv for tracking.
+
+NEVER hides candidates from pages — per editorial policy, we include
+all candidates even if they dropped out or terminated their committee.
 """
 
 import csv
@@ -12,7 +15,6 @@ import re
 import requests
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATUS_FILE = os.path.join(SCRIPT_DIR, "..", "data", "candidate_status.csv")
 FINANCE_FILE = os.path.join(SCRIPT_DIR, "..", "data", "all_candidates_finance_type.csv")
 
 FILERS_CSV_URL = (
@@ -70,7 +72,7 @@ def main():
         f"Has both: {len(terminated_names & active_names)}"
     )
 
-    # Update all_candidates_finance_type.csv
+    # Update all_candidates_finance_type.csv (status tracking only, no hiding)
     updated_finance = 0
     if os.path.exists(FINANCE_FILE):
         with open(FINANCE_FILE) as f:
@@ -82,7 +84,7 @@ def main():
             if not has_active and name in truly_terminated and r["status"] == "Active":
                 r["status"] = "Terminated"
                 updated_finance += 1
-                print(f"  NEWLY TERMINATED: {r['name']}")
+                print(f"  ⚠️  NEWLY TERMINATED: {r['name']} — review needed, not auto-hidden")
 
         if updated_finance:
             with open(FINANCE_FILE, "w", newline="") as f:
@@ -90,32 +92,9 @@ def main():
                 writer.writeheader()
                 writer.writerows(finance_rows)
             print(f"  Updated {updated_finance} candidates to Terminated in finance file")
+            print(f"  NOTE: No candidates were hidden. Review terminated candidates manually.")
 
-    # Update candidate_status.csv
-    hidden = 0
-    if os.path.exists(STATUS_FILE):
-        with open(STATUS_FILE) as f:
-            status_rows = list(csv.DictReader(f))
-
-        for r in status_rows:
-            if r.get("show_on_page") == "no":
-                continue
-            name = clean_name(r["candidate"])
-            if name in active_names:
-                continue
-            if name in truly_terminated:
-                r["show_on_page"] = "no"
-                hidden += 1
-                print(f"  HIDDEN: {r['candidate']} ({r['race']} dist {r['district']})")
-
-        if hidden:
-            with open(STATUS_FILE, "w", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=status_rows[0].keys())
-                writer.writeheader()
-                writer.writerows(status_rows)
-            print(f"  Hidden {hidden} candidates from pages")
-
-    if not updated_finance and not hidden:
+    if not updated_finance:
         print("  No changes — all candidates still active")
 
     # Report any new active filers not in our data
