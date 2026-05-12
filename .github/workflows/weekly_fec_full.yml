@@ -5,6 +5,9 @@ on:
     - cron: '0 12 * * 1'  # Every Monday at 8am ET (12pm UTC)
   workflow_dispatch:  # Allow manual trigger
 
+permissions:
+  contents: write
+
 jobs:
   fec-full-scan:
     runs-on: ubuntu-latest
