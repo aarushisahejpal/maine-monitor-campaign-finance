@@ -64,15 +64,16 @@ jobs:
         run: |
           Rscript scripts/clean_federal_data.R
 
-      # ── PUSH ──
-      - name: Commit and push
+      # ── REVIEW (dry run — log changes but don't push) ──
+      - name: Show data changes (dry run)
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/federal_2026/ viz/data/clean/
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Weekly FEC full scan: $(date +%Y-%m-%d)"
-            git push
-          fi
+          echo "=== FILES CHANGED ==="
+          git diff --staged --stat
+          echo "=== RECORD COUNTS ==="
+          wc -l data/federal_2026/receipts.csv data/federal_2026/expenditures.csv
+          echo "=== SAMPLE CONTRIBUTORS ==="
+          head -10 viz/data/clean/top_5contributors_by_federal_candidate.csv
+          echo "=== SAMPLE PAYEES ==="
+          head -10 viz/data/clean/top_5payees_by_federal_candidate.csv
+          echo "DRY RUN — not pushing. Review logs and re-enable push when ready."
