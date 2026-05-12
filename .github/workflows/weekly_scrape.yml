@@ -5,6 +5,9 @@ on:
     - cron: '0 10 * * *'  # Every day at 6am ET (10am UTC)
   workflow_dispatch:  # Allow manual trigger
 
+permissions:
+  contents: write
+
 jobs:
   daily-update:
     runs-on: ubuntu-latest
@@ -51,9 +54,15 @@ jobs:
           exp = []
           by_source = []
 
+          # Dedup by committee_id to prevent duplicate rows
+          seen_comms = set()
           for c in cands:
               comm_id = c['committee_id']
               if comm_id == 'NONE': continue
+              if comm_id in seen_comms:
+                  print(f'Skipping duplicate committee {comm_id} for {c[\"name\"]}')
+                  continue
+              seen_comms.add(comm_id)
               try:
                   resp = requests.get(f'https://api.open.fec.gov/v1/committee/{comm_id}/totals/', params={'api_key': API_KEY, 'cycle': 2026}, timeout=60)
                   results = resp.json().get('results', [])

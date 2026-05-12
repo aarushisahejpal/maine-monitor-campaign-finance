@@ -442,7 +442,7 @@ function removeMiddleName(name) {
 }
 // Wrap titleCase + removeMiddleName for display
 function displayName(s, context) {
-    // Merge Calabrese name variants
+    // Merge Calabrese name variants (CARMEM typo from FEC)
     if (s.toUpperCase().includes('CALABRESE, CARMEM')) s = 'CALABRESE, CARMEN VINCENT MR.';
     let name = removeMiddleName(titleCase(s));
     const u = s.toUpperCase();
