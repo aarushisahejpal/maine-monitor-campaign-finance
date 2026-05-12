@@ -1,18 +1,27 @@
 candidate_name,office,district,source_type,total
-"PINGREE, CHELLIE M",House,01,Individual,150194.13
-"PINGREE, CHELLIE M",House,01,PAC/Committee,185050.0
-"PINGREE, CHELLIE M",House,01,Other,1448.09
-"RUSSELL, RONALD CHARLES MR.",House,01,Individual,59917.91
-"RUSSELL, RONALD CHARLES MR.",House,01,PAC/Committee,819.14
-"RUSSELL, RONALD CHARLES MR.",House,01,Other,381.89
 "SMALL, ERIC",House,01,Individual,12514.0
-"PIETROWICZ, JOSHUA JAMES",House,01,Individual,3501.0
-"PIETROWICZ, JOSHUA JAMES",House,01,Candidate/Self,1106.5
+"WOOD, JORDAN",House,02,Individual,4835948.23
+"WOOD, JORDAN",House,02,PAC/Committee,35100.0
+"WOOD, JORDAN",House,02,Candidate/Self,11323.68
+"WOOD, JORDAN",House,02,Loans,250000.0
+"WOOD, JORDAN",House,02,Other,1915.99
+"BALDACCI, JOSEPH",House,02,Individual,273967.91
+"BALDACCI, JOSEPH",House,02,PAC/Committee,1050.0
+"BALDACCI, JOSEPH",House,02,Candidate/Self,6400.0
+"BALDACCI, JOSEPH",House,02,Loans,35500.0
+"BALDACCI, JOSEPH",House,02,Other,141.68
 "GOLDEN, JARED",House,02,Individual,1977625.64
 "GOLDEN, JARED",House,02,PAC/Committee,319000.0
 "GOLDEN, JARED",House,02,Party Committee,547.83
 "GOLDEN, JARED",House,02,Transfers (Own Committees),243810.11
 "GOLDEN, JARED",House,02,Other,41591.38
+"CLARK, JAMES L.",House,02,Individual,600.0
+"RUSSELL, RONALD CHARLES MR.",House,01,Individual,59917.91
+"RUSSELL, RONALD CHARLES MR.",House,01,PAC/Committee,819.14
+"RUSSELL, RONALD CHARLES MR.",House,01,Other,381.89
+"ROBERTS, TIFFANY DANIELLE",House,01,Individual,18923.41
+"ROBERTS, TIFFANY DANIELLE",House,01,Loans,1127.68
+"ROBERTS, TIFFANY DANIELLE",House,01,Other,0.15
 "LEPAGE, PAUL",House,02,Individual,1285222.24
 "LEPAGE, PAUL",House,02,PAC/Committee,209480.25
 "LEPAGE, PAUL",House,02,Party Committee,5000.0
@@ -21,7 +30,32 @@ candidate_name,office,district,source_type,total
 "LOUD, PAIGE",House,02,Individual,9843.26
 "LOUD, PAIGE",House,02,PAC/Committee,500.0
 "LOUD, PAIGE",House,02,Candidate/Self,9003.24
-"CLARK, JAMES L.",House,02,Individual,600.0
+"DUNLAP, MATT",House,02,Individual,609357.24
+"DUNLAP, MATT",House,02,PAC/Committee,8000.0
+"DUNLAP, MATT",House,02,Loans,10000.0
+"DUNLAP, MATT",House,02,Other,856.63
+"PINGREE, CHELLIE M",House,01,Individual,150194.13
+"PINGREE, CHELLIE M",House,01,PAC/Committee,185050.0
+"PINGREE, CHELLIE M",House,01,Other,1448.09
+"PIETROWICZ, JOSHUA JAMES",House,01,Individual,3501.0
+"PIETROWICZ, JOSHUA JAMES",House,01,Candidate/Self,1106.5
+"LAFLAMME, ANDREA",Senate,00,Individual,5989.32
+"LAFLAMME, ANDREA",Senate,00,Loans,1750.0
+"COSTELLO, DAVID",Senate,00,Individual,28678.25
+"COSTELLO, DAVID",Senate,00,Candidate/Self,4795.98
+"COSTELLO, DAVID",Senate,00,Loans,110000.0
+"COSTELLO, DAVID",Senate,00,Other,6.43
+"RODRIGUEZ, DAIRA",Senate,00,Individual,29582.33
+"RODRIGUEZ, DAIRA",Senate,00,Candidate/Self,53000.0
+"RODRIGUEZ, DAIRA",Senate,00,Loans,160000.0
+"RODRIGUEZ, DAIRA",Senate,00,Other,0.01
+"CALABRESE, CARMEM VINCENT MR.",Senate,00,Individual,17759.71
+"CALABRESE, CARMEN VINCENT MR.",Senate,00,Individual,17759.71
+"RENCH, PHILLIP",Senate,00,Individual,4632.33
+"RENCH, PHILLIP",Senate,00,Candidate/Self,5.43
+"RENCH, PHILLIP",Senate,00,Loans,50000.0
+"RENCH, PHILLIP",Senate,00,Other,862.04
+"EVANS, DAVID ALAN",Senate,00,Individual,6436.72
 "PLATNER, GRAHAM",Senate,00,Individual,11851220.77
 "PLATNER, GRAHAM",Senate,00,PAC/Committee,77550.0
 "PLATNER, GRAHAM",Senate,00,Other,27758.5
@@ -37,35 +71,6 @@ candidate_name,office,district,source_type,total
 "KLEBAN, DAN",Senate,00,Individual,244074.58
 "KLEBAN, DAN",Senate,00,Candidate/Self,214666.84
 "KLEBAN, DAN",Senate,00,Other,45.0
-"CALABRESE, CARMEN VINCENT MR.",Senate,00,Individual,17759.71
 "FAVREAU, TUCKER",Senate,00,Individual,4928.77
 "FAVREAU, TUCKER",Senate,00,Candidate/Self,8670.25
 "FAVREAU, TUCKER",Senate,00,Other,0.08
-"EVANS, DAVID ALAN",Senate,00,Individual,6436.72
-"COSTELLO, DAVID",Senate,00,Individual,28678.25
-"COSTELLO, DAVID",Senate,00,Candidate/Self,4795.98
-"COSTELLO, DAVID",Senate,00,Other,6.43
-"RENCH, PHILLIP",Senate,00,Individual,4632.33
-"RENCH, PHILLIP",Senate,00,Candidate/Self,5.43
-"RENCH, PHILLIP",Senate,00,Other,862.04
-"RODRIGUEZ, DAIRA",Senate,00,Individual,29582.33
-"RODRIGUEZ, DAIRA",Senate,00,Candidate/Self,53000.0
-"RODRIGUEZ, DAIRA",Senate,00,Other,0.01
-"LAFLAMME, ANDREA",Senate,00,Individual,5989.32
-"ROBERTS, TIFFANY DANIELLE",House,01,Individual,18923.41
-"ROBERTS, TIFFANY DANIELLE",House,01,Other,0.15
-"BALDACCI, JOSEPH",House,02,Individual,273967.91
-"BALDACCI, JOSEPH",House,02,PAC/Committee,1050.0
-"BALDACCI, JOSEPH",House,02,Candidate/Self,6400.0
-"BALDACCI, JOSEPH",House,02,Other,141.68
-"WOOD, JORDAN",House,02,Individual,4835948.23
-"WOOD, JORDAN",House,02,PAC/Committee,35100.0
-"WOOD, JORDAN",House,02,Candidate/Self,11323.68
-"WOOD, JORDAN",House,02,Other,1915.99
-"DUNLAP, MATT",House,02,Individual,609357.24
-"DUNLAP, MATT",House,02,PAC/Committee,8000.0
-"DUNLAP, MATT",House,02,Other,856.63
-"COSTELLO, DAVID",Senate,00,Loans,110000
-"RENCH, PHILLIP",Senate,00,Loans,50000
-"RODRIGUEZ, DAIRA",Senate,00,Loans,160000
-"LAFLAMME, ANDREA",Senate,00,Loans,1750
