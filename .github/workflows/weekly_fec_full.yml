@@ -9,9 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  fec-full-scan:
+  fec-receipts:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 330
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +20,54 @@ jobs:
         with:
           python-version: '3.11'
 
-      - uses: r-lib/actions/setup-r@v2
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Full scan FEC receipts
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 a
+
+      - name: Upload receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-receipts
+          path: data/federal_2026/receipts.csv
+
+  fec-expenditures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Full scan FEC expenditures
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: python scrapers/fec_scraper.py 2026 b
+
+      - name: Upload expenditures
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-expenditures
+          path: data/federal_2026/expenditures.csv
+
+  aggregate-and-push:
+    needs: [fec-receipts, fec-expenditures]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-r@v2
 
       - name: Install system dependencies for R
         run: sudo apt-get update && sudo apt-get install -y libuv1-dev libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libpng-dev libtiff5-dev libjpeg-dev
@@ -29,21 +76,17 @@ jobs:
         run: |
           Rscript -e '.libPaths(); install.packages(c("tidyverse", "readr", "purrr", "writexl", "stringr"), lib=.libPaths()[1], repos="https://cloud.r-project.org", dependencies=TRUE); library(tidyverse)'
 
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
+      - name: Download receipts
+        uses: actions/download-artifact@v4
+        with:
+          name: fec-receipts
+          path: data/federal_2026/
 
-      # ── FEC FULL SCAN (catches all historical records) ──
-      - name: Full scan FEC receipts
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 a
-        continue-on-error: true
-
-      - name: Full scan FEC expenditures
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 b
-        continue-on-error: true
+      - name: Download expenditures
+        uses: actions/download-artifact@v4
+        with:
+          name: fec-expenditures
+          path: data/federal_2026/
 
       # ── VERIFY ──
       - name: Verify no duplicates
@@ -64,16 +107,15 @@ jobs:
         run: |
           Rscript scripts/clean_federal_data.R
 
-      # ── REVIEW (dry run — log changes but don't push) ──
-      - name: Show data changes (dry run)
+      # ── PUSH ──
+      - name: Commit and push
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/federal_2026/ viz/data/clean/
-          echo "=== FILES CHANGED ==="
-          git diff --staged --stat
-          echo "=== RECORD COUNTS ==="
-          wc -l data/federal_2026/receipts.csv data/federal_2026/expenditures.csv
-          echo "=== SAMPLE CONTRIBUTORS ==="
-          head -10 viz/data/clean/top_5contributors_by_federal_candidate.csv
-          echo "=== SAMPLE PAYEES ==="
-          head -10 viz/data/clean/top_5payees_by_federal_candidate.csv
-          echo "DRY RUN — not pushing. Review logs and re-enable push when ready."
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Weekly FEC full scan: $(date +%Y-%m-%d)"
+            git push
+          fi
