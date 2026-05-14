@@ -1,4 +1,4 @@
-name: Weekly FEC Full Scan
+name: Weekly FEC Update
 
 on:
   schedule:
@@ -9,9 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  fec-receipts:
+  fec-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 330
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@v4
@@ -20,54 +20,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
-
-      - name: Full scan FEC receipts
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 a
-
-      - name: Upload receipts
-        uses: actions/upload-artifact@v4
-        with:
-          name: fec-receipts
-          path: data/federal_2026/receipts.csv
-
-  fec-expenditures:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
-
-      - name: Full scan FEC expenditures
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-        run: python scrapers/fec_scraper.py 2026 b
-
-      - name: Upload expenditures
-        uses: actions/upload-artifact@v4
-        with:
-          name: fec-expenditures
-          path: data/federal_2026/expenditures.csv
-
-  aggregate-and-push:
-    needs: [fec-receipts, fec-expenditures]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-r@v2
+      - uses: r-lib/actions/setup-r@v2
 
       - name: Install system dependencies for R
         run: sudo apt-get update && sudo apt-get install -y libuv1-dev libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libpng-dev libtiff5-dev libjpeg-dev
@@ -76,17 +29,26 @@ jobs:
         run: |
           Rscript -e '.libPaths(); install.packages(c("tidyverse", "readr", "purrr", "writexl", "stringr"), lib=.libPaths()[1], repos="https://cloud.r-project.org", dependencies=TRUE); library(tidyverse)'
 
-      - name: Download receipts
-        uses: actions/download-artifact@v4
-        with:
-          name: fec-receipts
-          path: data/federal_2026/
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
 
-      - name: Download expenditures
-        uses: actions/download-artifact@v4
-        with:
-          name: fec-expenditures
-          path: data/federal_2026/
+      # ── INCREMENTAL FEC SCAN (last 30 days only) ──
+      - name: Pull recent FEC receipts
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+          FEC_MIN_DATE: ${{ env.MIN_DATE }}
+        run: |
+          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
+          echo "Pulling receipts from $MIN_DATE"
+          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 a
+
+      - name: Pull recent FEC expenditures
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+        run: |
+          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
+          echo "Pulling expenditures from $MIN_DATE"
+          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 b
 
       # ── VERIFY ──
       - name: Verify no duplicates
@@ -116,6 +78,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Weekly FEC full scan: $(date +%Y-%m-%d)"
+            git commit -m "Weekly FEC update: $(date +%Y-%m-%d)"
             git push
           fi
