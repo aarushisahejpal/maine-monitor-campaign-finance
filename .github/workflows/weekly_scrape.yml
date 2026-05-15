@@ -50,9 +50,30 @@ jobs:
           with open('scrapers/me_candidates_2026.json') as f:
               cands = json.load(f)
 
+          # Load existing data so we never lose candidates on API failure
+          prev_official = {}
+          prev_exp = {}
+          prev_source = {}
+          try:
+              with open('viz/data/clean/total_contributions_by_federal_candidate.csv') as f:
+                  for r in csv.DictReader(f):
+                      prev_official[r['candidate_name']] = r
+          except: pass
+          try:
+              with open('viz/data/clean/total_expenditures_by_federal_candidate.csv') as f:
+                  for r in csv.DictReader(f):
+                      prev_exp[r['candidate_name']] = r
+          except: pass
+          try:
+              with open('viz/data/clean/contributions_by_source_federal.csv') as f:
+                  for r in csv.DictReader(f):
+                      prev_source.setdefault(r['candidate_name'], []).append(r)
+          except: pass
+
           official = []
           exp = []
           by_source = []
+          api_success = set()
 
           # Dedup by committee_id to prevent duplicate rows
           seen_comms = set()
@@ -68,6 +89,7 @@ jobs:
                   results = resp.json().get('results', [])
                   if results:
                       t = results[0]
+                      api_success.add(c['name'])
                       official.append({'candidate_name': c['name'], 'office': c['office'], 'district': c['district'], 'party': c['party'], 'tot_con': t.get('receipts', 0) or 0, 'individual_unitemized': t.get('individual_unitemized_contributions', 0) or 0, 'cash_on_hand': t.get('last_cash_on_hand_end_period', 0) or 0})
                       exp.append({'candidate_name': c['name'], 'office': c['office'], 'district': c['district'], 'party': c['party'], 'tot_exp': t.get('disbursements', 0) or 0})
                       individual = (t.get('individual_itemized_contributions', 0) or 0) + (t.get('individual_unitemized_contributions', 0) or 0)
@@ -86,9 +108,22 @@ jobs:
                       if transfers: by_source.append({'candidate_name': c['name'], 'office': o, 'district': d, 'source_type': 'Transfers (Own Committees)', 'total': round(transfers, 2)})
                       if loans: by_source.append({'candidate_name': c['name'], 'office': o, 'district': d, 'source_type': 'Loans', 'total': round(loans, 2)})
                       if offsets + other_r > 0: by_source.append({'candidate_name': c['name'], 'office': o, 'district': d, 'source_type': 'Other', 'total': round(offsets + other_r, 2)})
+                  else:
+                      print(f'No API results for {c[\"name\"]} — keeping previous data')
                   time.sleep(0.5)
               except Exception as e:
-                  print(f'Error for {c[\"name\"]}: {e}')
+                  print(f'Error for {c[\"name\"]}: {e} — keeping previous data')
+
+          # Preserve previous data for candidates where API returned nothing
+          for name, row in prev_official.items():
+              if name not in api_success:
+                  official.append({k: float(v) if k in ('tot_con','individual_unitemized','cash_on_hand') else v for k, v in row.items()})
+          for name, row in prev_exp.items():
+              if name not in api_success:
+                  exp.append({k: float(v) if k == 'tot_exp' else v for k, v in row.items()})
+          for name, rows in prev_source.items():
+              if name not in api_success:
+                  by_source.extend(rows)
 
           with open('viz/data/clean/total_contributions_by_federal_candidate.csv', 'w', newline='') as f:
               w = csv.DictWriter(f, fieldnames=['candidate_name','office','district','party','tot_con','individual_unitemized','cash_on_hand'])
