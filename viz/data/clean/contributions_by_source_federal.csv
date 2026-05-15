@@ -16,6 +16,9 @@ candidate_name,office,district,source_type,total
 "GOLDEN, JARED",House,02,Transfers (Own Committees),243810.11
 "GOLDEN, JARED",House,02,Other,41591.38
 "CLARK, JAMES L.",House,02,Individual,600.0
+"RUSSELL, RONALD CHARLES MR.",House,01,Individual,59917.91
+"RUSSELL, RONALD CHARLES MR.",House,01,PAC/Committee,819.14
+"RUSSELL, RONALD CHARLES MR.",House,01,Other,381.89
 "ROBERTS, TIFFANY DANIELLE",House,01,Individual,18923.41
 "ROBERTS, TIFFANY DANIELLE",House,01,Loans,1127.68
 "ROBERTS, TIFFANY DANIELLE",House,01,Other,0.15
@@ -47,6 +50,10 @@ candidate_name,office,district,source_type,total
 "RODRIGUEZ, DAIRA",Senate,00,Loans,160000.0
 "RODRIGUEZ, DAIRA",Senate,00,Other,0.01
 "CALABRESE, CARMEN VINCENT MR.",Senate,00,Individual,17759.71
+"RENCH, PHILLIP",Senate,00,Individual,4632.33
+"RENCH, PHILLIP",Senate,00,Candidate/Self,5.43
+"RENCH, PHILLIP",Senate,00,Loans,50000.0
+"RENCH, PHILLIP",Senate,00,Other,862.04
 "EVANS, DAVID ALAN",Senate,00,Individual,6436.72
 "PLATNER, GRAHAM",Senate,00,Individual,11851220.77
 "PLATNER, GRAHAM",Senate,00,PAC/Committee,77550.0
