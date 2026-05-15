@@ -137,6 +137,9 @@ jobs:
               w = csv.DictWriter(f, fieldnames=['candidate_name','office','district','source_type','total'])
               w.writeheader()
               w.writerows(by_source)
+          # Verify no candidates were lost
+          assert len(official) >= 30, f'ABORT: Only {len(official)} federal candidates in totals — expected at least 30'
+          assert len(exp) >= 30, f'ABORT: Only {len(exp)} federal candidates in expenditures — expected at least 30'
           print(f'Updated {len(official)} totals, {len(exp)} expenditures, {len(by_source)} by-source rows')
           "
 
@@ -154,6 +157,12 @@ jobs:
           dupes = len(urls) - len(set(urls))
           print(f'State: {len(rows):,} rows, {dupes} duplicates')
           assert dupes == 0, 'State data has duplicates!'
+
+          # Verify no state candidates were lost
+          with open('data/candidate_status.csv') as f:
+              visible = sum(1 for r in csv.DictReader(f) if r.get('show_on_page') == 'yes')
+          print(f'State candidates visible: {visible}')
+          assert visible >= 430, f'ABORT: Only {visible} visible state candidates — expected at least 430'
           print('Verification passed')
           "
 
