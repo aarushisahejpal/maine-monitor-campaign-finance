@@ -183,14 +183,13 @@ jobs:
             sed -i "s/<strong>Last updated:<\/strong>[^<]*<br>/<strong>Last updated:<\/strong> $DATE. Candidate totals and contribution breakdowns by source are updated daily. Individual donor and expenditure details from FEC Schedule A and B filings are updated weekly.<br>/" "$f" 2>/dev/null || true
           done
 
-      - name: Commit and push
+      - name: Dry run — show changes without pushing
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ viz/data/clean/ viz/*.html
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Daily update: $(date +%Y-%m-%d)"
-            git push
-          fi
+          echo "=== FILES CHANGED ==="
+          git diff --staged --stat
+          echo "=== FEDERAL CANDIDATES ==="
+          cat viz/data/clean/total_contributions_by_federal_candidate.csv
+          echo "=== STATE CANDIDATE COUNT ==="
+          grep -c ",yes" data/candidate_status.csv
+          echo "DRY RUN COMPLETE — not pushing"
