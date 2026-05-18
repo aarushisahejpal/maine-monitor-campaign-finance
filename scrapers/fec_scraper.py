@@ -152,10 +152,18 @@ def pull(cycle, schedule):
     with open(candidates_file) as f:
         candidates = json.load(f)
 
+    # Filter committees based on FEC_SKIP_COMMITTEES / FEC_ONLY_COMMITTEES env vars
+    skip_comms = set(filter(None, os.environ.get('FEC_SKIP_COMMITTEES', '').split(',')))
+    only_comms = set(filter(None, os.environ.get('FEC_ONLY_COMMITTEES', '').split(',')))
+
     seen_comms = {}
     for c in candidates:
         cid = c['committee_id']
         if cid != 'NONE' and cid not in seen_comms:
+            if skip_comms and cid in skip_comms:
+                continue
+            if only_comms and cid not in only_comms:
+                continue
             seen_comms[cid] = c
 
     checkpoint = load_checkpoint(checkpoint_path)

@@ -9,9 +9,10 @@ permissions:
   contents: write
 
 jobs:
-  fec-scrape:
+  # Job 1: All committees except Wood (fast — under 1 hour)
+  fec-scrape-main:
     runs-on: ubuntu-latest
-    timeout-minutes: 330
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@v4
@@ -23,29 +24,24 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      # ── INCREMENTAL FEC SCAN (last 30 days only) ──
-      # Appends new records to existing data, deduplicates by transaction_id.
-      # The daily pipeline's R aggregation will pick up new records next morning.
-      # This workflow ONLY touches data/federal_2026/ — never clean CSVs or HTML.
-      - name: Pull recent FEC receipts
+      - name: Pull receipts (excluding Wood)
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+          FEC_SKIP_COMMITTEES: C00903179
         run: |
           MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          echo "Pulling receipts from $MIN_DATE"
+          echo "Pulling receipts from $MIN_DATE (skipping Wood)"
           FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 a
-        continue-on-error: true
 
-      - name: Pull recent FEC expenditures
+      - name: Pull expenditures (excluding Wood)
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+          FEC_SKIP_COMMITTEES: C00903179
         run: |
           MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          echo "Pulling expenditures from $MIN_DATE"
+          echo "Pulling expenditures from $MIN_DATE (skipping Wood)"
           FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 b
-        continue-on-error: true
 
-      # ── VERIFY ──
       - name: Verify no data loss
         run: |
           python3 -c "
@@ -59,14 +55,10 @@ jobs:
               dupes = len(ids) - len(set(ids))
               print(f'{fname}: {len(ids):,} records, {dupes} duplicates')
               assert dupes == 0, f'{fname} has duplicates!'
-              assert len(ids) >= min_expected, f'{fname} has only {len(ids):,} records — expected at least {min_expected:,}. Aborting to prevent data loss.'
-          print('All clean — record counts verified')
+              assert len(ids) >= min_expected, f'{fname} has only {len(ids):,} records — expected at least {min_expected:,}. Aborting.'
+          print('All clean')
           "
 
-      # ── PUSH RAW DATA ONLY ──
-      # Only pushes data/federal_2026/ (raw receipts + expenditures).
-      # Never touches viz/data/clean/, HTML, candidate_status, or display names.
-      # The daily pipeline handles R aggregation into clean CSVs.
       - name: Push raw FEC data
         run: |
           git config user.name "github-actions[bot]"
@@ -75,6 +67,71 @@ jobs:
           if git diff --staged --quiet; then
             echo "No new FEC records"
           else
-            git commit -m "Weekly FEC raw data: $(date +%Y-%m-%d)"
+            git commit -m "Weekly FEC update (29 committees): $(date +%Y-%m-%d)"
+            git push
+          fi
+
+  # Job 2: Wood only (58K+ records, needs dedicated time)
+  fec-scrape-wood:
+    needs: fec-scrape-main
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Pull Wood receipts only
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+          FEC_ONLY_COMMITTEES: C00903179
+        run: |
+          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
+          echo "Pulling Wood receipts from $MIN_DATE"
+          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 a
+
+      - name: Pull Wood expenditures only
+        env:
+          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
+          FEC_ONLY_COMMITTEES: C00903179
+        run: |
+          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
+          echo "Pulling Wood expenditures from $MIN_DATE"
+          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 b
+
+      - name: Verify no data loss
+        run: |
+          python3 -c "
+          import csv
+          for fname, id_field, min_expected in [
+              ('data/federal_2026/receipts.csv', 'transaction_id', 147000),
+              ('data/federal_2026/expenditures.csv', 'transaction_id', 5000)
+          ]:
+              with open(fname) as f:
+                  ids = [r[id_field] for r in csv.DictReader(f) if r.get(id_field)]
+              dupes = len(ids) - len(set(ids))
+              print(f'{fname}: {len(ids):,} records, {dupes} duplicates')
+              assert dupes == 0, f'{fname} has duplicates!'
+              assert len(ids) >= min_expected, f'{fname} has only {len(ids):,} records — expected at least {min_expected:,}. Aborting.'
+          print('All clean')
+          "
+
+      - name: Push raw FEC data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/federal_2026/
+          if git diff --staged --quiet; then
+            echo "No new Wood records"
+          else
+            git commit -m "Weekly FEC update (Wood): $(date +%Y-%m-%d)"
             git push
           fi
