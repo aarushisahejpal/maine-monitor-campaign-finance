@@ -9,9 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  fec-update:
+  fec-scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 330
 
     steps:
       - uses: actions/checkout@v4
@@ -20,27 +20,21 @@ jobs:
         with:
           python-version: '3.11'
 
-      - uses: r-lib/actions/setup-r@v2
-
-      - name: Install system dependencies for R
-        run: sudo apt-get update && sudo apt-get install -y libuv1-dev libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libpng-dev libtiff5-dev libjpeg-dev
-
-      - name: Install R packages
-        run: |
-          Rscript -e '.libPaths(); install.packages(c("tidyverse", "readr", "purrr", "writexl", "stringr"), lib=.libPaths()[1], repos="https://cloud.r-project.org", dependencies=TRUE); library(tidyverse)'
-
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
       # ── INCREMENTAL FEC SCAN (last 30 days only) ──
+      # Appends new records to existing data, deduplicates by transaction_id.
+      # The daily pipeline's R aggregation will pick up new records next morning.
+      # This workflow ONLY touches data/federal_2026/ — never clean CSVs or HTML.
       - name: Pull recent FEC receipts
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-          FEC_MIN_DATE: ${{ env.MIN_DATE }}
         run: |
           MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
           echo "Pulling receipts from $MIN_DATE"
           FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 a
+        continue-on-error: true
 
       - name: Pull recent FEC expenditures
         env:
@@ -49,14 +43,13 @@ jobs:
           MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
           echo "Pulling expenditures from $MIN_DATE"
           FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 b
+        continue-on-error: true
 
       # ── VERIFY ──
-      - name: Verify no duplicates and no data loss
+      - name: Verify no data loss
         run: |
           python3 -c "
-          import csv, subprocess
-
-          # Get previous record counts from git
+          import csv
           for fname, id_field, min_expected in [
               ('data/federal_2026/receipts.csv', 'transaction_id', 147000),
               ('data/federal_2026/expenditures.csv', 'transaction_id', 5000)
@@ -67,44 +60,21 @@ jobs:
               print(f'{fname}: {len(ids):,} records, {dupes} duplicates')
               assert dupes == 0, f'{fname} has duplicates!'
               assert len(ids) >= min_expected, f'{fname} has only {len(ids):,} records — expected at least {min_expected:,}. Aborting to prevent data loss.'
-
-          # Verify clean CSVs have all 30 federal candidates after R aggregation
           print('All clean — record counts verified')
           "
 
-      - name: Verify no candidates lost
-        run: |
-          python3 -c "
-          import csv, json
-          with open('scrapers/me_candidates_2026.json') as f:
-              cands = json.load(f)
-          expected = set(c['name'] for c in cands if c['committee_id'] != 'NONE')
-
-          for fname in ['viz/data/clean/total_contributions_by_federal_candidate.csv', 'viz/data/clean/total_expenditures_by_federal_candidate.csv']:
-              with open(fname) as f:
-                  on_page = set(r['candidate_name'] for r in csv.DictReader(f))
-              missing = expected - on_page
-              if missing:
-                  print(f'ABORT: {fname} is missing {len(missing)} candidates: {missing}')
-                  raise SystemExit(1)
-              print(f'{fname}: all {len(on_page)} candidates present')
-          print('Candidate check passed')
-          "
-
-      # ── AGGREGATE ──
-      - name: Run R aggregation
-        run: |
-          Rscript scripts/clean_federal_data.R
-
-      # ── PUSH ──
-      - name: Commit and push
+      # ── PUSH RAW DATA ONLY ──
+      # Only pushes data/federal_2026/ (raw receipts + expenditures).
+      # Never touches viz/data/clean/, HTML, candidate_status, or display names.
+      # The daily pipeline handles R aggregation into clean CSVs.
+      - name: Push raw FEC data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/federal_2026/ viz/data/clean/
+          git add data/federal_2026/
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "No new FEC records"
           else
-            git commit -m "Weekly FEC update: $(date +%Y-%m-%d)"
+            git commit -m "Weekly FEC raw data: $(date +%Y-%m-%d)"
             git push
           fi
