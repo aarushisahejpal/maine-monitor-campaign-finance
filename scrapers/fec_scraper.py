@@ -171,7 +171,7 @@ def pull(cycle, schedule):
     remaining = {k: v for k, v in seen_comms.items() if k not in done}
     print(f"Cycle {cycle} schedule {schedule.upper()}: {len(seen_comms)} committees, {len(done)} done, {len(remaining)} remaining")
 
-    file_exists = os.path.exists(output_file) and len(done) > 0
+    file_exists = os.path.exists(output_file) and os.path.getsize(output_file) > 0
     session = make_session()
 
     # Load existing transaction IDs to prevent duplicates on resume
