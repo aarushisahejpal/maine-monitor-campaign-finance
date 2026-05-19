@@ -13,7 +13,7 @@ jobs:
   # House candidates + small Senate candidates (fast)
   fec-house-and-small:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 240
 
     steps:
       - uses: actions/checkout@v4
