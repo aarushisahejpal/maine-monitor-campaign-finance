@@ -220,12 +220,14 @@ def pull(cycle, schedule):
                 windows = [(None, None)]  # single pass, no date filter
 
             cand_rows = 0
+            incremental = len(seen_txn_ids) > 0  # True if we have existing data
             for w_start, w_end in windows:
                 last_index = None
                 last_date = None
                 max_retries = 5
                 consecutive_errors = 0
                 pages_fetched = 0
+                consecutive_dup_pages = 0  # Track all-duplicate pages for early bail
 
                 while True:
                     params = {
@@ -262,6 +264,7 @@ def pull(cycle, schedule):
                     if not results:
                         break
 
+                    page_new = 0
                     for r in results:
                         txn_id = r.get('transaction_id', '')
                         if txn_id and txn_id in seen_txn_ids:
@@ -270,6 +273,17 @@ def pull(cycle, schedule):
                             seen_txn_ids.add(txn_id)
                         writer.writerow(cfg['row_fn'](cand, r))
                         cand_rows += 1
+                        page_new += 1
+
+                    # Early bail: if we have existing data and hit 3 consecutive
+                    # all-duplicate pages, we've passed all new records — stop
+                    if incremental and page_new == 0:
+                        consecutive_dup_pages += 1
+                        if consecutive_dup_pages >= 3:
+                            print(f" (caught up)", end='', flush=True)
+                            break
+                    else:
+                        consecutive_dup_pages = 0
 
                     pagination = data.get('pagination', {})
                     last_index = pagination.get('last_indexes', {}).get('last_index')

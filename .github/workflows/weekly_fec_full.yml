@@ -3,17 +3,15 @@ name: Weekly FEC Update
 on:
   schedule:
     - cron: '0 12 * * 1'  # Every Monday at 8am ET (12pm UTC)
-    - cron: '0 12 * * 2'  # Tuesday — picks up anything Monday missed
   workflow_dispatch:  # Allow manual trigger
 
 permissions:
   contents: write
 
 jobs:
-  # House candidates + small Senate candidates (fast)
-  fec-house-and-small:
+  fec-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@v4
@@ -25,24 +23,21 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Pull receipts (House + small Senate)
+      # ── FEC INCREMENTAL SCAN ──
+      # Pulls newest records first, stops when it hits data we already have.
+      # No date filter needed — early bail handles efficiency.
+      - name: Pull FEC receipts
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-          FEC_SKIP_COMMITTEES: C00903179,C00314575,C00916437,C00923144
-        run: |
-          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          echo "Pulling receipts from $MIN_DATE (skipping Wood, Collins, Platner, Mills)"
-          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 a
+        run: python scrapers/fec_scraper.py 2026 a
 
-      - name: Pull expenditures (House + small Senate)
+      - name: Pull FEC expenditures
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-          FEC_SKIP_COMMITTEES: C00903179,C00314575,C00916437,C00923144
-        run: |
-          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 b
+        run: python scrapers/fec_scraper.py 2026 b
 
-      - name: Verify and push
+      # ── VERIFY ──
+      - name: Verify no data loss
         run: |
           python3 -c "
           import csv
@@ -58,134 +53,16 @@ jobs:
               assert len(ids) >= min_expected, f'Only {len(ids):,} records — expected at least {min_expected:,}. Aborting.'
           print('All clean')
           "
+
+      # ── PUSH RAW DATA ONLY ──
+      - name: Push raw FEC data
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/federal_2026/
           if git diff --staged --quiet; then
-            echo "No new records"
+            echo "No new FEC records"
           else
-            git commit -m "Weekly FEC update (House + small Senate): $(date +%Y-%m-%d)"
-            git push
-          fi
-
-  # Big Senate candidates: Collins, Platner, Mills
-  fec-big-senate:
-    needs: fec-house-and-small
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
-
-      - name: Pull receipts (Collins, Platner, Mills)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-          FEC_ONLY_COMMITTEES: C00314575,C00916437,C00923144
-        run: |
-          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          echo "Pulling receipts from $MIN_DATE (Collins, Platner, Mills)"
-          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 a
-
-      - name: Pull expenditures (Collins, Platner, Mills)
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-          FEC_ONLY_COMMITTEES: C00314575,C00916437,C00923144
-        run: |
-          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 b
-
-      - name: Verify and push
-        run: |
-          python3 -c "
-          import csv
-          for fname, id_field, min_expected in [
-              ('data/federal_2026/receipts.csv', 'transaction_id', 147000),
-              ('data/federal_2026/expenditures.csv', 'transaction_id', 5000)
-          ]:
-              with open(fname) as f:
-                  ids = [r[id_field] for r in csv.DictReader(f) if r.get(id_field)]
-              dupes = len(ids) - len(set(ids))
-              print(f'{fname}: {len(ids):,} records, {dupes} duplicates')
-              assert dupes == 0, f'{fname} has duplicates!'
-              assert len(ids) >= min_expected, f'Only {len(ids):,} records — expected at least {min_expected:,}. Aborting.'
-          print('All clean')
-          "
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/federal_2026/
-          if git diff --staged --quiet; then
-            echo "No new records"
-          else
-            git commit -m "Weekly FEC update (big Senate): $(date +%Y-%m-%d)"
-            git push
-          fi
-
-  # Wood (58K+ records, dedicated run)
-  fec-wood:
-    needs: fec-big-senate
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
-
-      - name: Pull Wood receipts
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-          FEC_ONLY_COMMITTEES: C00903179
-        run: |
-          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          echo "Pulling Wood receipts from $MIN_DATE"
-          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 a
-
-      - name: Pull Wood expenditures
-        env:
-          FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
-          FEC_ONLY_COMMITTEES: C00903179
-        run: |
-          MIN_DATE=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
-          FEC_MIN_DATE=$MIN_DATE python scrapers/fec_scraper.py 2026 b
-
-      - name: Verify and push
-        run: |
-          python3 -c "
-          import csv
-          for fname, id_field, min_expected in [
-              ('data/federal_2026/receipts.csv', 'transaction_id', 147000),
-              ('data/federal_2026/expenditures.csv', 'transaction_id', 5000)
-          ]:
-              with open(fname) as f:
-                  ids = [r[id_field] for r in csv.DictReader(f) if r.get(id_field)]
-              dupes = len(ids) - len(set(ids))
-              print(f'{fname}: {len(ids):,} records, {dupes} duplicates')
-              assert dupes == 0, f'{fname} has duplicates!'
-              assert len(ids) >= min_expected, f'Only {len(ids):,} records — expected at least {min_expected:,}. Aborting.'
-          print('All clean')
-          "
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/federal_2026/
-          if git diff --staged --quiet; then
-            echo "No new Wood records"
-          else
-            git commit -m "Weekly FEC update (Wood): $(date +%Y-%m-%d)"
+            git commit -m "Weekly FEC update: $(date +%Y-%m-%d)"
             git push
           fi
