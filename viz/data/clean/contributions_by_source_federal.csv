@@ -34,6 +34,9 @@ candidate_name,office,district,source_type,total
 "DUNLAP, MATT",House,02,PAC/Committee,8000.0
 "DUNLAP, MATT",House,02,Loans,10000.0
 "DUNLAP, MATT",House,02,Other,856.63
+"PINGREE, CHELLIE M",House,01,Individual,150194.13
+"PINGREE, CHELLIE M",House,01,PAC/Committee,185050.0
+"PINGREE, CHELLIE M",House,01,Other,1448.09
 "PIETROWICZ, JOSHUA JAMES",House,01,Individual,3501.0
 "PIETROWICZ, JOSHUA JAMES",House,01,Candidate/Self,1106.5
 "LAFLAMME, ANDREA",Senate,00,Individual,5989.32
@@ -70,6 +73,3 @@ candidate_name,office,district,source_type,total
 "FAVREAU, TUCKER",Senate,00,Individual,4928.77
 "FAVREAU, TUCKER",Senate,00,Candidate/Self,8670.25
 "FAVREAU, TUCKER",Senate,00,Other,0.08
-"PINGREE, CHELLIE M",House,01,Individual,150194.13
-"PINGREE, CHELLIE M",House,01,PAC/Committee,185050.0
-"PINGREE, CHELLIE M",House,01,Other,1448.09
