@@ -1,15 +1,15 @@
 candidate_name,office,district,source_type,total
 "SMALL, ERIC",House,01,Individual,12514.0
-"WOOD, JORDAN",House,02,Individual,4835948.23
-"WOOD, JORDAN",House,02,PAC/Committee,35100.0
-"WOOD, JORDAN",House,02,Candidate/Self,11323.68
-"WOOD, JORDAN",House,02,Loans,250000.0
-"WOOD, JORDAN",House,02,Other,1915.99
-"BALDACCI, JOSEPH",House,02,Individual,273967.91
-"BALDACCI, JOSEPH",House,02,PAC/Committee,1050.0
+"WOOD, JORDAN",House,02,Individual,5248827.48
+"WOOD, JORDAN",House,02,PAC/Committee,37600.0
+"WOOD, JORDAN",House,02,Candidate/Self,17021.92
+"WOOD, JORDAN",House,02,Loans,400000.0
+"WOOD, JORDAN",House,02,Other,4247.05
+"BALDACCI, JOSEPH",House,02,Individual,443068.79
+"BALDACCI, JOSEPH",House,02,PAC/Committee,31550.0
 "BALDACCI, JOSEPH",House,02,Candidate/Self,6400.0
-"BALDACCI, JOSEPH",House,02,Loans,35500.0
-"BALDACCI, JOSEPH",House,02,Other,141.68
+"BALDACCI, JOSEPH",House,02,Loans,48500.0
+"BALDACCI, JOSEPH",House,02,Other,980.92
 "GOLDEN, JARED",House,02,Individual,1977625.64
 "GOLDEN, JARED",House,02,PAC/Committee,319000.0
 "GOLDEN, JARED",House,02,Party Committee,547.83
@@ -28,9 +28,10 @@ candidate_name,office,district,source_type,total
 "LEPAGE, PAUL",House,02,Party Committee,5000.0
 "LEPAGE, PAUL",House,02,Transfers (Own Committees),367791.48
 "LEPAGE, PAUL",House,02,Other,100.01
-"LOUD, PAIGE",House,02,Individual,9843.26
-"LOUD, PAIGE",House,02,PAC/Committee,500.0
-"LOUD, PAIGE",House,02,Candidate/Self,9003.24
+"LOUD, PAIGE",House,02,Individual,17083.44
+"LOUD, PAIGE",House,02,PAC/Committee,1000.0
+"LOUD, PAIGE",House,02,Candidate/Self,30864.45
+"LOUD, PAIGE",House,02,Other,960.0
 "DUNLAP, MATT",House,02,Individual,910624.91
 "DUNLAP, MATT",House,02,PAC/Committee,10000.0
 "DUNLAP, MATT",House,02,Loans,10000.0
@@ -57,9 +58,9 @@ candidate_name,office,district,source_type,total
 "RENCH, PHILLIP",Senate,00,Loans,50000.0
 "RENCH, PHILLIP",Senate,00,Other,862.04
 "EVANS, DAVID ALAN",Senate,00,Individual,6436.72
-"PLATNER, GRAHAM",Senate,00,Individual,11851220.77
-"PLATNER, GRAHAM",Senate,00,PAC/Committee,77550.0
-"PLATNER, GRAHAM",Senate,00,Other,27758.5
+"PLATNER, GRAHAM",Senate,00,Individual,16109776.14
+"PLATNER, GRAHAM",Senate,00,PAC/Committee,174684.37
+"PLATNER, GRAHAM",Senate,00,Other,27761.75
 "COLLINS, SUSAN M.",Senate,00,Individual,7330108.08
 "COLLINS, SUSAN M.",Senate,00,PAC/Committee,985550.0
 "COLLINS, SUSAN M.",Senate,00,Party Committee,62000.0
