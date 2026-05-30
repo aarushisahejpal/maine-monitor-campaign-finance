@@ -2,7 +2,7 @@
 """
 Daily incremental scraper for Maine Campaign Finance Disclosure.
 Appends new transactions since the last scrape date.
-Verifies total against site to detect gaps.
+Uses Playwright to handle Cloudflare protection.
 """
 
 import csv
@@ -10,110 +10,98 @@ import time
 import os
 import sys
 from datetime import date, timedelta
-import requests
-from bs4 import BeautifulSoup
 
-BASE_URL = "https://www.mainecampaignfinancedisclosure.com/public/activities"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.path.join(SCRIPT_DIR, "..", "data", "state_2026", "transactions.csv")
 LAST_SCRAPE_FILE = os.path.join(SCRIPT_DIR, "..", "data", "state_2026", "last_scrape_date.txt")
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-}
+BASE_URL = "https://www.mainecampaignfinancedisclosure.com/public/activities"
 
 FIELDNAMES = ["filer_name", "filer_url", "transaction_type", "source_payee", "date", "amount"]
 
 
-def build_params(page, start_date, end_date):
-    params = [("q[public_search_i_cont]", "")]
-    for t in ["", "contribution", "loan", "loan_forgiveness",
-              "returned_expenditure", "returned_independent_expenditure",
-              "", "expenditure", "independent_expenditure",
-              "debt_payment", "loan_payment", "returned_contribution",
-              "", "debt"]:
-        params.append(("q[transaction_type_in][]", t))
-    params.append(("q[filer_type_key_eq]", ""))
-    params.append(("q[amount_cents_gteq]", ""))
-    params.append(("q[amount_cents_lteq]", ""))
-    params.append(("q[date_gteq]", start_date))
-    params.append(("q[date_lteq]", end_date))
-    params.append(("q[s]", "date asc"))
-    params.append(("commit", "Create Search"))
-    params.append(("limit", "50"))
-    params.append(("page", str(page)))
-    return params
+def build_url(page, start_date, end_date):
+    """Build the search URL with query params."""
+    types = ["", "contribution", "loan", "loan_forgiveness",
+             "returned_expenditure", "returned_independent_expenditure",
+             "", "expenditure", "independent_expenditure",
+             "debt_payment", "loan_payment", "returned_contribution",
+             "", "debt"]
+    type_params = "&".join(f"q%5Btransaction_type_in%5D%5B%5D={t}" for t in types)
+    return (
+        f"{BASE_URL}?"
+        f"q%5Bpublic_search_i_cont%5D="
+        f"&{type_params}"
+        f"&q%5Bfiler_type_key_eq%5D="
+        f"&q%5Bamount_cents_gteq%5D="
+        f"&q%5Bamount_cents_lteq%5D="
+        f"&q%5Bdate_gteq%5D={start_date}"
+        f"&q%5Bdate_lteq%5D={end_date}"
+        f"&q%5Bs%5D=date+asc"
+        f"&commit=Create+Search"
+        f"&limit=50"
+        f"&page={page}"
+    )
 
 
-def parse_page(html):
-    soup = BeautifulSoup(html, "html.parser")
+def parse_page(page):
+    """Parse the current page for transaction rows and total count."""
     total = None
-    displaying = soup.find(string=lambda t: t and "Displaying items" in t)
+    displaying = page.query_selector("text=Displaying items")
     if displaying:
-        parts = displaying.split()
+        text = displaying.text_content()
+        parts = text.split()
         try:
             total = int(parts[parts.index("of") + 1].replace(",", ""))
         except (ValueError, IndexError):
             pass
+
     rows = []
-    table = soup.find("table")
+    table = page.query_selector("table")
     if not table:
         return rows, total
-    for tr in table.find_all("tr")[1:]:
-        tds = tr.find_all("td")
+
+    trs = table.query_selector_all("tr")
+    for tr in trs[1:]:  # skip header
+        tds = tr.query_selector_all("td")
         if len(tds) < 5:
             continue
-        a_tag = tds[0].find("a")
+        a_tag = tds[0].query_selector("a")
         rows.append({
-            "filer_name": tds[0].get_text(strip=True),
-            "filer_url": a_tag["href"] if a_tag else "",
-            "transaction_type": tds[1].get_text(strip=True),
-            "source_payee": tds[2].get_text(strip=True),
-            "date": tds[3].get_text(strip=True),
-            "amount": tds[4].get_text(strip=True),
+            "filer_name": tds[0].text_content().strip(),
+            "filer_url": a_tag.get_attribute("href") if a_tag else "",
+            "transaction_type": tds[1].text_content().strip(),
+            "source_payee": tds[2].text_content().strip(),
+            "date": tds[3].text_content().strip(),
+            "amount": tds[4].text_content().strip(),
         })
     return rows, total
 
 
-def get_site_total(session):
-    """Get the total record count from the site."""
-    params = build_params(1, "2025-01-01", date.today().isoformat())
-    try:
-        resp = session.get(BASE_URL, params=params, timeout=30)
-        _, total = parse_page(resp.text)
-        return total or 0
-    except Exception as e:
-        print(f"Warning: could not get site total: {e}")
-        return 0
-
-
-def scrape_window(session, start_date, end_date, seen_urls):
+def scrape_window(pw_page, start_date, end_date, seen_urls):
     """Scrape all pages for a date window. Returns new rows."""
     new_rows = []
-    page = 1
+    page_num = 1
     total_pages = None
     total_records = None
     max_retries = 5
     empty_retries = 0
 
     while True:
-        params = build_params(page, start_date, end_date)
+        url = build_url(page_num, start_date, end_date)
         retries = 0
         while retries < max_retries:
             try:
-                resp = session.get(BASE_URL, params=params, timeout=30)
-                resp.raise_for_status()
+                pw_page.goto(url, wait_until="networkidle", timeout=60000)
                 break
-            except requests.RequestException as e:
+            except Exception as e:
                 retries += 1
                 if retries >= max_retries:
-                    print(f"    FAILED page {page} after {max_retries} retries: {e}")
+                    print(f"    FAILED page {page_num} after {max_retries} retries: {e}")
                     return new_rows, total_records or 0
                 print(f"    Error ({retries}/{max_retries}): {e}. Retrying in 10s...")
                 time.sleep(10)
 
-        rows, total = parse_page(resp.text)
+        rows, total = parse_page(pw_page)
 
         if total and total_records is None:
             total_records = total
@@ -129,24 +117,38 @@ def scrape_window(session, start_date, end_date, seen_urls):
         empty_retries = 0
 
         for row in rows:
-            url = row["filer_url"]
-            if not url:
+            filer_url = row["filer_url"]
+            if not filer_url:
                 new_rows.append(row)
                 continue
-            if url not in seen_urls:
-                seen_urls.add(url)
+            if filer_url not in seen_urls:
+                seen_urls.add(filer_url)
                 new_rows.append(row)
 
-        if total_pages and page >= total_pages:
+        if total_pages and page_num >= total_pages:
             break
 
-        page += 1
+        page_num += 1
         time.sleep(0.5)
 
     return new_rows, total_records or 0
 
 
+def get_site_total(pw_page):
+    """Get the total record count from the site."""
+    url = build_url(1, "2025-01-01", date.today().isoformat())
+    try:
+        pw_page.goto(url, wait_until="networkidle", timeout=60000)
+        _, total = parse_page(pw_page)
+        return total or 0
+    except Exception as e:
+        print(f"Warning: could not get site total: {e}")
+        return 0
+
+
 def main():
+    from playwright.sync_api import sync_playwright
+
     today = date.today()
 
     # Determine start date: last scrape date - 3 days (overlap for safety)
@@ -160,9 +162,6 @@ def main():
 
     print(f"Daily update: {start} to {today}")
 
-    session = requests.Session()
-    session.headers.update(HEADERS)
-
     # Load existing URLs for dedup
     seen_urls = set()
     existing_count = 0
@@ -174,17 +173,34 @@ def main():
                 existing_count += 1
     print(f"Existing records: {existing_count:,}")
 
-    # Scrape day by day for the window
-    all_new = []
-    current = start
-    while current <= today:
-        new_rows, expected = scrape_window(
-            session, current.isoformat(), current.isoformat(), seen_urls
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         )
-        if new_rows:
-            all_new.extend(new_rows)
-            print(f"  {current}: {len(new_rows):,} new rows")
-        current += timedelta(days=1)
+        pw_page = context.new_page()
+
+        # Initial page load to handle any Cloudflare challenge
+        print("Loading site (handling Cloudflare)...")
+        pw_page.goto(BASE_URL, wait_until="networkidle", timeout=60000)
+        time.sleep(3)  # Give Cloudflare time to clear
+
+        # Scrape day by day for the window
+        all_new = []
+        current = start
+        while current <= today:
+            new_rows, expected = scrape_window(
+                pw_page, current.isoformat(), current.isoformat(), seen_urls
+            )
+            if new_rows:
+                all_new.extend(new_rows)
+                print(f"  {current}: {len(new_rows):,} new rows")
+            current += timedelta(days=1)
+
+        # Verify against site total
+        site_total = get_site_total(pw_page)
+
+        browser.close()
 
     # Append new rows
     if all_new:
@@ -195,14 +211,12 @@ def main():
     else:
         print("\nNo new rows found")
 
-    # Verify against site total
-    site_total = get_site_total(session)
     our_total = existing_count + len(all_new)
-    gap = site_total - our_total
 
     print(f"\n=== VERIFICATION ===")
     print(f"Site total:  {site_total:,}")
     print(f"Our total:   {our_total:,}")
+    gap = site_total - our_total
     print(f"Gap:         {gap:,}")
 
     if gap > 500:
