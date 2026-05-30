@@ -92,6 +92,11 @@ def scrape_window(pw_page, start_date, end_date, seen_urls):
         while retries < max_retries:
             try:
                 pw_page.goto(url, wait_until="networkidle", timeout=60000)
+                # Wait for table or "No results" to appear
+                try:
+                    pw_page.wait_for_selector("table, .no-results", timeout=15000)
+                except:
+                    pass  # Table might not exist if no results
                 break
             except Exception as e:
                 retries += 1
@@ -139,6 +144,10 @@ def get_site_total(pw_page):
     url = build_url(1, "2025-01-01", date.today().isoformat())
     try:
         pw_page.goto(url, wait_until="networkidle", timeout=60000)
+        try:
+            pw_page.wait_for_selector("table", timeout=15000)
+        except:
+            pass
         _, total = parse_page(pw_page)
         return total or 0
     except Exception as e:
@@ -183,7 +192,20 @@ def main():
         # Initial page load to handle any Cloudflare challenge
         print("Loading site (handling Cloudflare)...")
         pw_page.goto(BASE_URL, wait_until="networkidle", timeout=60000)
-        time.sleep(3)  # Give Cloudflare time to clear
+        # Wait for Cloudflare to clear and page to render
+        try:
+            pw_page.wait_for_selector("table", timeout=30000)
+            print("Site loaded — table found")
+        except:
+            # Might be on a Cloudflare challenge page, wait longer
+            print("Waiting for Cloudflare challenge...")
+            time.sleep(10)
+            pw_page.reload(wait_until="networkidle", timeout=60000)
+            try:
+                pw_page.wait_for_selector("table", timeout=30000)
+                print("Site loaded after retry — table found")
+            except:
+                print("WARNING: Could not find table after Cloudflare retry")
 
         # Scrape day by day for the window
         all_new = []
