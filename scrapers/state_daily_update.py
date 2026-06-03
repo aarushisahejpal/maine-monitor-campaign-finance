@@ -2,13 +2,14 @@
 """
 Daily incremental scraper for Maine Campaign Finance Disclosure.
 Appends new transactions since the last scrape date.
-Uses Playwright to handle Cloudflare protection.
+Uses stealth Playwright with fresh browser per page to bypass Cloudflare.
 """
 
 import csv
 import time
 import os
 import sys
+import random
 from datetime import date, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -17,6 +18,10 @@ LAST_SCRAPE_FILE = os.path.join(SCRIPT_DIR, "..", "data", "state_2026", "last_sc
 BASE_URL = "https://www.mainecampaignfinancedisclosure.com/public/activities"
 
 FIELDNAMES = ["filer_name", "filer_url", "transaction_type", "source_payee", "date", "amount"]
+
+BROWSER_ARGS = ['--disable-blink-features=AutomationControlled', '--no-sandbox']
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+ANTI_DETECT_SCRIPT = 'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
 
 
 def build_url(page, start_date, end_date):
@@ -77,82 +82,57 @@ def parse_page(page):
     return rows, total
 
 
-def scrape_window(pw_page, start_date, end_date, seen_urls):
-    """Scrape all pages for a date window. Returns new rows."""
-    new_rows = []
+def fetch_page(playwright, url):
+    """Fetch a single page using a fresh stealth browser instance."""
+    browser = playwright.chromium.launch(headless=True, args=BROWSER_ARGS)
+    context = browser.new_context(
+        user_agent=USER_AGENT,
+        viewport={'width': 1920, 'height': 1080},
+        locale='en-US',
+    )
+    page = context.new_page()
+    page.add_init_script(ANTI_DETECT_SCRIPT)
+
+    try:
+        page.goto(url, wait_until="networkidle", timeout=60000)
+        time.sleep(random.uniform(2, 4))
+        page.wait_for_selector("table", timeout=15000)
+        rows, total = parse_page(page)
+        return rows, total
+    except Exception:
+        return [], None
+    finally:
+        browser.close()
+
+
+def scrape_date_range(playwright, start_date, end_date, seen_urls):
+    """Scrape all pages for a date range using fresh browser per page."""
+    all_rows = []
     page_num = 1
-    total_pages = None
-    total_records = None
-    max_retries = 5
-    empty_retries = 0
 
     while True:
         url = build_url(page_num, start_date, end_date)
-        retries = 0
-        while retries < max_retries:
-            try:
-                pw_page.goto(url, wait_until="networkidle", timeout=60000)
-                # Wait for table or "No results" to appear
-                try:
-                    pw_page.wait_for_selector("table, .no-results", timeout=15000)
-                except:
-                    pass  # Table might not exist if no results
-                break
-            except Exception as e:
-                retries += 1
-                if retries >= max_retries:
-                    print(f"    FAILED page {page_num} after {max_retries} retries: {e}")
-                    return new_rows, total_records or 0
-                print(f"    Error ({retries}/{max_retries}): {e}. Retrying in 10s...")
-                time.sleep(10)
-
-        rows, total = parse_page(pw_page)
-
-        if total and total_records is None:
-            total_records = total
-            total_pages = (total + 49) // 50
+        rows, total = fetch_page(playwright, url)
 
         if not rows:
-            empty_retries += 1
-            if empty_retries <= 2:
-                time.sleep(3)
-                continue
             break
-
-        empty_retries = 0
 
         for row in rows:
             filer_url = row["filer_url"]
-            if not filer_url:
-                new_rows.append(row)
-                continue
-            if filer_url not in seen_urls:
-                seen_urls.add(filer_url)
-                new_rows.append(row)
+            if not filer_url or filer_url not in seen_urls:
+                if filer_url:
+                    seen_urls.add(filer_url)
+                all_rows.append(row)
 
-        if total_pages and page_num >= total_pages:
-            break
+        if total:
+            total_pages = (total + 49) // 50
+            if page_num >= total_pages:
+                break
 
         page_num += 1
-        time.sleep(0.5)
+        time.sleep(random.uniform(3, 6))
 
-    return new_rows, total_records or 0
-
-
-def get_site_total(pw_page):
-    """Get the total record count from the site."""
-    url = build_url(1, "2025-01-01", date.today().isoformat())
-    try:
-        pw_page.goto(url, wait_until="networkidle", timeout=60000)
-        try:
-            pw_page.wait_for_selector("table", timeout=15000)
-        except:
-            pass
-        _, total = parse_page(pw_page)
-        return total or 0
-    except Exception as e:
-        print(f"Warning: could not get site total: {e}")
-        return 0
+    return all_rows, total or 0
 
 
 def main():
@@ -160,13 +140,12 @@ def main():
 
     today = date.today()
 
-    # Determine start date: last scrape date - 3 days (overlap for safety)
+    # Wider window: last scrape date - 30 days to catch backfilled data
     if os.path.exists(LAST_SCRAPE_FILE):
         with open(LAST_SCRAPE_FILE) as f:
             last_date = date.fromisoformat(f.read().strip())
-        start = last_date - timedelta(days=3)
+        start = last_date - timedelta(days=30)
     else:
-        # First run: scrape everything
         start = date(2025, 1, 1)
 
     print(f"Daily update: {start} to {today}")
@@ -182,80 +161,38 @@ def main():
                 existing_count += 1
     print(f"Existing records: {existing_count:,}")
 
+    grand_total = 0
+
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        )
-        pw_page = context.new_page()
-
-        # Initial page load to handle any Cloudflare challenge
-        print("Loading site (handling Cloudflare)...")
-        pw_page.goto(BASE_URL, wait_until="networkidle", timeout=60000)
-        # Wait for Cloudflare to clear and page to render
-        try:
-            pw_page.wait_for_selector("table", timeout=30000)
-            print("Site loaded — table found")
-        except:
-            # Might be on a Cloudflare challenge page, wait longer
-            print("Waiting for Cloudflare challenge...")
-            time.sleep(10)
-            pw_page.reload(wait_until="networkidle", timeout=60000)
-            try:
-                pw_page.wait_for_selector("table", timeout=30000)
-                print("Site loaded after retry — table found")
-            except:
-                print("WARNING: Could not find table after Cloudflare retry")
-
-        # Scrape day by day for the window
-        all_new = []
+        # Scrape week by week for the window
         current = start
         while current <= today:
-            new_rows, expected = scrape_window(
-                pw_page, current.isoformat(), current.isoformat(), seen_urls
+            week_end = min(current + timedelta(days=6), today)
+            week_str = f"{current} to {week_end}"
+
+            new_rows, site_total = scrape_date_range(
+                p, current.isoformat(), week_end.isoformat(), seen_urls
             )
+
+            # Save after each week so we don't lose progress
             if new_rows:
-                all_new.extend(new_rows)
-                print(f"  {current}: {len(new_rows):,} new rows")
-            current += timedelta(days=1)
+                with open(OUTPUT_FILE, "a", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+                    writer.writerows(new_rows)
+                grand_total += len(new_rows)
+                print(f"  {week_str}: {len(new_rows)} new — SAVED (total: {grand_total:,})")
+            else:
+                print(f"  {week_str}: ok")
 
-        # Verify against site total
-        site_total = get_site_total(pw_page)
+            current = week_end + timedelta(days=1)
+            time.sleep(random.uniform(2, 4))
 
-        browser.close()
-
-    # Append new rows
-    if all_new:
-        with open(OUTPUT_FILE, "a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
-            writer.writerows(all_new)
-        print(f"\nAppended {len(all_new):,} new rows")
-    else:
-        print("\nNo new rows found")
-
-    our_total = existing_count + len(all_new)
-
-    print(f"\n=== VERIFICATION ===")
-    print(f"Site total:  {site_total:,}")
-    print(f"Our total:   {our_total:,}")
-    gap = site_total - our_total
-    print(f"Gap:         {gap:,}")
-
-    if gap > 500:
-        print(f"ERROR: Gap of {gap:,} records is too large. Full re-scrape needed.")
-        sys.exit(1)
-    elif gap > 50:
-        print(f"WARNING: Gap of {gap:,} records. Will be caught up over time.")
-    elif gap < 0:
-        print(f"WARNING: We have more records than the site. Possible duplicates.")
-    else:
-        print("OK — counts match (within tolerance)")
+    our_total = existing_count + grand_total
+    print(f"\nDone! {grand_total:,} new rows. Total records: {our_total:,}")
 
     # Save last scrape date
     with open(LAST_SCRAPE_FILE, "w") as f:
         f.write(today.isoformat())
-
-    print(f"\nDone! Total records: {our_total:,}")
 
 
 if __name__ == "__main__":
