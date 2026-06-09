@@ -105,7 +105,7 @@ def fetch_page(playwright, url):
         browser.close()
 
 
-def scrape_date_range(playwright, start_date, end_date, seen_urls):
+def scrape_date_range(playwright, start_date, end_date, seen_keys):
     """Scrape all pages for a date range using fresh browser per page."""
     all_rows = []
     page_num = 1
@@ -118,10 +118,10 @@ def scrape_date_range(playwright, start_date, end_date, seen_urls):
             break
 
         for row in rows:
-            filer_url = row["filer_url"]
-            if not filer_url or filer_url not in seen_urls:
-                if filer_url:
-                    seen_urls.add(filer_url)
+            # Dedup by content (filer + type + payee + date + amount), not just URL
+            key = (row["filer_name"], row["transaction_type"], row["source_payee"], row["date"], row["amount"])
+            if key not in seen_keys:
+                seen_keys.add(key)
                 all_rows.append(row)
 
         if total:
@@ -150,14 +150,15 @@ def main():
 
     print(f"Daily update: {start} to {today}")
 
-    # Load existing URLs for dedup
-    seen_urls = set()
+    # Load existing records for content-based dedup
+    seen_keys = set()
     existing_count = 0
     if os.path.exists(OUTPUT_FILE):
         with open(OUTPUT_FILE, "r") as f:
             reader = csv.DictReader(f)
             for r in reader:
-                seen_urls.add(r["filer_url"])
+                key = (r["filer_name"], r["transaction_type"], r["source_payee"], r["date"], r["amount"])
+                seen_keys.add(key)
                 existing_count += 1
     print(f"Existing records: {existing_count:,}")
 
@@ -171,7 +172,7 @@ def main():
             week_str = f"{current} to {week_end}"
 
             new_rows, site_total = scrape_date_range(
-                p, current.isoformat(), week_end.isoformat(), seen_urls
+                p, current.isoformat(), week_end.isoformat(), seen_keys
             )
 
             # Save after each week so we don't lose progress
