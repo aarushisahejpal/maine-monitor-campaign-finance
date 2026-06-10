@@ -1,9 +1,9 @@
 name: Daily Data Update
 
 on:
-  schedule:
-    - cron: '0 10 * * *'  # Every day at 6am ET (10am UTC)
-  workflow_dispatch:  # Allow manual trigger
+  # schedule:
+  #   - cron: '0 10 * * *'  # PAUSED — daily updates disabled while we verify fresh data
+  workflow_dispatch:  # Allow manual trigger only
 
 permissions:
   contents: write
