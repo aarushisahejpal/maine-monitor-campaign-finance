@@ -481,18 +481,33 @@ function loadCSV(file) {
 }
 
 async function loadData() {
-    const [totalsRaw, donorsRaw, smallRaw, expRaw, payeesRaw] = await Promise.all([
+    const [totalsRaw, donorsRaw, smallRaw, expRaw, payeesRaw, loansRaw] = await Promise.all([
         loadCSV('maine_total_contributions_by_filer.csv'),
         loadCSV('maine_top_5contributors_by_filer.csv'),
         loadCSV('maine_small_dollar_by_filer.csv'),
         loadCSV('maine_total_expenditures_by_filer.csv'),
-        loadCSV('maine_top_5payees_by_filer.csv')
+        loadCSV('maine_top_5payees_by_filer.csv'),
+        loadCSV('loans_inkind_by_candidate.csv').catch(() => [])
     ]);
+
+    // Loans + in-kind lookup
+    const LOANS = {};
+    loansRaw.forEach(r => {
+        if (r.candidate_name) {
+            const l = parseFloat(r.loans) || 0;
+            const ik = parseFloat(r.in_kind) || 0;
+            if (l > 0 || ik > 0) LOANS[r.candidate_name] = { loans: l, in_kind: ik };
+        }
+    });
 
     const TOTALS = totalsRaw
         .filter(r => r.race === RACE_FILTER)
-        .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown'}))
-        .sort((a, b) => b.t - a.t);
+        .map(r => {
+            const dn = r.display_name || r.candidate;
+            const li = LOANS[dn] || {};
+            return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0};
+        })
+        .sort((a, b) => (b.t + b.loans + b.ik) - (a.t + a.loans + a.ik));
 
     const DONORS = donorsRaw
         .filter(r => r.race === RACE_FILTER)
@@ -588,8 +603,9 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
+const fullTotal = d => d.t + d.loans + d.ik;
 const x = d3.scaleLinear()
-    .domain([0, d3.max(chartData, d => d.t)])
+    .domain([0, d3.max(chartData, d => fullTotal(d))])
     .range([margin.left, width - margin.right]);
 
 const y = d3.scaleBand()
@@ -611,7 +627,7 @@ bars.append('rect')
     .attr('rx', 2)
     .attr('fill', d => COLORS[d.p] || '#999')
     .transition().duration(700).delay((d, i) => i * 40)
-    .attr('width', d => x(d.t) - margin.left);
+    .attr('width', d => x(fullTotal(d)) - margin.left);
 
 bars.append('text')
     .attr('class', 'label')
@@ -623,10 +639,10 @@ bars.append('text')
 
 bars.append('text')
     .attr('class', 'value')
-    .attr('x', d => x(d.t) + 8)
+    .attr('x', d => x(fullTotal(d)) + 8)
     .attr('y', d => y(d.c) + y.bandwidth() / 2)
     .attr('dy', '0.35em')
-    .text(d => fmt(d.t))
+    .text(d => fmt(fullTotal(d)))
     .style('opacity', 0)
     .transition().duration(400).delay((d, i) => i * 40 + 500)
     .style('opacity', 1);
@@ -638,8 +654,10 @@ bars.on('mouseenter', function(evt, d) {
     const rank = chartData.indexOf(d) + 1;
     let html = `<div class="tip-name">${removeMiddleName(d.c)}</div>
         <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p === 'Unenrolled' ? 'independent' : d.p}</div>
-        <div class="tip-total">${fmt(d.t)}</div>
+        <div class="tip-total">${fmt(fullTotal(d))}</div>
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
+    if (d.loans > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.loans)} in loans</div>`;
+    if (d.ik > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.ik)} in-kind</div>`;
     showTip(evt, html);
 })
 .on('mousemove', moveTip)
@@ -649,7 +667,7 @@ bars.on('mouseenter', function(evt, d) {
     hideTip();
 });
 
-const total = TOTALS.reduce((a, b) => a + b.t, 0);
+const total = TOTALS.reduce((a, b) => a + fullTotal(b), 0);
 const totalExp = EXP_TOTALS.reduce((a, b) => a + b.t, 0);
 document.getElementById('chartTotal').textContent = 'Total raised across all candidates: ' + fmt(total);
 /* STASHED — total raised/spent summary hidden, data still in bar chart
@@ -674,27 +692,42 @@ TOTALS.forEach(cand => {
     card.innerHTML = `
         <div class="donor-card-header">
             <span class="donor-card-name" style="color:${COLORS[cand.p] || '#1a1a1a'}">${removeMiddleName(cand.c, 'html')}</span>
-            <span class="donor-card-total">${fmt(cand.t)} total</span>
+            <span class="donor-card-total">${fmt(fullTotal(cand))} total</span>
         </div>`;
 
-    // Platform donations (ActBlue/WinRed)
+    // Platform donations (ActBlue/WinRed) — first
     platformDonors.forEach(d => {
         const isBlue = /actblue/i.test(d.e);
         const borderColor = isBlue ? '#2c6fbb' : '#c0392b';
         const label = isBlue ? 'ActBlue' : 'WinRed';
         const pb = document.createElement('div');
         pb.className = 'platform-row';
-        pb.style.cssText = `padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-left:3px solid ${borderColor};border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;`;
+        pb.style.cssText = `padding:6px 8px;margin-bottom:2px;background:#fff;border:1px solid #e8e8e8;border-left:3px solid ${borderColor};border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;`;
         pb.innerHTML = `<span class="platform-label" style="font-size:0.8em;">Via ${label}</span><span class="platform-amt" style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
         card.appendChild(pb);
     });
+
+    // Breakdown rows — loans and in-kind sorted by amount
+    if (cand.loans > 0 || cand.ik > 0) {
+        const extras = [];
+        if (cand.loans > 0) extras.push({ label: 'Loans (self)', amt: cand.loans });
+        if (cand.ik > 0) extras.push({ label: 'In-kind contributions', amt: cand.ik });
+        extras.sort((a, b) => b.amt - a.amt);
+
+        extras.forEach(ex => {
+            const row = document.createElement('div');
+            row.style.cssText = 'padding:6px 8px;margin-bottom:2px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+            row.innerHTML = `<span style="font-size:0.8em;color:#1a1a1a;">${ex.label}</span><span style="font-size:0.95em;font-weight:400;color:#1a1a1a;">${fmt(ex.amt)}</span>`;
+            card.appendChild(row);
+        });
+    }
 
     // Small-dollar highlight
     if (smallAmt) {
         const sd = document.createElement('div');
         sd.className = 'small-dollar-row';
-        sd.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-        sd.innerHTML = `<span style="font-size:0.8em;color:var(--text-secondary);">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;">${fmt(smallAmt)}</span>`;
+        sd.style.cssText = 'padding:6px 8px;margin-bottom:2px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+        sd.innerHTML = `<span style="font-size:0.8em;color:#1a1a1a;">Contributions of $50 or less</span><span style="font-size:0.95em;font-weight:400;color:#1a1a1a;">${fmt(smallAmt)}</span>`;
         card.appendChild(sd);
     }
 
