@@ -444,13 +444,18 @@ async function loadData() {
         if (d.ft === 'MCEA' && MCEA[d.d]) d.m = MCEA[d.d];
     });
 
-    // Loans + in-kind lookup by display_name
+    // Loans + in-kind + other funding lookup by display_name
     const LOANS = {};
     loansRaw.forEach(r => {
         if (r.candidate_name) {
             const l = parseFloat(r.loans) || 0;
             const ik = parseFloat(r.in_kind) || 0;
-            if (l > 0 || ik > 0) LOANS[r.candidate_name] = { loans: l, in_kind: ik };
+            const tr = parseFloat(r.transfers) || 0;
+            const tt = parseFloat(r.treasury) || 0;
+            const fg = parseFloat(r.forgiveness) || 0;
+            const bi = parseFloat(r.interest) || 0;
+            if (l > 0 || ik > 0 || tr > 0 || tt > 0 || fg > 0 || bi > 0)
+                LOANS[r.candidate_name] = { loans: l, in_kind: ik, transfers: tr, treasury: tt, forgiveness: fg, interest: bi };
         }
     });
 
@@ -459,10 +464,14 @@ async function loadData() {
         const li = LOANS[d.d] || {};
         d.loans = li.loans || 0;
         d.ik = li.in_kind || 0;
+        d.transfers = li.transfers || 0;
+        d.treasury = li.treasury || 0;
+        d.forgiveness = li.forgiveness || 0;
+        d.interest = li.interest || 0;
     });
 
-    // Re-sort by full total (contributions + MCEA + loans + in-kind)
-    TOTALS.sort((a, b) => (b.t + b.m + b.loans + b.ik) - (a.t + a.m + a.loans + a.ik));
+    // Re-sort by full total
+    TOTALS.sort((a, b) => (b.t + b.m + b.loans + b.ik + b.transfers + b.treasury + b.forgiveness + b.interest) - (a.t + a.m + a.loans + a.ik + a.transfers + a.treasury + a.forgiveness + a.interest));
 
     // Build expenditure totals from ALL candidates (fill $0 for those with no expenditure data)
     const expMap = {};
@@ -579,7 +588,9 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-const maxVal = d3.max(TOTALS, d => d.t + d.m + d.loans + d.ik) || 1; // full total
+const barTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest;
+const fullTotal = d => d.t + d.m + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest;
+const maxVal = d3.max(TOTALS, d => fullTotal(d)) || 1; // full total
 const x = d3.scaleLinear()
     .domain([0, maxVal])
     .range([margin.left, width - margin.right]);
@@ -591,8 +602,7 @@ const y = d3.scaleBand()
 
 const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
 
-// Party-colored bar: contributions + loans + in-kind
-const barTotal = d => d.t + d.loans + d.ik;
+// Party-colored bar: contributions + loans + in-kind + transfers + etc
 bars.filter(d => barTotal(d) > 0).append('rect')
     .attr('class', 'bar')
     .attr('x', margin.left)
@@ -642,7 +652,6 @@ bars.filter(d => d.m > 0 && barTotal(d) > 0).append('line')
     .attr('stroke', '#fff').attr('stroke-width', 1.5);
 
 // $0 candidates get no bar, just an invisible rect for hover
-const fullTotal = d => d.t + d.m + d.loans + d.ik;
 bars.filter(d => fullTotal(d) === 0).append('rect')
     .attr('class', 'bar')
     .attr('x', margin.left)
@@ -748,6 +757,10 @@ bars.on('mouseenter', function(evt, d) {
     if (d.m > 0) html += `<div style="font-size:0.85em;color:#27ae60;margin-top:2px;">Includes ${fmt(d.m)} MCEA public funding</div>`;
     if (d.loans > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.loans)} in loans</div>`;
     if (d.ik > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.ik)} in-kind</div>`;
+    if (d.transfers > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.transfers)} from prior campaign</div>`;
+    if (d.treasury > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.treasury)} party transfer</div>`;
+    if (d.forgiveness > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.forgiveness)} loan forgiveness</div>`;
+    if (d.interest > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.interest)} bank interest</div>`;
     showTip(evt, html);
 })
 .on('mousemove', moveTip)
@@ -776,15 +789,19 @@ candsWithDonors.forEach(cand => {
     card.innerHTML = `
         <div class="donor-block-header">
             <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${(() => { const m = cand.d.match(/\s*(\([^)]+\))\s*$/); if (m) { return cand.d.replace(m[0],'') + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${m[1]}</span>`; } return cand.d; })()}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : cand.ft === 'Exempt' ? ' <span class="exempt-badge">EXEMPT</span>' : ''}</span>
-            <span class="donor-block-total">${fmt(cand.t + cand.m + cand.loans + cand.ik)} total</span>
+            <span class="donor-block-total">${fmt(fullTotal(cand))} total</span>
         </div>`;
 
     // Breakdown rows — other sources sorted by amount, then total individual contributions last
-    if (cand.m > 0 || cand.loans > 0 || cand.ik > 0) {
+    if (cand.m > 0 || cand.loans > 0 || cand.ik > 0 || cand.transfers > 0 || cand.treasury > 0 || cand.forgiveness > 0 || cand.interest > 0) {
         const extras = [];
         if (cand.m > 0) extras.push({ label: 'Maine Clean Elections Fund', amt: cand.m, green: true });
         if (cand.loans > 0) extras.push({ label: 'Loans (self)', amt: cand.loans, green: false });
         if (cand.ik > 0) extras.push({ label: 'In-kind contributions', amt: cand.ik, green: false });
+        if (cand.transfers > 0) extras.push({ label: 'Transfer from prior campaign', amt: cand.transfers, green: false });
+        if (cand.treasury > 0) extras.push({ label: 'Party committee transfer', amt: cand.treasury, green: false });
+        if (cand.forgiveness > 0) extras.push({ label: 'Loan forgiveness', amt: cand.forgiveness, green: false });
+        if (cand.interest > 0) extras.push({ label: 'Bank interest', amt: cand.interest, green: false });
         extras.sort((a, b) => b.amt - a.amt);
 
         // Other sources first
@@ -976,10 +993,10 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
     TOTALS.forEach(d => {
         if (d.ft === 'MCEA' && MCEA && MCEA[d.d]) d.m = MCEA[d.d];
         if (!d.m) d.m = 0;
-        d.loans = 0; d.ik = 0; // special election candidates unlikely to have loans but be safe
+        d.loans = 0; d.ik = 0; d.transfers = 0; d.treasury = 0; d.forgiveness = 0; d.interest = 0;
     });
-    const barTotal = d => d.t + d.loans + d.ik;
-    const fullTotal = d => d.t + d.m + d.loans + d.ik;
+    const barTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest;
+    const fullTotal = d => d.t + d.m + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest;
     const maxVal = d3.max(TOTALS, d => fullTotal(d)) || 1;
     const x = d3.scaleLinear().domain([0, maxVal]).range([margin.left, width - margin.right]);
     const y = d3.scaleBand().domain(TOTALS.map(d => d.d)).range([margin.top, height - margin.bottom]).padding(0.15);

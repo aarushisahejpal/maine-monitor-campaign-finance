@@ -496,7 +496,12 @@ async function loadData() {
         if (r.candidate_name) {
             const l = parseFloat(r.loans) || 0;
             const ik = parseFloat(r.in_kind) || 0;
-            if (l > 0 || ik > 0) LOANS[r.candidate_name] = { loans: l, in_kind: ik };
+            const tr = parseFloat(r.transfers) || 0;
+            const tt = parseFloat(r.treasury) || 0;
+            const fg = parseFloat(r.forgiveness) || 0;
+            const bi = parseFloat(r.interest) || 0;
+            if (l > 0 || ik > 0 || tr > 0 || tt > 0 || fg > 0 || bi > 0)
+                LOANS[r.candidate_name] = { loans: l, in_kind: ik, transfers: tr, treasury: tt, forgiveness: fg, interest: bi };
         }
     });
 
@@ -505,9 +510,9 @@ async function loadData() {
         .map(r => {
             const dn = r.display_name || r.candidate;
             const li = LOANS[dn] || {};
-            return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0};
+            return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0, transfers: li.transfers || 0, treasury: li.treasury || 0, forgiveness: li.forgiveness || 0, interest: li.interest || 0};
         })
-        .sort((a, b) => (b.t + b.loans + b.ik) - (a.t + a.loans + a.ik));
+        .sort((a, b) => (b.t + b.loans + b.ik + b.transfers + b.treasury + b.forgiveness + b.interest) - (a.t + a.loans + a.ik + a.transfers + a.treasury + a.forgiveness + a.interest));
 
     const DONORS = donorsRaw
         .filter(r => r.race === RACE_FILTER)
@@ -603,7 +608,7 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-const fullTotal = d => d.t + d.loans + d.ik;
+const fullTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest;
 const x = d3.scaleLinear()
     .domain([0, d3.max(chartData, d => fullTotal(d))])
     .range([margin.left, width - margin.right]);
@@ -658,6 +663,10 @@ bars.on('mouseenter', function(evt, d) {
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
     if (d.loans > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.loans)} in loans</div>`;
     if (d.ik > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.ik)} in-kind</div>`;
+    if (d.transfers > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.transfers)} from prior campaign</div>`;
+    if (d.treasury > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.treasury)} party transfer</div>`;
+    if (d.forgiveness > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.forgiveness)} loan forgiveness</div>`;
+    if (d.interest > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.interest)} bank interest</div>`;
     showTip(evt, html);
 })
 .on('mousemove', moveTip)
@@ -708,10 +717,14 @@ TOTALS.forEach(cand => {
     });
 
     // Breakdown rows — loans and in-kind sorted by amount
-    if (cand.loans > 0 || cand.ik > 0) {
+    if (cand.loans > 0 || cand.ik > 0 || cand.transfers > 0 || cand.treasury > 0 || cand.forgiveness > 0 || cand.interest > 0) {
         const extras = [];
         if (cand.loans > 0) extras.push({ label: 'Loans (self)', amt: cand.loans });
         if (cand.ik > 0) extras.push({ label: 'In-kind contributions', amt: cand.ik });
+        if (cand.transfers > 0) extras.push({ label: 'Transfer from prior campaign', amt: cand.transfers });
+        if (cand.treasury > 0) extras.push({ label: 'Party committee transfer', amt: cand.treasury });
+        if (cand.forgiveness > 0) extras.push({ label: 'Loan forgiveness', amt: cand.forgiveness });
+        if (cand.interest > 0) extras.push({ label: 'Bank interest', amt: cand.interest });
         extras.sort((a, b) => b.amt - a.amt);
 
         extras.forEach(ex => {
