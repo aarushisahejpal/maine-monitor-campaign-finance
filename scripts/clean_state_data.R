@@ -64,6 +64,11 @@ if (file.exists("data/name_merges.csv")) {
     mutate(filer_name = coalesce(canonical_name, filer_name)) %>%
     select(-canonical_name) %>%
     distinct()
+  # Also apply merges to transaction filer names so they match candidate list
+  state_df <- state_df %>%
+    left_join(name_merges, by = c("filer_name_clean" = "variant_name")) %>%
+    mutate(filer_name_clean = coalesce(canonical_name, filer_name_clean)) %>%
+    select(-canonical_name)
 }
 
 
