@@ -1,12 +1,12 @@
 "candidate_name","office","district","geo","total"
-"BALDACCI, JOSEPH","House","02","In State",68971.1
-"BALDACCI, JOSEPH","House","02","Out of State",50647.65
+"BALDACCI, JOSEPH","House","02","Out of State",127926.74
+"BALDACCI, JOSEPH","House","02","In State",92371.1
 "CALABRESE, CARMEN VINCENT MR.","Senate","00","In State",17711.95
 "CLARK, JAMES L.","House","02","Out of State",500
 "COLLINS, SUSAN M.","Senate","00","Out of State",14567880.38
 "COLLINS, SUSAN M.","Senate","00","In State",820423.56
-"COSTELLO, DAVID","Senate","00","In State",120645.88
-"COSTELLO, DAVID","Senate","00","Out of State",8350
+"COSTELLO, DAVID","Senate","00","In State",121370.88
+"COSTELLO, DAVID","Senate","00","Out of State",9016
 "DUNLAP, MATT","House","02","In State",255436.6
 "DUNLAP, MATT","House","02","Out of State",138372.43
 "EVANS, DAVID ALAN","Senate","00","Out of State",5831.72
@@ -17,15 +17,16 @@
 "KLEBAN, DAN","Senate","00","In State",214666.84
 "LAFLAMME, ANDREA","Senate","00","Out of State",5795.36
 "LAFLAMME, ANDREA","Senate","00","In State",1750
-"LEPAGE, PAUL","House","02","In State",1298890.83
-"LEPAGE, PAUL","House","02","Out of State",1273041.45
-"LOUD, PAIGE","House","02","In State",9203.24
-"LOUD, PAIGE","House","02","Out of State",2000
-"MILLS, JANET TRAFTON","Senate","00","Out of State",958516.81
-"MILLS, JANET TRAFTON","Senate","00","In State",294620.7
-"PIETROWICZ, JOSHUA JAMES","House","01","In State",2606.5
-"PINGREE, CHELLIE M","House","01","Out of State",222815.36
-"PINGREE, CHELLIE M","House","01","In State",3050
+"LEPAGE, PAUL","House","02","Out of State",1338914.26
+"LEPAGE, PAUL","House","02","In State",1305271.02
+"LOUD, PAIGE","House","02","In State",31064.45
+"LOUD, PAIGE","House","02","Out of State",3460
+"MILLS, JANET TRAFTON","Senate","00","Out of State",1002557.62
+"MILLS, JANET TRAFTON","Senate","00","In State",311523.58
+"PIETROWICZ, JOSHUA JAMES","House","01","In State",4445.5
+"PIETROWICZ, JOSHUA JAMES","House","01","Unknown",140
+"PINGREE, CHELLIE M","House","01","Out of State",261815.36
+"PINGREE, CHELLIE M","House","01","In State",16342.35
 "PLATNER, GRAHAM","Senate","00","Out of State",790142.4
 "PLATNER, GRAHAM","Senate","00","In State",260298.16
 "RENCH, PHILLIP","Senate","00","In State",50987.08
@@ -33,8 +34,8 @@
 "ROBERTS, TIFFANY DANIELLE","House","01","In State",11940.43
 "ROBERTS, TIFFANY DANIELLE","House","01","Out of State",1803
 "RODRIGUEZ, DAIRA","Senate","00","Out of State",214500
-"RUSSELL, RONALD CHARLES MR.","House","01","Out of State",85275.3
-"RUSSELL, RONALD CHARLES MR.","House","01","In State",13324.25
+"RUSSELL, RONALD CHARLES MR.","House","01","Out of State",86614.79
+"RUSSELL, RONALD CHARLES MR.","House","01","In State",14824.25
 "SMALL, ERIC","House","01","Out of State",11000
 "SMALL, ERIC","House","01","In State",3828
 "WOOD, JORDAN","House","02","In State",436644.43
