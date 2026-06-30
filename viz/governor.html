@@ -500,8 +500,9 @@ async function loadData() {
             const tt = parseFloat(r.treasury) || 0;
             const fg = parseFloat(r.forgiveness) || 0;
             const bi = parseFloat(r.interest) || 0;
-            if (l > 0 || ik > 0 || tr > 0 || tt > 0 || fg > 0 || bi > 0)
-                LOANS[r.candidate_name] = { loans: l, in_kind: ik, transfers: tr, treasury: tt, forgiveness: fg, interest: bi };
+            const ret = parseFloat(r.returned) || 0;
+            if (l > 0 || ik > 0 || tr > 0 || tt > 0 || fg > 0 || bi > 0 || ret > 0)
+                LOANS[r.candidate_name] = { loans: l, in_kind: ik, transfers: tr, treasury: tt, forgiveness: fg, interest: bi, returned: ret };
         }
     });
 
@@ -510,9 +511,9 @@ async function loadData() {
         .map(r => {
             const dn = r.display_name || r.candidate;
             const li = LOANS[dn] || {};
-            return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0, transfers: li.transfers || 0, treasury: li.treasury || 0, forgiveness: li.forgiveness || 0, interest: li.interest || 0};
+            return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0, transfers: li.transfers || 0, treasury: li.treasury || 0, forgiveness: li.forgiveness || 0, interest: li.interest || 0, returned: li.returned || 0};
         })
-        .sort((a, b) => (b.t + b.loans + b.ik + b.transfers + b.treasury + b.forgiveness + b.interest) - (a.t + a.loans + a.ik + a.transfers + a.treasury + a.forgiveness + a.interest));
+        .sort((a, b) => (b.t + b.loans + b.ik + b.transfers + b.treasury + b.forgiveness + b.interest - b.returned) - (a.t + a.loans + a.ik + a.transfers + a.treasury + a.forgiveness + a.interest - a.returned));
 
     const DONORS = donorsRaw
         .filter(r => r.race === RACE_FILTER)
@@ -608,7 +609,7 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-const fullTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest;
+const fullTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest - d.returned;
 const x = d3.scaleLinear()
     .domain([0, d3.max(chartData, d => fullTotal(d))])
     .range([margin.left, width - margin.right]);
@@ -667,6 +668,7 @@ bars.on('mouseenter', function(evt, d) {
     if (d.treasury > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.treasury)} party transfer</div>`;
     if (d.forgiveness > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.forgiveness)} loan forgiveness</div>`;
     if (d.interest > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.interest)} bank interest</div>`;
+    if (d.returned > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">-${fmt(d.returned)} returned</div>`;
     showTip(evt, html);
 })
 .on('mousemove', moveTip)
@@ -717,7 +719,7 @@ TOTALS.forEach(cand => {
     });
 
     // Breakdown rows — loans and in-kind sorted by amount
-    if (cand.loans > 0 || cand.ik > 0 || cand.transfers > 0 || cand.treasury > 0 || cand.forgiveness > 0 || cand.interest > 0) {
+    if (cand.loans > 0 || cand.ik > 0 || cand.transfers > 0 || cand.treasury > 0 || cand.forgiveness > 0 || cand.interest > 0 || cand.returned > 0) {
         const extras = [];
         if (cand.loans > 0) extras.push({ label: 'Loans (self)', amt: cand.loans });
         if (cand.ik > 0) extras.push({ label: 'In-kind contributions', amt: cand.ik });
@@ -733,6 +735,13 @@ TOTALS.forEach(cand => {
             row.innerHTML = `<span style="font-size:0.8em;color:#1a1a1a;">${ex.label}</span><span style="font-size:0.95em;font-weight:400;color:#1a1a1a;">${fmt(ex.amt)}</span>`;
             card.appendChild(row);
         });
+
+        if (cand.returned > 0) {
+            const ret = document.createElement('div');
+            ret.style.cssText = 'padding:6px 8px;margin-bottom:2px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
+            ret.innerHTML = `<span style="font-size:0.8em;color:#1a1a1a;">Returned contributions</span><span style="font-size:0.95em;font-weight:400;color:#1a1a1a;">-${fmt(cand.returned)}</span>`;
+            card.appendChild(ret);
+        }
     }
 
     // Small-dollar highlight
