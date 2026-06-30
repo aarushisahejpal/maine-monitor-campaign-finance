@@ -5,10 +5,12 @@ library(tidyverse)
 # ── RECEIPTS (contributions) ──
 fed_df <- read_csv("data/federal_2026/receipts.csv")
 
-# Filter out memo/earmarked items to avoid double-counting
-# (e.g. ActBlue earmarks show up as both a memo and actual contribution)
+# Filter out conduit/pass-through entries to avoid double-counting
+# Earmarked donations create two rows: the real donor ("EARMARKED CONTRIBUTION: SEE BELOW")
+# and the conduit forwarding it ("EARMARKED THROUGH" or "EARMARKED-CONDUIT").
+# We keep the real donor row and remove only the conduit row.
 fed_df_no_memo <- fed_df %>%
-  filter(is.na(memo_text) | !str_detect(toupper(memo_text), "EARMARKED|MEMO"))
+  filter(is.na(memo_text) | !str_detect(toupper(memo_text), "EARMARKED THROUGH|EARMARKED-CONDUIT"))
 
 # Official totals come from total_contributions_by_federal_candidate.csv (FEC API)
 # so we skip computing cand_sum from Schedule A
