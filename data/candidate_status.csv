@@ -407,7 +407,7 @@ marc anthony boisse,Representative,141,Republican,state,,yes
 rebecca lynn flood andrews,Representative,141,Democrat,state,,yes
 ayn hanselmann,Representative,142,Democrat,state,,yes
 gordon frohloff,Representative,142,Republican,state,,yes
-eric h small,Representative,143,Republican,state,,yes
+eric h small,Representative,143,Unenrolled,state,,yes
 john robert henkelman iii,Representative,143,Democrat,state,,yes
 corinna cole,Representative,144,Unenrolled,state,,yes
 jeff adams,Representative,144,Republican,state,,yes
@@ -683,7 +683,7 @@ zachary t wyles,,,,state,,no
 "PINGREE, CHELLIE M",House,01,,federal,,yes
 "ROBERTS, TIFFANY DANIELLE",House,01,,federal,,yes
 "RUSSELL, RONALD CHARLES MR.",House,01,,federal,,yes
-"SMALL, ERIC",House,01,,federal,,yes
+"SMALL, ERIC",House,01,Unenrolled,federal,,yes
 "DUNLAP, MATT",House,02,,federal,,yes
 "GOLDEN, JARED",House,02,,federal,,yes
 "LEPAGE, PAUL",House,02,,federal,,yes
@@ -714,3 +714,9 @@ lauren chelsea jones,Representative,112,Republican,state,,yes
 "LAFLAMME, ANDREA",Senate,,,federal,,yes
 "PIANTIDOSI, ANDREW",House,01,,federal,,yes
 "CLARK, JAMES L.",House,02,,federal,,yes
+david duguay,Senator,19,Unenrolled,,,yes
+roy gott,Senator,12,Unenrolled,,,yes
+adam shaw,Representative,26,Unenrolled,,,yes
+lawrence mcwilliams,Representative,128,Unenrolled,,,yes
+marc lessard,Representative,133,Unenrolled,,,yes
+noah cobb,Representative,148,Unenrolled,,,yes
