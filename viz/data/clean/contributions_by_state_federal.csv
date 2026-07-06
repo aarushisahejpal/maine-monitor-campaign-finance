@@ -1,43 +1,43 @@
-candidate_name,office,district,geo,total
-"BALDACCI, JOSEPH",House,02,In State,249152.1
-"BALDACCI, JOSEPH",House,02,Out of State,223977.31
-"CALABRESE, CARMEN VINCENT",Senate,00,In State,17711.95
-"CLARK, JAMES L.",House,02,Out of State,500
-"COLLINS, SUSAN M.",Senate,00,Out of State,14567880.38
-"COLLINS, SUSAN M.",Senate,00,In State,820423.56
-"COSTELLO, DAVID",Senate,00,In State,121370.88
-"COSTELLO, DAVID",Senate,00,Out of State,9016
-"DUNLAP, MATT",House,02,In State,257436.6
-"DUNLAP, MATT",House,02,Out of State,138372.43
-"EVANS, DAVID ALAN",Senate,00,Out of State,5831.72
-"FAVREAU, TUCKER",Senate,00,In State,8475.02
-"FAVREAU, TUCKER",Senate,00,Out of State,7250
-"GOLDEN, JARED",House,02,Out of State,2169652.73
-"GOLDEN, JARED",House,02,In State,280159.79
-"KLEBAN, DAN",Senate,00,In State,283876.84
-"KLEBAN, DAN",Senate,00,Out of State,125515
-"LAFLAMME, ANDREA",Senate,00,Out of State,5795.36
-"LAFLAMME, ANDREA",Senate,00,In State,1750
-"LEPAGE, PAUL",House,02,Out of State,1338914.26
-"LEPAGE, PAUL",House,02,In State,1305271.02
-"LOUD, PAIGE",House,02,In State,35238.45
-"LOUD, PAIGE",House,02,Out of State,9179.26
-"MILLS, JANET TRAFTON",Senate,00,Out of State,2963082.11
-"MILLS, JANET TRAFTON",Senate,00,In State,1170016.87
-"PIETROWICZ, JOSHUA JAMES",House,01,In State,4445.5
-"PIETROWICZ, JOSHUA JAMES",House,01,Unknown,140
-"PINGREE, CHELLIE M",House,01,Out of State,282241.36
-"PINGREE, CHELLIE M",House,01,In State,57633.35
-"PLATNER, GRAHAM",Senate,00,Out of State,5223766.54
-"PLATNER, GRAHAM",Senate,00,In State,1473891.26
-"RENCH, PHILLIP",Senate,00,In State,50987.08
-"RENCH, PHILLIP",Senate,00,Out of State,3448.79
-"ROBERTS, TIFFANY DANIELLE",House,01,In State,11940.43
-"ROBERTS, TIFFANY DANIELLE",House,01,Out of State,1803
-"RODRIGUEZ, DAIRA",Senate,00,Out of State,235793.33
-"RUSSELL, RONALD CHARLES",House,01,Out of State,86614.79
-"RUSSELL, RONALD CHARLES",House,01,In State,14824.25
-"SMALL, ERIC",House,01,Out of State,11000
-"SMALL, ERIC",House,01,In State,3828
-"WOOD, JORDAN",House,02,Out of State,1515179.55
-"WOOD, JORDAN",House,02,In State,539695.93
+"candidate_name","office","district","geo","total"
+"BALDACCI, JOSEPH","House","02","In State",249152.1
+"BALDACCI, JOSEPH","House","02","Out of State",223977.31
+"CALABRESE, CARMEN VINCENT MR.","Senate","00","In State",17711.95
+"CLARK, JAMES L.","House","02","Out of State",500
+"COLLINS, SUSAN M.","Senate","00","Out of State",14567880.38
+"COLLINS, SUSAN M.","Senate","00","In State",820423.56
+"COSTELLO, DAVID","Senate","00","In State",121370.88
+"COSTELLO, DAVID","Senate","00","Out of State",9016
+"DUNLAP, MATT","House","02","In State",257436.6
+"DUNLAP, MATT","House","02","Out of State",138372.43
+"EVANS, DAVID ALAN","Senate","00","Out of State",5831.72
+"FAVREAU, TUCKER","Senate","00","In State",8475.02
+"FAVREAU, TUCKER","Senate","00","Out of State",7250
+"GOLDEN, JARED","House","02","Out of State",2169652.73
+"GOLDEN, JARED","House","02","In State",280159.79
+"KLEBAN, DAN","Senate","00","In State",283876.84
+"KLEBAN, DAN","Senate","00","Out of State",125515
+"LAFLAMME, ANDREA","Senate","00","Out of State",5795.36
+"LAFLAMME, ANDREA","Senate","00","In State",1750
+"LEPAGE, PAUL","House","02","Out of State",1338914.26
+"LEPAGE, PAUL","House","02","In State",1305271.02
+"LOUD, PAIGE","House","02","In State",35238.45
+"LOUD, PAIGE","House","02","Out of State",9179.26
+"MILLS, JANET TRAFTON","Senate","00","Out of State",2963082.11
+"MILLS, JANET TRAFTON","Senate","00","In State",1170016.87
+"PIETROWICZ, JOSHUA JAMES","House","01","In State",4445.5
+"PIETROWICZ, JOSHUA JAMES","House","01","Unknown",140
+"PINGREE, CHELLIE M","House","01","Out of State",282241.36
+"PINGREE, CHELLIE M","House","01","In State",57633.35
+"PLATNER, GRAHAM","Senate","00","Out of State",5223766.54
+"PLATNER, GRAHAM","Senate","00","In State",1473891.26
+"RENCH, PHILLIP","Senate","00","In State",50987.08
+"RENCH, PHILLIP","Senate","00","Out of State",3448.79
+"ROBERTS, TIFFANY DANIELLE","House","01","In State",11940.43
+"ROBERTS, TIFFANY DANIELLE","House","01","Out of State",1803
+"RODRIGUEZ, DAIRA","Senate","00","Out of State",235793.33
+"RUSSELL, RONALD CHARLES MR.","House","01","Out of State",86614.79
+"RUSSELL, RONALD CHARLES MR.","House","01","In State",14824.25
+"SMALL, ERIC","House","01","Out of State",11000
+"SMALL, ERIC","House","01","In State",3828
+"WOOD, JORDAN","House","02","Out of State",1515179.55
+"WOOD, JORDAN","House","02","In State",539695.93
