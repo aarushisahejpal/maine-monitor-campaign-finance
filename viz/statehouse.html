@@ -722,7 +722,11 @@ bars.append('text')
 
 // Show MCEA note if any candidates in this district are MCEA
 if (TOTALS.some(d => d.ft === 'MCEA')) {
-    document.getElementById('mceaNote').style.display = 'block';
+    const mceaNote = document.getElementById('mceaNote');
+    if (TOTALS.some(d => d.ft === 'MCEA' && d.m === 0)) {
+        mceaNote.innerHTML = 'Maine Clean Election Act (MCEA) candidates are participating in Maine\'s voluntary public financing system. The Maine Ethics Commission has yet to publish MCEA funding totals for some candidates; data will be updated as it becomes available.<a href="#mcea-footer" onclick="var el=document.getElementById(\'mcea-footer\');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:\'smooth\'});}catch(e){el.scrollIntoView({behavior:\'smooth\'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>';
+    }
+    mceaNote.style.display = 'block';
     document.getElementById('mcea-footer-block').style.display = 'inline';
 
     // Set MCEA amounts in footer based on race type only
@@ -1084,7 +1088,11 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
     if (TOTALS.some(d => d.ft === 'MCEA')) {
         const specNote = document.createElement('div');
         specNote.style.cssText = 'margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        specNote.innerHTML = `Maine Clean Election Act (MCEA) candidates are participating in Maine's voluntary public financing system.<a href="#mcea-footer" onclick="var el=document.getElementById('mcea-footer');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:'smooth'});}catch(e){el.scrollIntoView({behavior:'smooth'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>`;
+        let specNoteText = `Maine Clean Election Act (MCEA) candidates are participating in Maine's voluntary public financing system.`;
+        if (TOTALS.some(d => d.ft === 'MCEA' && d.m === 0)) {
+            specNoteText = `Maine Clean Election Act (MCEA) candidates are participating in Maine's voluntary public financing system. The Maine Ethics Commission has yet to publish MCEA funding totals for some candidates; data will be updated as it becomes available.`;
+        }
+        specNote.innerHTML = specNoteText + `<a href="#mcea-footer" onclick="var el=document.getElementById('mcea-footer');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:'smooth'});}catch(e){el.scrollIntoView({behavior:'smooth'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>`;
         document.getElementById('chartContainerSpec').parentNode.appendChild(specNote);
     }
 
