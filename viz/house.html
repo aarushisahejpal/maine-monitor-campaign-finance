@@ -448,8 +448,8 @@ function displayName(s, context) {
     let name = removeMiddleName(titleCase(s));
     const u = s.toUpperCase();
     let label = '';
-    if (u.includes('GOLDEN')) label = '(dropped out)';
-    else if (u.includes('ROBERTS, TIFFANY') || u.includes('SMALL, ERIC') || u.includes('PIANTIDOSI') || u.includes('DUPREY') || u.includes('PIETROWICZ') || u.includes('SIGEL') || u.includes('CLARK, JAMES') || u.includes('BALDACCI') || u.includes('LOUD') || u.includes('WOOD, JORDAN')) label = '(not on ballot)';
+    if (u.includes('GOLDEN') || u.includes('SMALL, ERIC')) label = '(dropped out)';
+    else if (u.includes('ROBERTS, TIFFANY') || u.includes('PIANTIDOSI') || u.includes('DUPREY') || u.includes('PIETROWICZ') || u.includes('SIGEL') || u.includes('CLARK, JAMES') || u.includes('BALDACCI') || u.includes('LOUD') || u.includes('WOOD, JORDAN')) label = '(not on ballot)';
     if (label) {
         if (context === 'svg') return name + ` <tspan style="fill:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</tspan>`;
         if (context === 'html') return name + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</span>`;
