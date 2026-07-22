@@ -514,7 +514,7 @@ async function loadData() {
             return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0, transfers: li.transfers || 0, treasury: li.treasury || 0, forgiveness: li.forgiveness || 0, interest: li.interest || 0, returned: li.returned || 0};
         })
         .sort((a, b) => {
-            const isOut = d => d.c.includes('(not on ballot)') || d.c.includes('(dropped out)') ? 1 : 0;
+            const isOut = d => d.c.includes('not on ballot') || d.c.includes('dropped out') ? 1 : 0;
             const outDiff = isOut(a) - isOut(b);
             if (outDiff !== 0) return outDiff;
             return (b.t + b.loans + b.ik + b.transfers + b.treasury + b.forgiveness + b.interest - b.returned) - (a.t + a.loans + a.ik + a.transfers + a.treasury + a.forgiveness + a.interest - a.returned);
@@ -533,7 +533,7 @@ async function loadData() {
         .filter(r => r.race === RACE_FILTER)
         .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_exp)}))
         .sort((a, b) => {
-            const isOut = d => d.c.includes('(not on ballot)') || d.c.includes('(dropped out)') ? 1 : 0;
+            const isOut = d => d.c.includes('not on ballot') || d.c.includes('dropped out') ? 1 : 0;
             const outDiff = isOut(a) - isOut(b);
             if (outDiff !== 0) return outDiff;
             return b.t - a.t;
@@ -641,7 +641,7 @@ bars.append('rect')
     .attr('width', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
-    .attr('fill', d => (d.c.includes('(not on ballot)') || d.c.includes('(dropped out)')) ? '#ccc' : (COLORS[d.p] || '#999'))
+    .attr('fill', d => (d.c.includes('not on ballot') || d.c.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
     .transition().duration(700).delay((d, i) => i * 40)
     .attr('width', d => x(fullTotal(d)) - margin.left);
 
@@ -814,7 +814,7 @@ if (expData.length) {
     expBars.append('rect').attr('class', 'bar')
         .attr('x', expMargin.left).attr('y', d => expY(d.c))
         .attr('width', 0).attr('height', expY.bandwidth()).attr('rx', 2)
-        .attr('fill', d => (d.c.includes('(not on ballot)') || d.c.includes('(dropped out)')) ? '#ccc' : (COLORS[d.p] || '#999'))
+        .attr('fill', d => (d.c.includes('not on ballot') || d.c.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
         .transition().duration(700).delay((d, i) => i * 40)
         .attr('width', d => expX(d.t) - expMargin.left);
 

@@ -473,7 +473,7 @@ async function loadData() {
     });
 
     // Re-sort: advancing candidates first, then not-on-ballot/dropped-out; within each group by full total
-    const isOut = d => d.d.includes('(not on ballot)') || d.d.includes('(dropped out)') ? 1 : 0;
+    const isOut = d => d.d.includes('not on ballot') || d.d.includes('dropped out') ? 1 : 0;
     TOTALS.sort((a, b) => {
         const outDiff = isOut(a) - isOut(b);
         if (outDiff !== 0) return outDiff;
@@ -621,7 +621,7 @@ bars.filter(d => barTotal(d) > 0).append('rect')
     .attr('width', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
-    .attr('fill', d => (d.d.includes('(not on ballot)') || d.d.includes('(dropped out)')) ? '#ccc' : (COLORS[d.p] || '#999'))
+    .attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
     .transition().duration(700).delay((d, i) => i * 80)
     .attr('width', d => x(barTotal(d)) - margin.left);
 
@@ -915,7 +915,7 @@ if (EXP_TOTALS.length) {
     // Bars for candidates with expenditures
     expBars.filter(d => d.t > 0).append('rect').attr('class', 'bar')
         .attr('x', expMargin.left).attr('y', d => expY(d.d)).attr('width', 0)
-        .attr('height', expY.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('(not on ballot)') || d.d.includes('(dropped out)')) ? '#ccc' : (COLORS[d.p] || '#999'))
+        .attr('height', expY.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
         .transition().duration(700).delay((d, i) => i * 80).attr('width', d => expX(d.t) - expMargin.left);
 
     // $0 candidates — invisible rect for hover
@@ -1034,7 +1034,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
 
     bars.filter(d => barTotal(d) > 0).append('rect').attr('class', 'bar')
         .attr('x', margin.left).attr('y', d => y(d.d)).attr('width', 0)
-        .attr('height', y.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('(not on ballot)') || d.d.includes('(dropped out)')) ? '#ccc' : (COLORS[d.p] || '#999'))
+        .attr('height', y.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
         .transition().duration(700).delay((d, i) => i * 80).attr('width', d => x(barTotal(d)) - margin.left);
 
     // Light green fill for special election MCEA segment
@@ -1166,7 +1166,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
 
         eBars.filter(d => d.t > 0).append('rect').attr('class', 'bar')
             .attr('x', margin.left).attr('y', d => eY(d.d)).attr('width', 0)
-            .attr('height', eY.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('(not on ballot)') || d.d.includes('(dropped out)')) ? '#ccc' : (COLORS[d.p] || '#999'))
+            .attr('height', eY.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
             .transition().duration(700).delay((d, i) => i * 80).attr('width', d => eX(d.t) - margin.left);
 
         eBars.filter(d => d.t === 0).append('rect').attr('class', 'bar')
