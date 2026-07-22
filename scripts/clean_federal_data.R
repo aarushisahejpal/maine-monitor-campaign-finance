@@ -17,6 +17,7 @@ fed_df_no_memo <- fed_df %>%
 
 cand_top5_contribs <- fed_df_no_memo %>%
   filter(contribution_receipt_amount >= 0) %>%
+  mutate(contributor_name = toupper(contributor_name)) %>%
   group_by(candidate_name, contributor_name, office, district) %>%
   summarize(contribution_amount = sum(contribution_receipt_amount, na.rm = T), .groups = "drop") %>%
   group_by(candidate_name) %>%
@@ -69,9 +70,10 @@ small_dollar_federal <- fed_df_no_memo %>%
   group_by(candidate_name, office, district, party) %>%
   summarise(small_dollar_total = sum(contribution_receipt_amount, na.rm = TRUE), .groups = "drop")
 
-# ActBlue/WinRed platform totals (from unfiltered data to capture all earmarked donations)
+# ActBlue/WinRed platform totals (exclude conduit aggregates to avoid double-counting)
 platform_totals <- fed_df %>%
   filter(contribution_receipt_amount > 0) %>%
+  filter(is.na(memo_text) | !str_detect(toupper(memo_text), "EARMARKED-CONDUIT")) %>%
   filter(str_detect(toupper(contributor_name), "ACTBLUE|WINRED")) %>%
   mutate(platform = case_when(
     str_detect(toupper(contributor_name), "ACTBLUE") ~ "ActBlue",
@@ -93,9 +95,9 @@ cand_exp_sum <- fed_exp %>%
 
 cand_top5_payees <- fed_exp %>%
   filter(disbursement_amount >= 0) %>%
-  # Normalize common payee name variants
+  mutate(recipient_name = toupper(recipient_name)) %>%
   mutate(recipient_name = case_when(
-    str_detect(toupper(recipient_name), "^HELIX CAMPAIGN") ~ "HELIX CAMPAIGNS",
+    str_detect(recipient_name, "^HELIX CAMPAIGN") ~ "HELIX CAMPAIGNS",
     TRUE ~ recipient_name
   )) %>%
   group_by(candidate_name, recipient_name, office, district) %>%
