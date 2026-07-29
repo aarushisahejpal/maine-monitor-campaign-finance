@@ -122,15 +122,66 @@ committee_sum <- state_df %>%
 committee_sum_for_join <- committee_sum %>% 
   rename("candidate" = "source_payee", "contributor" = "filer_name") 
 
-cand_con_total <- cand_sum %>% 
-  rename(candidate = filer_name) %>% 
-  rbind(committee_sum_for_join) %>% 
-  group_by(candidate, race, district, party) %>% 
+cand_con_total <- cand_sum %>%
+  rename(candidate = filer_name) %>%
+  rbind(committee_sum_for_join) %>%
+  group_by(candidate, race, district, party) %>%
   #this sums the totals given directly to the candidates and indirectly to the PAC/committee, who then give to the candidaet
-  summarize(tot_con_per_cand = sum(tot_con, na.rm = T)) %>% 
-  filter(race %in% c("Governor", "Senator", "Representative")) %>% 
-  mutate(district = as.numeric(district)) %>% 
+  summarize(tot_con_per_cand = sum(tot_con, na.rm = T)) %>%
+  filter(race %in% c("Governor", "Senator", "Representative")) %>%
+  mutate(district = as.numeric(district)) %>%
   arrange(race, district, -tot_con_per_cand)
+
+# ── FILING SUMMARY OVERLAY ──
+# Filing summaries include unitemized contributions that don't appear as
+# individual transactions. Use filing total as baseline, then add any new
+# transactions that came in after the filing period ended.
+if (file.exists("data/state_2026/filing_summaries.csv")) {
+  filing_summaries <- read_csv("data/state_2026/filing_summaries.csv") %>%
+    mutate(
+      candidate_clean = filer_name %>%
+        str_to_lower() %>%
+        str_replace_all("[[:punct:]]", "") %>%
+        str_squish(),
+      filing_end = as.Date(filing_period_end, format = "%m/%d/%Y")
+    )
+
+  # Calculate incremental contributions after filing period end for each candidate
+  # Include monetary contributions, in-kind, and loans to match "total raised"
+  incremental <- state_df %>%
+    filter(transaction_type %in% c("Monetary Contribution", "In-Kind Contribution", "Loan")) %>%
+    mutate(
+      tx_date = as.Date(date, format = "%m/%d/%Y"),
+      filer_clean = filer_name_clean %>% str_remove_all("\\s+special$")
+    ) %>%
+    inner_join(filing_summaries %>% select(candidate_clean, filing_end),
+               by = c("filer_clean" = "candidate_clean")) %>%
+    filter(tx_date > filing_end) %>%
+    group_by(filer_clean) %>%
+    summarize(incremental_con = sum(amount_n, na.rm = TRUE))
+
+  # Apply: filing total_contributions (includes monetary + in-kind + loans) + incremental
+  for (i in seq_len(nrow(filing_summaries))) {
+    cand_clean <- filing_summaries$candidate_clean[i]
+    filing_total <- filing_summaries$total_contributions[i]
+    incr <- incremental %>% filter(filer_clean == cand_clean) %>% pull(incremental_con)
+    if (length(incr) == 0) incr <- 0
+    new_total <- filing_total + incr
+
+    if (cand_clean %in% cand_con_total$candidate) {
+      old_total <- cand_con_total %>% filter(candidate == cand_clean) %>% pull(tot_con_per_cand)
+      cat(paste0("Filing overlay: ", cand_clean,
+                 " | transactions: $", formatC(old_total, format = "f", digits = 2, big.mark = ","),
+                 " | filing: $", formatC(filing_total, format = "f", digits = 2, big.mark = ","),
+                 " | incremental after ", filing_summaries$filing_period_end[i], ": $",
+                 formatC(incr, format = "f", digits = 2, big.mark = ","),
+                 " | new total: $", formatC(new_total, format = "f", digits = 2, big.mark = ","), "\n"))
+      cand_con_total <- cand_con_total %>%
+        mutate(tot_con_per_cand = ifelse(candidate == cand_clean, new_total, tot_con_per_cand))
+    }
+  }
+  cand_con_total <- cand_con_total %>% arrange(race, district, -tot_con_per_cand)
+}
 
 # Add ALL candidates with $0 contributions who aren't already in the data
 # (MCEA candidates + TF candidates who only have expenditures)
@@ -319,6 +370,35 @@ cand_exp_total <- state_df %>%
   filter(race %in% c("Governor", "Senator", "Representative")) %>%
   mutate(district = as.numeric(district)) %>%
   arrange(race, district, -tot_exp)
+
+# Apply filing summary overlay to expenditures too
+if (exists("filing_summaries")) {
+  exp_incremental <- state_df %>%
+    filter(transaction_type == "Expenditure") %>%
+    mutate(
+      tx_date = as.Date(date, format = "%m/%d/%Y"),
+      filer_clean = filer_name_clean %>% str_remove_all("\\s+special$")
+    ) %>%
+    inner_join(filing_summaries %>% select(candidate_clean, filing_end, total_expenditures),
+               by = c("filer_clean" = "candidate_clean")) %>%
+    filter(tx_date > filing_end) %>%
+    group_by(filer_clean) %>%
+    summarize(incremental_exp = sum(amount_n, na.rm = TRUE))
+
+  for (i in seq_len(nrow(filing_summaries))) {
+    cand_clean <- filing_summaries$candidate_clean[i]
+    filing_exp <- filing_summaries$total_expenditures[i]
+    incr <- exp_incremental %>% filter(filer_clean == cand_clean) %>% pull(incremental_exp)
+    if (length(incr) == 0) incr <- 0
+    new_exp <- filing_exp + incr
+
+    if (cand_clean %in% cand_exp_total$filer_name) {
+      cand_exp_total <- cand_exp_total %>%
+        mutate(tot_exp = ifelse(filer_name == cand_clean, new_exp, tot_exp))
+    }
+  }
+  cand_exp_total <- cand_exp_total %>% arrange(race, district, -tot_exp)
+}
 
 # Top 5 payees per candidate
 cand_top5_payees <- state_df %>%
