@@ -132,6 +132,24 @@ cand_con_total <- cand_sum %>%
   mutate(district = as.numeric(district)) %>%
   arrange(race, district, -tot_con_per_cand)
 
+# Add ALL candidates with $0 contributions who aren't already in the data
+# (MCEA candidates + TF candidates who only have expenditures)
+# This must run BEFORE the filing overlay so candidates with no transactions
+# but with filing data get their totals updated.
+missing_cands <- candidate_list %>%
+  select(filer_name, race, district, party) %>%
+  distinct() %>%
+  filter(race %in% c("Governor", "Senator", "Representative")) %>%
+  filter(!filer_name %in% cand_con_total$candidate) %>%
+  mutate(tot_con_per_cand = 0, district = as.numeric(district)) %>%
+  rename(candidate = filer_name)
+
+if (nrow(missing_cands) > 0) {
+  cand_con_total <- bind_rows(cand_con_total, missing_cands) %>%
+    arrange(race, district, -tot_con_per_cand)
+  cat(paste0("Added ", nrow(missing_cands), " candidates with $0 contributions\n"))
+}
+
 # ── FILING SUMMARY OVERLAY ──
 # Filing summaries include unitemized contributions that don't appear as
 # individual transactions. Use filing total as baseline, then add any new
@@ -146,10 +164,68 @@ if (file.exists("data/state_2026/filing_summaries.csv")) {
       filing_end = as.Date(filing_period_end, format = "%m/%d/%Y")
     )
 
-  # Calculate incremental contributions after filing period end for each candidate
-  # Include monetary contributions, in-kind, and loans to match "total raised"
-  incremental <- state_df %>%
+  # Build name mapping: filer URL names -> candidate_list names via filer_url bridge
+  # The filer URL list and filing summaries share filer_url; candidate_list has
+  # the canonical cleaned names used in cand_con_total. Match within same
+  # office+district using last-name overlap for cases where middle names differ.
+  if (file.exists("data/state_2026/all_filer_urls_2026.csv")) {
+    filer_urls <- read_csv("data/state_2026/all_filer_urls_2026.csv") %>%
+      mutate(
+        url_name_clean = name %>%
+          str_to_lower() %>%
+          str_replace_all("[[:punct:]]", "") %>%
+          str_squish(),
+        race_norm = case_when(
+          office == "Senator" ~ "Senator",
+          office == "Representative" ~ "Representative",
+          office == "Governor" ~ "Governor",
+          TRUE ~ office
+        ),
+        district = as.numeric(district)
+      )
+
+    cand_list_for_match <- candidate_list %>%
+      filter(race %in% c("Governor", "Senator", "Representative")) %>%
+      mutate(district = as.numeric(district)) %>%
+      select(filer_name, race, district) %>%
+      distinct()
+
+    name_map <- tibble(filing_name = character(), cand_list_name = character())
+    for (i in seq_len(nrow(filer_urls))) {
+      url_clean <- filer_urls$url_name_clean[i]
+      url_race <- filer_urls$race_norm[i]
+      url_dist <- filer_urls$district[i]
+      if (url_clean %in% cand_con_total$candidate) {
+        name_map <- bind_rows(name_map, tibble(filing_name = url_clean, cand_list_name = url_clean))
+        next
+      }
+      same_district <- cand_list_for_match %>%
+        filter(race == url_race, district == url_dist | (is.na(district) & is.na(url_dist)))
+      if (nrow(same_district) == 0) next
+      url_parts <- str_split(url_clean, "\\s+")[[1]]
+      for (j in seq_len(nrow(same_district))) {
+        cl_name <- same_district$filer_name[j]
+        cl_parts <- str_split(cl_name, "\\s+")[[1]]
+        if (all(url_parts %in% cl_parts) || all(cl_parts %in% url_parts)) {
+          name_map <- bind_rows(name_map, tibble(filing_name = url_clean, cand_list_name = cl_name))
+          break
+        }
+      }
+    }
+    name_map <- distinct(name_map)
+    cat(paste0("Filing name mapping: ", nrow(name_map), " matched\n"))
+
+    filing_summaries <- filing_summaries %>%
+      left_join(name_map, by = c("candidate_clean" = "filing_name")) %>%
+      mutate(candidate_clean = coalesce(cand_list_name, candidate_clean)) %>%
+      select(-cand_list_name)
+  }
+
+  # Calculate incremental DIRECT contributions after filing period end
+  # (where candidate is the filer — their own page's transactions)
+  incremental_direct <- state_df %>%
     filter(transaction_type %in% c("Monetary Contribution", "In-Kind Contribution", "Loan")) %>%
+    filter(!str_detect(filer_name, paste(committee_strings, collapse = "|"))) %>%
     mutate(
       tx_date = as.Date(date, format = "%m/%d/%Y"),
       filer_clean = filer_name_clean %>% str_remove_all("\\s+special$")
@@ -160,44 +236,57 @@ if (file.exists("data/state_2026/filing_summaries.csv")) {
     group_by(filer_clean) %>%
     summarize(incremental_con = sum(amount_n, na.rm = TRUE))
 
-  # Apply: filing total_contributions (includes monetary + in-kind + loans) + incremental
+  # PAC/committee contributions to each candidate (candidate as source_payee)
+  # These are NOT included in the candidate's filing summary — they're on the PAC side
+  pac_to_candidate <- state_df %>%
+    filter(transaction_type == "Monetary Contribution") %>%
+    filter(str_detect(filer_name, paste(committee_strings, collapse = "|"))) %>%
+    mutate(
+      source_payee = source_payee %>%
+        str_to_lower() %>%
+        str_replace_all("[[:punct:]]", "") %>%
+        str_remove_all("\\s+special$") %>%
+        str_squish()
+    ) %>%
+    left_join(candidate_list, by = c("source_payee" = "filer_name")) %>%
+    filter(!is.na(race)) %>%
+    group_by(source_payee) %>%
+    summarize(pac_con = sum(amount_n, na.rm = TRUE))
+
+  # Apply: filing total (direct) + PAC contributions + incremental direct after filing
+  skipped <- 0
+  applied <- 0
   for (i in seq_len(nrow(filing_summaries))) {
     cand_clean <- filing_summaries$candidate_clean[i]
     filing_total <- filing_summaries$total_contributions[i]
-    incr <- incremental %>% filter(filer_clean == cand_clean) %>% pull(incremental_con)
+    if (is.na(filing_total)) next
+    incr <- incremental_direct %>% filter(filer_clean == cand_clean) %>% pull(incremental_con)
     if (length(incr) == 0) incr <- 0
-    new_total <- filing_total + incr
+    pac <- pac_to_candidate %>% filter(source_payee == cand_clean) %>% pull(pac_con)
+    if (length(pac) == 0) pac <- 0
+    new_total <- filing_total + pac + incr
 
     if (cand_clean %in% cand_con_total$candidate) {
       old_total <- cand_con_total %>% filter(candidate == cand_clean) %>% pull(tot_con_per_cand)
       cat(paste0("Filing overlay: ", cand_clean,
-                 " | transactions: $", formatC(old_total, format = "f", digits = 2, big.mark = ","),
+                 " | old: $", formatC(old_total, format = "f", digits = 2, big.mark = ","),
                  " | filing: $", formatC(filing_total, format = "f", digits = 2, big.mark = ","),
-                 " | incremental after ", filing_summaries$filing_period_end[i], ": $",
+                 " | PAC: $", formatC(pac, format = "f", digits = 2, big.mark = ","),
+                 " | incr after ", filing_summaries$filing_period_end[i], ": $",
                  formatC(incr, format = "f", digits = 2, big.mark = ","),
-                 " | new total: $", formatC(new_total, format = "f", digits = 2, big.mark = ","), "\n"))
+                 " | new: $", formatC(new_total, format = "f", digits = 2, big.mark = ","), "\n"))
       cand_con_total <- cand_con_total %>%
         mutate(tot_con_per_cand = ifelse(candidate == cand_clean, new_total, tot_con_per_cand))
+      applied <- applied + 1
+    } else {
+      skipped <- skipped + 1
     }
   }
+  cat(paste0("Filing overlay applied to ", applied, " candidates, skipped ", skipped, " (not in candidate list)\n"))
   cand_con_total <- cand_con_total %>% arrange(race, district, -tot_con_per_cand)
 }
 
-# Add ALL candidates with $0 contributions who aren't already in the data
-# (MCEA candidates + TF candidates who only have expenditures)
-missing_cands <- candidate_list %>%
-  select(filer_name, race, district, party) %>%
-  distinct() %>%
-  filter(race %in% c("Governor", "Senator", "Representative")) %>%
-  filter(!filer_name %in% cand_con_total$candidate) %>%
-  mutate(tot_con_per_cand = 0, district = as.numeric(district)) %>%
-  rename(candidate = filer_name)
-
-if (nrow(missing_cands) > 0) {
-  cand_con_total <- bind_rows(cand_con_total, missing_cands) %>%
-    arrange(race, district, -tot_con_per_cand)
-  cat(paste0("Added ", nrow(missing_cands), " candidates with $0 contributions\n"))
-}
+# (moved $0 candidate addition above the filing overlay)
 
 # export an excel sheet with the total contributions for each canddiates;
 # each race and district is a separate sheet
