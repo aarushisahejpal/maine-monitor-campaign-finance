@@ -599,8 +599,8 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-const barTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest - d.returned;
-const fullTotal = d => d.t + d.m + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest - d.returned;
+const barTotal = d => d.t;
+const fullTotal = d => d.t + d.m;
 const maxVal = d3.max(TOTALS, d => fullTotal(d)) || 1; // full total
 const x = d3.scaleLinear()
     .domain([0, maxVal])
@@ -1021,8 +1021,8 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
         if (!d.m) d.m = 0;
         d.loans = 0; d.ik = 0; d.transfers = 0; d.treasury = 0; d.forgiveness = 0; d.interest = 0; d.returned = 0;
     });
-    const barTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest - d.returned;
-    const fullTotal = d => d.t + d.m + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest - d.returned;
+    const barTotal = d => d.t;
+    const fullTotal = d => d.t + d.m;
     const maxVal = d3.max(TOTALS, d => fullTotal(d)) || 1;
     const x = d3.scaleLinear().domain([0, maxVal]).range([margin.left, width - margin.right]);
     const y = d3.scaleBand().domain(TOTALS.map(d => d.d)).range([margin.top, height - margin.bottom]).padding(0.15);

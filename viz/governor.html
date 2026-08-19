@@ -619,7 +619,7 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-const fullTotal = d => d.t + d.loans + d.ik + d.transfers + d.treasury + d.forgiveness + d.interest - d.returned;
+const fullTotal = d => d.t;
 const x = d3.scaleLinear()
     .domain([0, d3.max(chartData, d => fullTotal(d))])
     .range([margin.left, width - margin.right]);
