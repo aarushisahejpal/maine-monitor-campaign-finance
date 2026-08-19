@@ -71,6 +71,28 @@ if (file.exists("data/name_merges.csv")) {
     select(-canonical_name)
 }
 
+# Exclude phantom expenditures from previous campaign transfers (after name merges)
+# When a candidate carries over funds, the old campaign files an "Expenditure" to self
+# and the new campaign files a "Transfer from Previous Campaign" for the same amount.
+# Both appear under the same filer_name. The expenditure belongs to the OLD campaign.
+transfer_info <- state_df %>%
+  filter(transaction_type == "Transfer from Previous Campaign") %>%
+  select(filer_name_clean, amount_n) %>%
+  distinct() %>%
+  rename(transfer_amount = amount_n)
+
+state_df <- state_df %>%
+  left_join(transfer_info, by = "filer_name_clean") %>%
+  mutate(
+    payee_clean = source_payee %>% str_to_lower() %>% str_replace_all("[[:punct:]]", "") %>% str_squish(),
+    filer_last = word(filer_name_clean, -1),
+    is_transfer_expenditure = transaction_type == "Expenditure" &
+      !is.na(transfer_amount) &
+      abs(amount_n - transfer_amount) < 0.01 &
+      str_detect(payee_clean, fixed(filer_last))
+  ) %>%
+  filter(!is_transfer_expenditure) %>%
+  select(-transfer_amount, -payee_clean, -filer_last, -is_transfer_expenditure)
 
 committee_strings <- c("ACTBLUE", "Maine", "Voter", "MAINE", "committee", 
                        "COMMITTEE", "Committee", "Action", "PAC", 
@@ -157,6 +179,7 @@ if (nrow(missing_cands) > 0) {
 if (file.exists("data/state_2026/filing_summaries.csv")) {
   filing_summaries <- read_csv("data/state_2026/filing_summaries.csv") %>%
     mutate(
+      is_special_filing = str_detect(filer_name, regex("special", ignore_case = TRUE)),
       candidate_clean = filer_name %>%
         str_to_lower() %>%
         str_replace_all("[[:punct:]]", "") %>%
@@ -221,62 +244,20 @@ if (file.exists("data/state_2026/filing_summaries.csv")) {
       select(-cand_list_name)
   }
 
-  # Calculate incremental DIRECT contributions after filing period end
-  # (where candidate is the filer — their own page's transactions)
-  incremental_direct <- state_df %>%
-    filter(transaction_type %in% c("Monetary Contribution", "In-Kind Contribution", "Loan")) %>%
-    filter(!str_detect(filer_name, paste(committee_strings, collapse = "|"))) %>%
-    mutate(
-      tx_date = as.Date(date, format = "%m/%d/%Y"),
-      filer_clean = filer_name_clean %>% str_remove_all("\\s+special$")
-    ) %>%
-    inner_join(filing_summaries %>% select(candidate_clean, filing_end),
-               by = c("filer_clean" = "candidate_clean")) %>%
-    filter(tx_date > filing_end) %>%
-    group_by(filer_clean) %>%
-    summarize(incremental_con = sum(amount_n, na.rm = TRUE))
-
-  # PAC/committee contributions to each candidate (candidate as source_payee)
-  # These are NOT included in the candidate's filing summary — they're on the PAC side
-  pac_to_candidate <- state_df %>%
-    filter(transaction_type == "Monetary Contribution") %>%
-    filter(str_detect(filer_name, paste(committee_strings, collapse = "|"))) %>%
-    mutate(
-      source_payee = source_payee %>%
-        str_to_lower() %>%
-        str_replace_all("[[:punct:]]", "") %>%
-        str_remove_all("\\s+special$") %>%
-        str_squish()
-    ) %>%
-    left_join(candidate_list, by = c("source_payee" = "filer_name")) %>%
-    filter(!is.na(race)) %>%
-    group_by(source_payee) %>%
-    summarize(pac_con = sum(amount_n, na.rm = TRUE))
-
-  # Apply: filing total (direct) + PAC contributions + incremental direct after filing
+  # Apply filing totals directly — the filing summary is the authoritative source.
+  # No incremental additions to avoid any risk of double-counting.
+  # Numbers update when we re-scrape filing summaries after each filing deadline.
   skipped <- 0
   applied <- 0
   for (i in seq_len(nrow(filing_summaries))) {
+    if (filing_summaries$is_special_filing[i]) next
     cand_clean <- filing_summaries$candidate_clean[i]
     filing_total <- filing_summaries$total_contributions[i]
     if (is.na(filing_total)) next
-    incr <- incremental_direct %>% filter(filer_clean == cand_clean) %>% pull(incremental_con)
-    if (length(incr) == 0) incr <- 0
-    pac <- pac_to_candidate %>% filter(source_payee == cand_clean) %>% pull(pac_con)
-    if (length(pac) == 0) pac <- 0
-    new_total <- filing_total + pac + incr
 
     if (cand_clean %in% cand_con_total$candidate) {
-      old_total <- cand_con_total %>% filter(candidate == cand_clean) %>% pull(tot_con_per_cand)
-      cat(paste0("Filing overlay: ", cand_clean,
-                 " | old: $", formatC(old_total, format = "f", digits = 2, big.mark = ","),
-                 " | filing: $", formatC(filing_total, format = "f", digits = 2, big.mark = ","),
-                 " | PAC: $", formatC(pac, format = "f", digits = 2, big.mark = ","),
-                 " | incr after ", filing_summaries$filing_period_end[i], ": $",
-                 formatC(incr, format = "f", digits = 2, big.mark = ","),
-                 " | new: $", formatC(new_total, format = "f", digits = 2, big.mark = ","), "\n"))
       cand_con_total <- cand_con_total %>%
-        mutate(tot_con_per_cand = ifelse(candidate == cand_clean, new_total, tot_con_per_cand))
+        mutate(tot_con_per_cand = ifelse(candidate == cand_clean, filing_total, tot_con_per_cand))
       applied <- applied + 1
     } else {
       skipped <- skipped + 1
@@ -460,30 +441,16 @@ cand_exp_total <- state_df %>%
   mutate(district = as.numeric(district)) %>%
   arrange(race, district, -tot_exp)
 
-# Apply filing summary overlay to expenditures too
+# Apply filing summary totals to expenditures (no incremental — same as contributions)
 if (exists("filing_summaries")) {
-  exp_incremental <- state_df %>%
-    filter(transaction_type == "Expenditure") %>%
-    mutate(
-      tx_date = as.Date(date, format = "%m/%d/%Y"),
-      filer_clean = filer_name_clean %>% str_remove_all("\\s+special$")
-    ) %>%
-    inner_join(filing_summaries %>% select(candidate_clean, filing_end, total_expenditures),
-               by = c("filer_clean" = "candidate_clean")) %>%
-    filter(tx_date > filing_end) %>%
-    group_by(filer_clean) %>%
-    summarize(incremental_exp = sum(amount_n, na.rm = TRUE))
-
   for (i in seq_len(nrow(filing_summaries))) {
+    if (filing_summaries$is_special_filing[i]) next
     cand_clean <- filing_summaries$candidate_clean[i]
     filing_exp <- filing_summaries$total_expenditures[i]
-    incr <- exp_incremental %>% filter(filer_clean == cand_clean) %>% pull(incremental_exp)
-    if (length(incr) == 0) incr <- 0
-    new_exp <- filing_exp + incr
 
     if (cand_clean %in% cand_exp_total$filer_name) {
       cand_exp_total <- cand_exp_total %>%
-        mutate(tot_exp = ifelse(filer_name == cand_clean, new_exp, tot_exp))
+        mutate(tot_exp = ifelse(filer_name == cand_clean, filing_exp, tot_exp))
     }
   }
   cand_exp_total <- cand_exp_total %>% arrange(race, district, -tot_exp)
