@@ -413,7 +413,7 @@
                 <div class="ribbon-text">Who's Giving?</div>
             </div>
         </div>
-        <p class="inclusion-note" style="font-size:0.78em;color:#1a1a1a;font-style:italic;margin-bottom:12px;line-height:1.5;">In the campaign finance data, we are including candidates who have been certified by the Maine secretary of state's office, or filed with the Maine Ethics Commission or Federal Elections Commission to run for office even if they later dropped out or did not make the ballot.</p>
+        <p class="inclusion-note" style="font-size:0.78em;color:#1a1a1a;font-style:italic;margin-bottom:12px;line-height:1.5;">In the campaign finance data, we are including candidates who have been certified by the Maine secretary of state's office, or filed with the Maine Ethics Commission or Federal Elections Commission to run for office even if they later dropped out or did not make the primary ballot. Independents, or unenrolled/non-party candidates, will not run in a primary this June.</p>
         <div class="chart-card">
             <p style="font-size:0.85em;color:#1a1a1a;margin-bottom:16px;"><strong>Here's the total raised by candidate.</strong></p>
             <div id="chartContainer"></div>
@@ -440,8 +440,8 @@
 
     <footer class="page-footer">
 <strong>Source:</strong> Maine Campaign Finance Disclosure System.<br>
-<strong>Last updated:</strong> August 10, 2026. Data is refreshed weekly.<br><br>
-<span style="font-size:0.95em;">Total raised figures are drawn from campaign finance reports filed with the Maine Ethics Commission and include monetary contributions, in-kind contributions, and loans. Between scheduled filings, totals are supplemented with individual transactions as they are posted to the Commission's disclosure site. Top donor lists only those who have given $3,000 or more. ActBlue is an online fundraising platform used by Democratic candidates; WinRed serves the same function for Republican candidates. Contributions listed under these groups are from individual donors who used the platforms to make donations. Candidates do not have to itemize donations of less than $50 in campaign finance filings. Individuals, political action committees and party committees may give up to $2,075 for each the primary and general election, for a total of $4,150. Contributions made to a particular candidate that are earmarked or directed through an intermediary such as a PAC or a party committee are considered contributions to the candidate, and are subject to the contribution limits.</span>
+<strong>Last updated:</strong> June 21, 2026. Data is refreshed weekly.<br><br>
+<span style="font-size:0.95em;">Top donor lists only those who have given $3,000 or more. ActBlue is an online fundraising platform used by Democratic candidates; WinRed serves the same function for Republican candidates. Contributions listed under these groups are from individual donors who used the platforms to make donations. Candidates do not have to itemize donations of less than $50 in campaign finance filings. Individuals, political action committees and party committees may give up to $2,075 for each the primary and general election, for a total of $4,150. Contributions made to a particular candidate that are earmarked or directed through an intermediary such as a PAC or a party committee are considered contributions to the candidate, and are subject to the contribution limits.</span>
     </footer>
     <div style="font-size:0.8em;color:#1a1a1a;margin-top:16px;padding-bottom:24px;">Developed in partnership with Aarushi Sahejpal and Hannah Bensen of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.</div>
 
@@ -496,13 +496,7 @@ async function loadData() {
         if (r.candidate_name) {
             const l = parseFloat(r.loans) || 0;
             const ik = parseFloat(r.in_kind) || 0;
-            const tr = parseFloat(r.transfers) || 0;
-            const tt = parseFloat(r.treasury) || 0;
-            const fg = parseFloat(r.forgiveness) || 0;
-            const bi = parseFloat(r.interest) || 0;
-            const ret = parseFloat(r.returned) || 0;
-            if (l > 0 || ik > 0 || tr > 0 || tt > 0 || fg > 0 || bi > 0 || ret > 0)
-                LOANS[r.candidate_name] = { loans: l, in_kind: ik, transfers: tr, treasury: tt, forgiveness: fg, interest: bi, returned: ret };
+            if (l > 0 || ik > 0) LOANS[r.candidate_name] = { loans: l, in_kind: ik };
         }
     });
 
@@ -511,14 +505,9 @@ async function loadData() {
         .map(r => {
             const dn = r.display_name || r.candidate;
             const li = LOANS[dn] || {};
-            return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0, transfers: li.transfers || 0, treasury: li.treasury || 0, forgiveness: li.forgiveness || 0, interest: li.interest || 0, returned: li.returned || 0};
+            return {c: dn, p: r.party, t: parseFloat(r.tot_con_per_cand), ft: r.finance_type || 'Unknown', loans: li.loans || 0, ik: li.in_kind || 0};
         })
-        .sort((a, b) => {
-            const isOut = d => d.c.includes('not on ballot') || d.c.includes('dropped out') ? 1 : 0;
-            const outDiff = isOut(a) - isOut(b);
-            if (outDiff !== 0) return outDiff;
-            return b.t - a.t;
-        });
+        .sort((a, b) => b.t - a.t);
 
     const DONORS = donorsRaw
         .filter(r => r.race === RACE_FILTER)
@@ -532,12 +521,7 @@ async function loadData() {
     const EXP_TOTALS = expRaw
         .filter(r => r.race === RACE_FILTER)
         .map(r => ({c: r.display_name || r.candidate, p: r.party, t: parseFloat(r.tot_exp)}))
-        .sort((a, b) => {
-            const isOut = d => d.c.includes('not on ballot') || d.c.includes('dropped out') ? 1 : 0;
-            const outDiff = isOut(a) - isOut(b);
-            if (outDiff !== 0) return outDiff;
-            return b.t - a.t;
-        });
+        .sort((a, b) => b.t - a.t);
 
     const TOP_PAYEES = payeesRaw
         .filter(r => r.race === RACE_FILTER)
@@ -641,7 +625,7 @@ bars.append('rect')
     .attr('width', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
-    .attr('fill', d => (d.c.includes('not on ballot') || d.c.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
+    .attr('fill', d => COLORS[d.p] || '#999')
     .transition().duration(700).delay((d, i) => i * 40)
     .attr('width', d => x(fullTotal(d)) - margin.left);
 
@@ -674,11 +658,6 @@ bars.on('mouseenter', function(evt, d) {
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
     if (d.loans > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.loans)} in loans</div>`;
     if (d.ik > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.ik)} in-kind</div>`;
-    if (d.transfers > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.transfers)} from prior campaign</div>`;
-    if (d.treasury > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.treasury)} party transfer</div>`;
-    if (d.forgiveness > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.forgiveness)} loan forgiveness</div>`;
-    if (d.interest > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.interest)} bank interest</div>`;
-    if (d.returned > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">-${fmt(d.returned)} returned</div>`;
     showTip(evt, html);
 })
 .on('mousemove', moveTip)
@@ -729,14 +708,10 @@ TOTALS.forEach(cand => {
     });
 
     // Breakdown rows — loans and in-kind sorted by amount
-    if (cand.loans > 0 || cand.ik > 0 || cand.transfers > 0 || cand.treasury > 0 || cand.forgiveness > 0 || cand.interest > 0 || cand.returned > 0) {
+    if (cand.loans > 0 || cand.ik > 0) {
         const extras = [];
         if (cand.loans > 0) extras.push({ label: 'Loans (self)', amt: cand.loans });
         if (cand.ik > 0) extras.push({ label: 'In-kind contributions', amt: cand.ik });
-        if (cand.transfers > 0) extras.push({ label: 'Transfer from prior campaign', amt: cand.transfers });
-        if (cand.treasury > 0) extras.push({ label: 'Party committee transfer', amt: cand.treasury });
-        if (cand.forgiveness > 0) extras.push({ label: 'Loan forgiveness', amt: cand.forgiveness });
-        if (cand.interest > 0) extras.push({ label: 'Bank interest', amt: cand.interest });
         extras.sort((a, b) => b.amt - a.amt);
 
         extras.forEach(ex => {
@@ -745,13 +720,6 @@ TOTALS.forEach(cand => {
             row.innerHTML = `<span style="font-size:0.8em;color:#1a1a1a;">${ex.label}</span><span style="font-size:0.95em;font-weight:400;color:#1a1a1a;">${fmt(ex.amt)}</span>`;
             card.appendChild(row);
         });
-
-        if (cand.returned > 0) {
-            const ret = document.createElement('div');
-            ret.style.cssText = 'padding:6px 8px;margin-bottom:2px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-            ret.innerHTML = `<span style="font-size:0.8em;color:#1a1a1a;">Returned contributions</span><span style="font-size:0.95em;font-weight:400;color:#1a1a1a;">-${fmt(cand.returned)}</span>`;
-            card.appendChild(ret);
-        }
     }
 
     // Small-dollar highlight
@@ -814,7 +782,7 @@ if (expData.length) {
     expBars.append('rect').attr('class', 'bar')
         .attr('x', expMargin.left).attr('y', d => expY(d.c))
         .attr('width', 0).attr('height', expY.bandwidth()).attr('rx', 2)
-        .attr('fill', d => (d.c.includes('not on ballot') || d.c.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
+        .attr('fill', d => COLORS[d.p] || '#999')
         .transition().duration(700).delay((d, i) => i * 40)
         .attr('width', d => expX(d.t) - expMargin.left);
 

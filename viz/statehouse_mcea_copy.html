@@ -358,8 +358,8 @@
 
     <footer class="page-footer">
 <strong>Source:</strong> Maine Campaign Finance Disclosure System.<br>
-<strong>Last updated:</strong> August 10, 2026. Data is refreshed weekly.<br><br>
-<span style="font-size:0.95em;">Top donor lists only those who have given $100 or more. ActBlue is an online fundraising platform used by Democratic candidates; WinRed serves the same function for Republican candidates. Contributions listed under these groups are from individual donors who used the platforms to make donations. Candidates do not have to itemize donations of less than $50 in campaign finance filings. Individuals, political action committees and party committees may give up to $500 for each the primary and general election, for a total of $1,000, to traditionally financed candidates. Contributions made to a particular candidate that are earmarked or directed through an intermediary such as a PAC or a party committee are considered contributions to the candidate, and are subject to the contribution limits.<span id="mcea-footer-block" style="display:none;"><br><br><span id="mcea-footer" style="color:#27ae60;font-weight:700;">*</span>Some candidates in this race are running as a Maine Clean Election Act (MCEA) candidate, choosing to participate in Maine's voluntary public financing system. This means they are funding their campaigns through a capped amount of small initial private donations, or seed money, and then a sum of public funds from the state that is allotted depending on the type of race and whether it is contested. Candidates receive a set amount of public financing once they are certified: <span id="mceaAmountNote">$675 for an uncontested primary, $3,325 for a contested primary, $1,350 for an uncontested general election and $6,650 for a contested general election</span>. MCEA candidates can earn additional public funds by hitting additional qualifying contribution milestones above the minimum needed to qualify for MCEA certification. Initial seed money is capped at <span id="mceaSeedNote">$1,000 for Maine House candidates</span>.</span></span>
+<strong>Last updated:</strong> June 8, 2026. Data is refreshed daily.<br><br>
+<span style="font-size:0.95em;">Top donor lists only those who have given $100 or more. ActBlue is an online fundraising platform used by Democratic candidates; WinRed serves the same function for Republican candidates. Contributions listed under these groups are from individual donors who used the platforms to make donations. Candidates do not have to itemize donations of less than $50 in campaign finance filings. Individuals, political action committees and party committees may give up to $500 for each the primary and general election, for a total of $1,000, to traditionally financed candidates. Contributions made to a particular candidate that are earmarked or directed through an intermediary such as a PAC or a party committee are considered contributions to the candidate, and are subject to the contribution limits.<span id="mcea-footer-block" style="display:none;"><br><br><span id="mcea-footer" style="color:#27ae60;font-weight:700;">*</span>Some candidates in this race are running as a Maine Clean Election Act (MCEA) candidate, choosing to participate in Maine's voluntary public financing system. This means they are funding their campaigns through a capped amount of small initial private donations, or seed money, and then a sum of public funds from the state that is allotted depending on the type of race and whether it is contested. Candidates receive a set amount of public financing once they are certified: <span id="mceaAmountNote">$675 for an uncontested primary, $3,325 for a contested primary, $1,350 for an uncontested general election and $6,650 for a contested general election</span>. Initial seed money is capped at <span id="mceaSeedNote">$1,000 for Maine House candidates</span>.</span></span>
     </footer>
     <div style="font-size:0.8em;color:#1a1a1a;margin-top:16px;padding-bottom:24px;">Developed in partnership with Aarushi Sahejpal and Hannah Bensen of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.</div>
 </div>
@@ -444,19 +444,13 @@ async function loadData() {
         if (d.ft === 'MCEA' && MCEA[d.d]) d.m = MCEA[d.d];
     });
 
-    // Loans + in-kind + other funding lookup by display_name
+    // Loans + in-kind lookup by display_name
     const LOANS = {};
     loansRaw.forEach(r => {
         if (r.candidate_name) {
             const l = parseFloat(r.loans) || 0;
             const ik = parseFloat(r.in_kind) || 0;
-            const tr = parseFloat(r.transfers) || 0;
-            const tt = parseFloat(r.treasury) || 0;
-            const fg = parseFloat(r.forgiveness) || 0;
-            const bi = parseFloat(r.interest) || 0;
-            const ret = parseFloat(r.returned) || 0;
-            if (l > 0 || ik > 0 || tr > 0 || tt > 0 || fg > 0 || bi > 0 || ret > 0)
-                LOANS[r.candidate_name] = { loans: l, in_kind: ik, transfers: tr, treasury: tt, forgiveness: fg, interest: bi, returned: ret };
+            if (l > 0 || ik > 0) LOANS[r.candidate_name] = { loans: l, in_kind: ik };
         }
     });
 
@@ -465,20 +459,10 @@ async function loadData() {
         const li = LOANS[d.d] || {};
         d.loans = li.loans || 0;
         d.ik = li.in_kind || 0;
-        d.transfers = li.transfers || 0;
-        d.treasury = li.treasury || 0;
-        d.forgiveness = li.forgiveness || 0;
-        d.interest = li.interest || 0;
-        d.returned = li.returned || 0;
     });
 
-    // Re-sort: advancing candidates first, then not-on-ballot/dropped-out; within each group by full total
-    const isOut = d => d.d.includes('not on ballot') || d.d.includes('dropped out') ? 1 : 0;
-    TOTALS.sort((a, b) => {
-        const outDiff = isOut(a) - isOut(b);
-        if (outDiff !== 0) return outDiff;
-        return (b.t + b.m) - (a.t + a.m);
-    });
+    // Re-sort by full total (contributions + MCEA + loans + in-kind)
+    TOTALS.sort((a, b) => (b.t + b.m) - (a.t + a.m));
 
     // Build expenditure totals from ALL candidates (fill $0 for those with no expenditure data)
     const expMap = {};
@@ -486,11 +470,7 @@ async function loadData() {
         expMap[r.candidate] = parseFloat(r.tot_exp);
     });
     const EXP_TOTALS = TOTALS.map(d => ({c: d.c, d: d.d, p: d.p, t: expMap[d.c] || 0, ft: d.ft}))
-        .sort((a, b) => {
-            const outDiff = isOut(a) - isOut(b);
-            if (outDiff !== 0) return outDiff;
-            return b.t - a.t;
-        });
+        .sort((a, b) => b.t - a.t);
 
     const TOP_PAYEES = payeesRaw
         .filter(r => r.race === RACE && String(r.district) === DISTRICT)
@@ -590,7 +570,7 @@ const margin = { top: 4, right: isMobile ? 70 : 110, bottom: 4, left: isMobile ?
 const barH = 30, barGap = 6;
 const width = isMobile ? 520 : 780;
 const hasMCEA = TOTALS.some(d => d.ft === 'MCEA');
-const vbPad = isMobile ? 40 : (hasMCEA ? 55 : 0);
+const vbPad = isMobile ? 40 : 0;
 const height = TOTALS.length * (barH + barGap) + margin.top + margin.bottom;
 
 const svg = d3.select('#chartContainer')
@@ -599,9 +579,7 @@ const svg = d3.select('#chartContainer')
     .attr('viewBox', `${-vbPad} 0 ${width + vbPad} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-const barTotal = d => d.t;
-const fullTotal = d => d.t + d.m;
-const maxVal = d3.max(TOTALS, d => fullTotal(d)) || 1; // full total
+const maxVal = d3.max(TOTALS, d => d.t + d.m + d.loans + d.ik) || 1; // full total
 const x = d3.scaleLinear()
     .domain([0, maxVal])
     .range([margin.left, width - margin.right]);
@@ -613,7 +591,8 @@ const y = d3.scaleBand()
 
 const bars = svg.selectAll('.bar-g').data(TOTALS).join('g').attr('class', 'bar-g');
 
-// Party-colored bar: contributions + loans + in-kind + transfers + etc
+// Party-colored bar: contributions + loans + in-kind
+const barTotal = d => d.t;
 bars.filter(d => barTotal(d) > 0).append('rect')
     .attr('class', 'bar')
     .attr('x', margin.left)
@@ -621,7 +600,7 @@ bars.filter(d => barTotal(d) > 0).append('rect')
     .attr('width', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
-    .attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
+    .attr('fill', d => COLORS[d.p] || '#999')
     .transition().duration(700).delay((d, i) => i * 80)
     .attr('width', d => x(barTotal(d)) - margin.left);
 
@@ -663,6 +642,7 @@ bars.filter(d => d.m > 0 && barTotal(d) > 0).append('line')
     .attr('stroke', '#fff').attr('stroke-width', 1.5);
 
 // $0 candidates get no bar, just an invisible rect for hover
+const fullTotal = d => d.t + d.m;
 bars.filter(d => fullTotal(d) === 0).append('rect')
     .attr('class', 'bar')
     .attr('x', margin.left)
@@ -688,18 +668,16 @@ bars.append('text')
         return d.d;
     });
 
-// MCEA badge — aligned in a column based on widest MCEA candidate name
+// MCEA badge before each candidate's name — positioned relative to full display name
 const nameWidths = {};
 TOTALS.forEach(d => {
     const tmp = svg.append('text').attr('class','label').text(d.d).style('visibility','hidden');
     nameWidths[d.d] = tmp.node().getComputedTextLength();
     tmp.remove();
 });
-const maxMceaNameWidth = Math.max(...TOTALS.filter(d => d.ft === 'MCEA').map(d => nameWidths[d.d] || 0));
-const badgeX = margin.left - 10 - maxMceaNameWidth - 52;
 
 bars.filter(d => d.ft === 'MCEA').append('foreignObject')
-    .attr('x', badgeX)
+    .attr('x', d => margin.left - 10 - nameWidths[d.d] - 52)
     .attr('y', d => y(d.d))
     .attr('width', 44)
     .attr('height', y.bandwidth())
@@ -733,11 +711,7 @@ bars.append('text')
 
 // Show MCEA note if any candidates in this district are MCEA
 if (TOTALS.some(d => d.ft === 'MCEA')) {
-    const mceaNote = document.getElementById('mceaNote');
-    if (TOTALS.some(d => d.ft === 'MCEA' && d.m === 0)) {
-        mceaNote.innerHTML = 'Maine Clean Election Act (MCEA) candidates are participating in Maine\'s voluntary public financing system. The Maine Ethics Commission has yet to publish MCEA funding totals for some candidates; data will be updated as it becomes available.<a href="#mcea-footer" onclick="var el=document.getElementById(\'mcea-footer\');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:\'smooth\'});}catch(e){el.scrollIntoView({behavior:\'smooth\'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>';
-    }
-    mceaNote.style.display = 'block';
+    document.getElementById('mceaNote').style.display = 'block';
     document.getElementById('mcea-footer-block').style.display = 'inline';
 
     // Set MCEA amounts in footer based on race type only
@@ -774,11 +748,6 @@ bars.on('mouseenter', function(evt, d) {
     if (d.m > 0) html += `<div style="font-size:0.85em;color:#27ae60;margin-top:2px;">Includes ${fmt(d.m)} MCEA public funding</div>`;
     if (d.loans > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.loans)} in loans</div>`;
     if (d.ik > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.ik)} in-kind</div>`;
-    if (d.transfers > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.transfers)} from prior campaign</div>`;
-    if (d.treasury > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.treasury)} party transfer</div>`;
-    if (d.forgiveness > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.forgiveness)} loan forgiveness</div>`;
-    if (d.interest > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.interest)} bank interest</div>`;
-    if (d.returned > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">-${fmt(d.returned)} returned</div>`;
     showTip(evt, html);
 })
 .on('mousemove', moveTip)
@@ -807,22 +776,37 @@ candsWithDonors.forEach(cand => {
     card.innerHTML = `
         <div class="donor-block-header">
             <span class="donor-block-name" style="color:${COLORS[cand.p] || '#6b6b6b'}">${(() => { const m = cand.d.match(/\s*(\([^)]+\))\s*$/); if (m) { return cand.d.replace(m[0],'') + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${m[1]}</span>`; } return cand.d; })()}${cand.ft === 'MCEA' ? ' <span class="mcea-badge">MCEA</span>' : cand.ft === 'Exempt' ? ' <span class="exempt-badge">EXEMPT</span>' : ''}</span>
-            <span class="donor-block-total">${fmt(fullTotal(cand))} total</span>
+            <span class="donor-block-total">${fmt(cand.t + cand.m + cand.loans + cand.ik)} total</span>
         </div>`;
 
+    // Exempt candidate note
+    if (cand.ft === 'Exempt') {
+        const eb = document.createElement('div');
+        eb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
+        eb.innerHTML = 'Exempt candidate — does not intend to raise or spend money for this campaign.';
+        card.appendChild(eb);
+    }
+
+    // Platform donations (ActBlue/WinRed) — first
+    platformDonors.forEach(d => {
+        const isBlue = /actblue/i.test(d.e);
+        const borderColor = isBlue ? '#2c6fbb' : '#c0392b';
+        const label = isBlue ? 'ActBlue' : 'WinRed';
+        const pb = document.createElement('div');
+        pb.className = 'platform-row';
+        pb.style.cssText = `padding:6px 8px;margin-bottom:2px;background:#fff;border:1px solid #e8e8e8;border-left:3px solid ${borderColor};border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;`;
+        pb.innerHTML = `<span class="platform-label" style="font-size:0.8em;">Via ${label}</span><span class="platform-amt" style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
+        card.appendChild(pb);
+    });
+
     // Breakdown rows — other sources sorted by amount, then total individual contributions last
-    if (cand.m > 0 || cand.loans > 0 || cand.ik > 0 || cand.transfers > 0 || cand.treasury > 0 || cand.forgiveness > 0 || cand.interest > 0 || cand.returned > 0) {
+    if (cand.m > 0 || cand.loans > 0 || cand.ik > 0) {
         const extras = [];
         if (cand.m > 0) extras.push({ label: 'Maine Clean Elections Fund', amt: cand.m, green: true });
         if (cand.loans > 0) extras.push({ label: 'Loans (self)', amt: cand.loans, green: false });
         if (cand.ik > 0) extras.push({ label: 'In-kind contributions', amt: cand.ik, green: false });
-        if (cand.transfers > 0) extras.push({ label: 'Transfer from prior campaign', amt: cand.transfers, green: false });
-        if (cand.treasury > 0) extras.push({ label: 'Party committee transfer', amt: cand.treasury, green: false });
-        if (cand.forgiveness > 0) extras.push({ label: 'Loan forgiveness', amt: cand.forgiveness, green: false });
-        if (cand.interest > 0) extras.push({ label: 'Bank interest', amt: cand.interest, green: false });
         extras.sort((a, b) => b.amt - a.amt);
 
-        // Other sources first
         extras.forEach(ex => {
             const row = document.createElement('div');
             row.style.cssText = ex.green
@@ -833,14 +817,6 @@ candsWithDonors.forEach(cand => {
             card.appendChild(row);
         });
 
-        // Returned contributions — negative, shown last before total individual contributions
-        if (cand.returned > 0) {
-            const ret = document.createElement('div');
-            ret.style.cssText = 'padding:6px 8px;margin-bottom:2px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;';
-            ret.innerHTML = `<span style="font-size:0.8em;color:#1a1a1a;">Returned contributions</span><span style="font-size:0.95em;font-weight:400;color:#1a1a1a;">-${fmt(cand.returned)}</span>`;
-            card.appendChild(ret);
-        }
-
         // Total individual contributions — always last (closest to top donors)
         if (cand.t > 0) {
             const cr = document.createElement('div');
@@ -849,27 +825,6 @@ candsWithDonors.forEach(cand => {
             card.appendChild(cr);
         }
     }
-
-
-    // Exempt candidate note
-    if (cand.ft === 'Exempt') {
-        const eb = document.createElement('div');
-        eb.style.cssText = 'padding:10px 8px;margin-bottom:4px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        eb.innerHTML = 'Exempt candidate — does not intend to raise or spend money for this campaign.';
-        card.appendChild(eb);
-    }
-
-    // Platform donations (ActBlue/WinRed)
-    platformDonors.forEach(d => {
-        const isBlue = /actblue/i.test(d.e);
-        const borderColor = isBlue ? '#2c6fbb' : '#c0392b';
-        const label = isBlue ? 'ActBlue' : 'WinRed';
-        const pb = document.createElement('div');
-        pb.className = 'platform-row';
-        pb.style.cssText = `padding:10px 8px;margin-bottom:4px;background:#fff;border:1px solid #e8e8e8;border-left:3px solid ${borderColor};border-radius:4px;display:flex;justify-content:space-between;align-items:baseline;`;
-        pb.innerHTML = `<span class="platform-label" style="font-size:0.8em;">Via ${label}</span><span class="platform-amt" style="font-size:0.95em;font-weight:400;">${fmt(d.a)}</span>`;
-        card.appendChild(pb);
-    });
 
     // Small-dollar highlight — removed for statehouse pages
 
@@ -915,7 +870,7 @@ if (EXP_TOTALS.length) {
     // Bars for candidates with expenditures
     expBars.filter(d => d.t > 0).append('rect').attr('class', 'bar')
         .attr('x', expMargin.left).attr('y', d => expY(d.d)).attr('width', 0)
-        .attr('height', expY.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
+        .attr('height', expY.bandwidth()).attr('rx', 2).attr('fill', d => COLORS[d.p] || '#999')
         .transition().duration(700).delay((d, i) => i * 80).attr('width', d => expX(d.t) - expMargin.left);
 
     // $0 candidates — invisible rect for hover
@@ -1019,7 +974,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
     TOTALS.forEach(d => {
         if (d.ft === 'MCEA' && MCEA && MCEA[d.d]) d.m = MCEA[d.d];
         if (!d.m) d.m = 0;
-        d.loans = 0; d.ik = 0; d.transfers = 0; d.treasury = 0; d.forgiveness = 0; d.interest = 0; d.returned = 0;
+        d.loans = 0; d.ik = 0; // special election candidates unlikely to have loans but be safe
     });
     const barTotal = d => d.t;
     const fullTotal = d => d.t + d.m;
@@ -1034,7 +989,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
 
     bars.filter(d => barTotal(d) > 0).append('rect').attr('class', 'bar')
         .attr('x', margin.left).attr('y', d => y(d.d)).attr('width', 0)
-        .attr('height', y.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
+        .attr('height', y.bandwidth()).attr('rx', 2).attr('fill', d => COLORS[d.p] || '#999')
         .transition().duration(700).delay((d, i) => i * 80).attr('width', d => x(barTotal(d)) - margin.left);
 
     // Light green fill for special election MCEA segment
@@ -1099,11 +1054,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
     if (TOTALS.some(d => d.ft === 'MCEA')) {
         const specNote = document.createElement('div');
         specNote.style.cssText = 'margin-top:12px;padding:10px;background:#edf7ed;border:1px solid #c8e6c9;border-radius:4px;font-size:0.8em;color:var(--text-secondary);';
-        let specNoteText = `Maine Clean Election Act (MCEA) candidates are participating in Maine's voluntary public financing system.`;
-        if (TOTALS.some(d => d.ft === 'MCEA' && d.m === 0)) {
-            specNoteText = `Maine Clean Election Act (MCEA) candidates are participating in Maine's voluntary public financing system. The Maine Ethics Commission has yet to publish MCEA funding totals for some candidates; data will be updated as it becomes available.`;
-        }
-        specNote.innerHTML = specNoteText + `<a href="#mcea-footer" onclick="var el=document.getElementById('mcea-footer');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:'smooth'});}catch(e){el.scrollIntoView({behavior:'smooth'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>`;
+        specNote.innerHTML = `Maine Clean Election Act (MCEA) candidates are participating in Maine's voluntary public financing system.<a href="#mcea-footer" onclick="var el=document.getElementById('mcea-footer');var rect=el.getBoundingClientRect();var offset=rect.top+window.pageYOffset;try{window.parent.scrollTo({top:offset,behavior:'smooth'});}catch(e){el.scrollIntoView({behavior:'smooth'});}return false;" style="color:#27ae60;text-decoration:none;font-weight:700;cursor:pointer;">*</a>`;
         document.getElementById('chartContainerSpec').parentNode.appendChild(specNote);
     }
 
@@ -1166,7 +1117,7 @@ function renderSpecial(TOTALS, DONORS, SMALL, EXP_TOTALS, TOP_PAYEES, MCEA) {
 
         eBars.filter(d => d.t > 0).append('rect').attr('class', 'bar')
             .attr('x', margin.left).attr('y', d => eY(d.d)).attr('width', 0)
-            .attr('height', eY.bandwidth()).attr('rx', 2).attr('fill', d => (d.d.includes('not on ballot') || d.d.includes('dropped out')) ? '#ccc' : (COLORS[d.p] || '#999'))
+            .attr('height', eY.bandwidth()).attr('rx', 2).attr('fill', d => COLORS[d.p] || '#999')
             .transition().duration(700).delay((d, i) => i * 80).attr('width', d => eX(d.t) - margin.left);
 
         eBars.filter(d => d.t === 0).append('rect').attr('class', 'bar')
