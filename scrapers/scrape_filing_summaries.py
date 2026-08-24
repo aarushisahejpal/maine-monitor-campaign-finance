@@ -93,6 +93,8 @@ def scrape_filer_page(page, url, filer_name):
                 fname = tds[0].text_content().strip()
                 fdate = tds[1].text_content().strip()
                 if fname and fdate and html.unescape(fname) != html.unescape(filer_name):
+                    if "personal financial disclosure" in fname.lower():
+                        continue
                     latest_filing_name = fname
                     latest_filing_date = fdate
                     break
