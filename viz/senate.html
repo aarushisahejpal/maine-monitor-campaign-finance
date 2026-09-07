@@ -276,6 +276,7 @@
             </div>
         </div>
         <p class="inclusion-note" style="font-size:0.78em;color:#1a1a1a;font-style:italic;margin-bottom:12px;line-height:1.5;">In the campaign finance data, we are including candidates who have been certified by the Maine secretary of state's office, or filed with the Maine Ethics Commission or Federal Elections Commission to run for office even if they later dropped out or did not make the ballot.</p>
+        <p class="inclusion-note" style="font-size:0.78em;color:#1a1a1a;font-style:italic;margin-bottom:12px;line-height:1.5;">The data for Jordan Wood and Paige Loud includes campaign finance information from their 2nd Congressional District runs; that data was not separated in FEC filings.</p>
         <div class="chart-card">
             <p style="font-size:0.85em;color:#1a1a1a;margin-bottom:16px;"><strong>Here's the total raised by candidate.</strong></p>
             <div id="chartContributions"></div>
@@ -360,9 +361,9 @@ const PARTY_COLORS = {
 const PARTY_LABELS = {
     'REPUBLICAN PARTY':'Republican', 'DEMOCRATIC PARTY':'Democrat',
     'INDEPENDENT':'independent', 'INDEPENDENT PARTY':'independent',
-    'UNAFFILIATED':'independent', '':'Other'
+    'UNAFFILIATED':'independent', 'TAXPAYERS':'Taxpayers', '':'Other'
 };
-const PARTY_ORDER = ['DEMOCRATIC PARTY','REPUBLICAN PARTY','INDEPENDENT','INDEPENDENT PARTY','UNAFFILIATED'];
+const PARTY_ORDER = ['DEMOCRATIC PARTY','REPUBLICAN PARTY','INDEPENDENT','INDEPENDENT PARTY','UNAFFILIATED','TAXPAYERS'];
 const SOURCE_COLORS = { Individual:'#19345B', 'PAC/Committee':'#e67e22', 'Party Committee':'#27ae60', 'Transfers (Own Committees)':'#2ecc71', 'Candidate/Self':'#8e44ad', Other:'#999' };
 const GEO_COLORS = { 'In State':'#19345B', 'Out of State':'#e67e22', Unknown:'#999' };
 
@@ -449,6 +450,7 @@ function displayName(s, context) {
     let label = '';
     if (u.includes('MILLS, JANET') || u.includes('PLATNER, GRAHAM')) label = '(dropped out)';
     else if (u.includes('KLEBAN') || u.includes('RODRIGUEZ') || u.includes('FAVREAU') || u.includes('RENCH') || u.includes('COSTELLO') || u.includes('LAFLAMME') || u.includes('SMERIGLIO') || u.includes('CALABRESE') || u.includes('ALCALA') || u.includes('ALCORN') || u.includes('RICH, TIMOTHY') || u.includes('EVANS')) label = '(not on ballot)';
+    else if (u.includes('BELLOWS') || u.includes('JACKSON, TROY') || u.includes('SHAH') || u.includes('WEBB') || u.includes('PELLETIER') || u.includes('CARLSON') || u.includes('SOLOMON') || u.includes('LOUD') || u.includes('WOOD, JORDAN')) label = '(convention)';
     if (label) {
         if (context === 'svg') return name + ` <tspan style="fill:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</tspan>`;
         if (context === 'html') return name + ` <span style="color:#666;font-size:0.8em;font-style:italic;text-transform:none;">${label}</span>`;
@@ -473,7 +475,7 @@ function buildChart(containerId, data, totalId) {
     const y = d3.scaleBand().domain(chartData.map(d=>d.c)).range([margin.top, height-margin.bottom]).padding(0.15);
     const bars = svg.selectAll('.bar-g').data(chartData).join('g').attr('class','bar-g');
     bars.append('rect').attr('class','bar').attr('x',margin.left).attr('y',d=>y(d.c)).attr('width',0)
-        .attr('height',y.bandwidth()).attr('rx',2).attr('fill',d=>PARTY_COLORS[d.p]||'#999')
+        .attr('height',y.bandwidth()).attr('rx',2).attr('fill',d=>{const dn=displayName(d.c);const u=d.c.toUpperCase();if(dn.includes('dropped out')||dn.includes('not on ballot'))return'#ccc';if(dn.includes('convention')&&!u.includes('JACKSON, TROY'))return'#ccc';return PARTY_COLORS[d.p]||'#999';})
         .transition().duration(700).delay((d,i)=>i*40).attr('width',d=>x(d.t)-margin.left);
     bars.append('text').attr('class','label').attr('x',margin.left-10).attr('y',d=>y(d.c)+y.bandwidth()/2)
         .attr('dy','0.35em').attr('text-anchor','end').html(d=>displayName(d.c, 'svg'));

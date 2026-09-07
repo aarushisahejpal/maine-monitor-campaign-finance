@@ -474,7 +474,7 @@ function buildChart(containerId, data, totalId) {
     const y = d3.scaleBand().domain(chartData.map(d=>d.c)).range([margin.top, height-margin.bottom]).padding(0.15);
     const bars = svg.selectAll('.bar-g').data(chartData).join('g').attr('class','bar-g');
     bars.append('rect').attr('class','bar').attr('x',margin.left).attr('y',d=>y(d.c)).attr('width',0)
-        .attr('height',y.bandwidth()).attr('rx',2).attr('fill',d=>PARTY_COLORS[d.p]||'#999')
+        .attr('height',y.bandwidth()).attr('rx',2).attr('fill',d=>{const dn=displayName(d.c);return(dn.includes('dropped out')||dn.includes('not on ballot'))?'#ccc':(PARTY_COLORS[d.p]||'#999');})
         .transition().duration(700).delay((d,i)=>i*40).attr('width',d=>x(d.t)-margin.left);
     bars.append('text').attr('class','label').attr('x',margin.left-10).attr('y',d=>y(d.c)+y.bandwidth()/2)
         .attr('dy','0.35em').attr('text-anchor','end').html(d=>displayName(d.c, 'svg'));
