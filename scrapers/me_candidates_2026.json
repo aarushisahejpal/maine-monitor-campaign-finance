@@ -246,5 +246,69 @@
     "district": "00",
     "party": "DEMOCRATIC PARTY",
     "committee_id": "C00907873"
+  },
+  {
+    "candidate_id": "S6ME00456",
+    "name": "BELLOWS, SHENNA",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00955815"
+  },
+  {
+    "candidate_id": "S6ME00464",
+    "name": "JACKSON, TROY DALE",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00955609"
+  },
+  {
+    "candidate_id": "S6ME00431",
+    "name": "LOUD, PAIGE",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00931352"
+  },
+  {
+    "candidate_id": "S6ME00449",
+    "name": "SHAH, NIRAV",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00955773"
+  },
+  {
+    "candidate_id": "S6ME00480",
+    "name": "WEBB, ASHLEY JAMES",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00957126"
+  },
+  {
+    "candidate_id": "S6ME00498",
+    "name": "PELLETIER, SAUNDRA",
+    "office": "Senate",
+    "district": "00",
+    "party": "DEMOCRATIC PARTY",
+    "committee_id": "C00957167"
+  },
+  {
+    "candidate_id": "S6ME00472",
+    "name": "CARLSON, OWEN NICHOLAS",
+    "office": "Senate",
+    "district": "00",
+    "party": "TAXPAYERS",
+    "committee_id": "NONE"
+  },
+  {
+    "candidate_id": "S6ME00506",
+    "name": "SOLOMON, GAVIN",
+    "office": "Senate",
+    "district": "00",
+    "party": "REPUBLICAN PARTY",
+    "committee_id": "NONE"
   }
 ]
