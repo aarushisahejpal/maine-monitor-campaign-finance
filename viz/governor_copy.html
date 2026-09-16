@@ -625,7 +625,7 @@ bars.append('rect')
     .attr('width', 0)
     .attr('height', y.bandwidth())
     .attr('rx', 2)
-    .attr('fill', d => COLORS[d.p] || '#999')
+    .attr('fill', d => (d.c.includes('not on ballot') || d.c.includes('dropped out') || d.c.includes('write-in')) ? '#ccc' : (COLORS[d.p] || '#999'))
     .transition().duration(700).delay((d, i) => i * 40)
     .attr('width', d => x(fullTotal(d)) - margin.left);
 
@@ -656,8 +656,9 @@ bars.on('mouseenter', function(evt, d) {
         <div class="tip-party">${d.p === 'Democratic' ? 'Democrat' : d.p === 'Unenrolled' ? 'independent' : d.p}</div>
         <div class="tip-total">${fmt(fullTotal(d))}</div>
         <div class="tip-rank">#${rank} of ${chartData.length} candidates</div>`;
-    if (d.loans > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.loans)} in loans</div>`;
-    if (d.ik > 0) html += `<div style="font-size:0.85em;color:#666;margin-top:2px;">Includes ${fmt(d.ik)} in-kind</div>`;
+    const pc = COLORS[d.p] || '#666';
+    if (d.loans > 0) html += `<div style="font-size:0.85em;color:${pc};margin-top:2px;">Includes ${fmt(d.loans)} in loans</div>`;
+    if (d.ik > 0) html += `<div style="font-size:0.85em;color:${pc};margin-top:2px;">Includes ${fmt(d.ik)} in-kind</div>`;
     showTip(evt, html);
 })
 .on('mousemove', moveTip)
@@ -782,7 +783,7 @@ if (expData.length) {
     expBars.append('rect').attr('class', 'bar')
         .attr('x', expMargin.left).attr('y', d => expY(d.c))
         .attr('width', 0).attr('height', expY.bandwidth()).attr('rx', 2)
-        .attr('fill', d => COLORS[d.p] || '#999')
+        .attr('fill', d => (d.c.includes('not on ballot') || d.c.includes('dropped out') || d.c.includes('write-in')) ? '#ccc' : (COLORS[d.p] || '#999'))
         .transition().duration(700).delay((d, i) => i * 40)
         .attr('width', d => expX(d.t) - expMargin.left);
 
