@@ -1,6 +1,8 @@
 "candidate_name","office","district","geo","total"
 "BALDACCI, JOSEPH","House","02","Out of State",314826.02
 "BALDACCI, JOSEPH","House","02","In State",286255.1
+"BELLOWS, SHENNA","Senate","00","In State",101095
+"BELLOWS, SHENNA","Senate","00","Out of State",89418
 "CALABRESE, CARMEN VINCENT MR.","Senate","00","In State",17711.95
 "CLARK, JAMES L.","House","02","Out of State",500
 "COLLINS, SUSAN M.","Senate","00","Out of State",18549052.45
@@ -18,9 +20,9 @@
 "KLEBAN, DAN","Senate","00","Out of State",125515
 "LAFLAMME, ANDREA","Senate","00","Out of State",13942.54
 "LAFLAMME, ANDREA","Senate","00","In State",1750
-"LEPAGE, PAUL","House","02","Out of State",2042040.57
-"LEPAGE, PAUL","House","02","In State",1382595.25
-"LOUD, PAIGE","House","02","In State",39653.27
+"LEPAGE, PAUL","House","02","Out of State",2042050.61
+"LEPAGE, PAUL","House","02","In State",1382695.25
+"LOUD, PAIGE","House","02","In State",71316.04
 "LOUD, PAIGE","House","02","Out of State",12279.26
 "MILLS, JANET TRAFTON","Senate","00","Out of State",3187911.32
 "MILLS, JANET TRAFTON","Senate","00","In State",1170016.87

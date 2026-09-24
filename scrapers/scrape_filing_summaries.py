@@ -25,6 +25,8 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
 ANTI_DETECT_SCRIPT = 'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
 
 FILING_PERIOD_ENDS = {
+    "42-Day Pre-General Report": "09/15/2026",
+    "42-Day Pre-General MCEA Report": "09/15/2026",
     "42-Day Post-Primary Report": "07/14/2026",
     "42-Day Post-Primary MCEA Report": "07/14/2026",
     "11-Day Pre-Primary Report": "05/22/2026",
