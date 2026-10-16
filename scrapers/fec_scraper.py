@@ -42,7 +42,7 @@ DISBURSEMENT_FIELDS = [
 
 def make_session():
     s = requests.Session()
-    retries = Retry(total=5, backoff_factor=2, status_forcelist=[429, 500, 502, 503, 504])
+    retries = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
     s.mount('https://', HTTPAdapter(max_retries=retries))
     return s
 
@@ -202,7 +202,7 @@ def pull(cycle, schedule):
                     'two_year_transaction_period': cycle,
                     'per_page': 1,
                 }
-                resp = session.get(cfg['endpoint'], params=check_params, timeout=60)
+                resp = session.get(cfg['endpoint'], params=check_params, timeout=(10, 30))
                 record_count = resp.json().get('pagination', {}).get('count', 0)
             except:
                 record_count = 0
@@ -247,7 +247,7 @@ def pull(cycle, schedule):
                         params[cfg['date_key']] = last_date
 
                     try:
-                        resp = session.get(cfg['endpoint'], params=params, timeout=60)
+                        resp = session.get(cfg['endpoint'], params=params, timeout=(10, 30))
                         resp.raise_for_status()
                         data = resp.json()
                         consecutive_errors = 0
