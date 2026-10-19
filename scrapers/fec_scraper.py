@@ -11,10 +11,33 @@ Usage (run from repo root):
     python scrapers/fec_scraper.py 2024 b
 """
 
-import json, csv, time, os, sys
+import json, csv, time, os, sys, signal
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
+
+class RequestTimeout(Exception):
+    pass
+
+def _alarm_handler(signum, frame):
+    raise RequestTimeout("Hard timeout")
+
+signal.signal(signal.SIGALRM, _alarm_handler)
+
+
+def safe_get(session, url, params, hard_timeout=45):
+    """GET with a hard signal-based timeout that kills hung connections."""
+    signal.alarm(hard_timeout)
+    try:
+        resp = session.get(url, params=params, timeout=(10, 30))
+        signal.alarm(0)
+        return resp
+    except RequestTimeout:
+        raise
+    except Exception:
+        signal.alarm(0)
+        raise
 
 API_KEY = os.environ.get('FEC_API_KEY', 'DEMO_KEY')
 
@@ -42,8 +65,11 @@ DISBURSEMENT_FIELDS = [
 
 def make_session():
     s = requests.Session()
-    retries = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
-    s.mount('https://', HTTPAdapter(max_retries=retries))
+    retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504],
+                    raise_on_status=False)
+    a = HTTPAdapter(max_retries=retries)
+    a.config = {'keep_alive': True}
+    s.mount('https://', a)
     return s
 
 
@@ -192,6 +218,7 @@ def pull(cycle, schedule):
 
         total_rows = 0
         for comm_id, cand in remaining.items():
+            session = make_session()
             print(f"\n  {cand['name']} ({comm_id})...", end='', flush=True)
 
             # Check total record count first
@@ -202,7 +229,7 @@ def pull(cycle, schedule):
                     'two_year_transaction_period': cycle,
                     'per_page': 1,
                 }
-                resp = session.get(cfg['endpoint'], params=check_params, timeout=(10, 30))
+                resp = safe_get(session, cfg['endpoint'], check_params)
                 record_count = resp.json().get('pagination', {}).get('count', 0)
             except:
                 record_count = 0
@@ -247,7 +274,7 @@ def pull(cycle, schedule):
                         params[cfg['date_key']] = last_date
 
                     try:
-                        resp = session.get(cfg['endpoint'], params=params, timeout=(10, 30))
+                        resp = safe_get(session, cfg['endpoint'], params)
                         resp.raise_for_status()
                         data = resp.json()
                         consecutive_errors = 0
