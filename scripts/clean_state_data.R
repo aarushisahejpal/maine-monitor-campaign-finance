@@ -146,9 +146,7 @@ committee_sum_for_join <- committee_sum %>%
 
 cand_con_total <- cand_sum %>%
   rename(candidate = filer_name) %>%
-  rbind(committee_sum_for_join) %>%
   group_by(candidate, race, district, party) %>%
-  #this sums the totals given directly to the candidates and indirectly to the PAC/committee, who then give to the candidaet
   summarize(tot_con_per_cand = sum(tot_con, na.rm = T)) %>%
   filter(race %in% c("Governor", "Senator", "Representative")) %>%
   mutate(district = as.numeric(district)) %>%
@@ -326,8 +324,7 @@ cand_comm_contribs <- state_df %>%
          entity = filer_name)
   
 
-all_contribs <- cand_contributors %>%
-  rbind(cand_comm_contribs)
+all_contribs <- cand_contributors
 
 # Small-dollar totals (contributions of $50 or less) per candidate
 small_dollar <- state_df %>%
